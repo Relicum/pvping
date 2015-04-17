@@ -1,0 +1,5 @@
+name: Duel
+main: com.relicum.duel.Duel
+author: Relicum
+version: ${project.version}
+description: Test Plugin
