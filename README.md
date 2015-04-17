@@ -1,3 +1,3 @@
-PVPING-PARENT-1.0.1-SNAPSHOT
+PVPING-PLUGINGS-1.0.3-SNAPSHOT
 ===
-Parent for various PVP related plugins
+Collection of PVP plugins that share various core modules

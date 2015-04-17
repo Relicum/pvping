@@ -3,3 +3,23 @@ main: com.relicum.duel.Duel
 author: Relicum
 version: ${project.version}
 description: Test Plugin
+depends: [PvpCore]
+
+commands:
+  duel:
+    description: Base command for all other commands
+    usage: /<command> [args]
+    permission: duel.admin.info
+
+permissions:
+  duel.*:
+    description: Allows players to duel items
+    children:
+      duel.admin.*: true
+  duel.admin.*:
+    description: Allows access to all admin commands
+    children:
+      duel.admin.info: true
+  duel.admin.info:
+    description: allows admins to see plugin info
+    default: op
