@@ -1,7 +1,8 @@
 package com.relicum.duel.Commands;
 
+import com.relicum.commands.AbstractCommand;
 import com.relicum.duel.Duel;
-import com.relicum.pvpcore.Commands.AbstractCommand;
+
 
 /**
  * DuelCmd

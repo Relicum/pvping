@@ -1,7 +1,6 @@
 package com.relicum.duel.Commands;
 
-import com.relicum.pvpcore.Commands.Msg;
-
+import com.relicum.commands.Interfaces.Msg;
 import static org.bukkit.ChatColor.*;
 
 /**
@@ -20,8 +19,7 @@ public final class DuelMsg implements Msg {
 
     public static DuelMsg getInstance() {
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = new DuelMsg();
         }
         return instance;
@@ -36,7 +34,7 @@ public final class DuelMsg implements Msg {
     @Override
     public String getPrefix() {
 
-        return DARK_PURPLE + "|-" + AQUA + "DUEL-1V1" + DARK_PURPLE + "-| ";
+        return DARK_RED + "" + BOLD + "|-" + GOLD + "" + BOLD + "1V1" + DARK_RED + BOLD + "-| " + RESET;
     }
 
 }

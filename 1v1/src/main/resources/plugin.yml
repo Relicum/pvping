@@ -2,13 +2,19 @@ name: Duel
 main: com.relicum.duel.Duel
 author: Relicum
 version: ${project.version}
-description: Test Plugin
+description: Duel Plugin
 depends: [PvpCore]
 
 commands:
-  duel:
-    description: Base command for all other commands
+  1v1:
+    description: 'Start a 1v1 PVP Match'
     usage: /<command> [args]
+    aliases: [duel]
+    permission: duel.player.info
+  noxarena:
+    description: 'Main admin prefix command'
+    usage: /<command> [args]
+    aliases: [na]
     permission: duel.admin.info
 
 permissions:
@@ -16,10 +22,18 @@ permissions:
     description: Allows players to duel items
     children:
       duel.admin.*: true
+      duel.player.*: true
   duel.admin.*:
     description: Allows access to all admin commands
     children:
       duel.admin.info: true
+  duel.player.*:
+    description: Allows access to all player commands
+    children:
+      duel.player.info: true
   duel.admin.info:
     description: allows admins to see plugin info
+    default: op
+  duel.player.info:
+    description: allows player to see help info
     default: op

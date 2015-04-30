@@ -5,12 +5,12 @@
 test/
 *.pydevproject
 .metadata
-*.iml
 bin/
 tmp/
 target/
 production/
 META-INF/
+*.iml
 *.tmp
 *.bak
 *.swp

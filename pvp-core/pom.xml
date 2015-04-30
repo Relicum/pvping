@@ -9,7 +9,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pvp-core</artifactId>
     <name>PvpCore</name>
-
     <description>Core Functions for PVP plugins</description>
     <build>
         <defaultGoal>clean install</defaultGoal>
@@ -75,11 +74,10 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <finalName>${project.name}-${project.version}</finalName>
-                    <outputDirectory>${project.basedir}</outputDirectory>
+                    <minimizeJar>true</minimizeJar>
+                    <outputDirectory>${project.basedir}/target</outputDirectory>
                     <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
                     <shadedClassifierName/>
-                    <minimizeJar>true</minimizeJar>
                     <useBaseVersion>true</useBaseVersion>
                 </configuration>
             </plugin>
@@ -95,7 +93,20 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
-    <dependencies/>
+    <dependencies>
+        <dependency>
+            <groupId>com.relicum</groupId>
+            <artifactId>Locations</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.relicum</groupId>
+            <artifactId>spigot-config</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
     <properties>
         <package.dir>${project.build.directory}</package.dir>
         <package.name>${project.build.finalName}</package.name>

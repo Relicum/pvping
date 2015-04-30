@@ -1,26 +1,28 @@
 package com.relicum.duel.Commands;
 
+import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
-import com.relicum.pvpcore.Annotations.Command;
+import com.relicum.pvpcore.Enums.EndReason;
 import org.bukkit.command.CommandSender;
-
+import org.bukkit.entity.Player;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Name: Hello.java Created: 17 April 2015
+ * Name: Leave.java Created: 17 April 2015
  *
  * @author Relicum
  * @version 0.0.1
  */
-@Command(aliases = { "hello" }, desc = "Simple test to say hello", perm = "duel.admin.hello", parent = "duel", usage = "/duel hello", isSub = true)
-public class Hello extends DuelCmd {
+@Command(aliases = { "leave" }, desc = "Leave the 1v1 arena", perm = "duel.player.leave", parent = "1v1", usage = "/1v1 leave", isSub = true)
+public class Leave extends DuelCmd {
 
     /**
      * Instantiates a new AbstractCommand
      *
      * @param plugin the plugin
      */
-    public Hello(Duel plugin) {
+    public Leave(Duel plugin) {
 
         super(plugin);
     }
@@ -37,7 +39,7 @@ public class Hello extends DuelCmd {
     @Override
     public List<String> tabComp(int length) {
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**
@@ -51,10 +53,16 @@ public class Hello extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
 
-        this.sendMessage("Hello message");
-        this.sendAdminMessage("Hello message");
-        this.sendErrorMessage("Hello message");
-        return true;
+        Player player = (Player) sender;
+
+        if (plugin.player.getUuid().equals(player.getUniqueId())) {
+            plugin.player.gameEnd(EndReason.LEAVE_CMD);
+            sendMessage("You have been removed from PvpPlayer");
+            return true;
+        } else {
+            sendErrorMessage("You are not a PvpPlayer at the moment");
+            return true;
+        }
     }
 
 }
