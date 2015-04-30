@@ -5,8 +5,7 @@ import com.relicum.duel.Duel;
 import com.relicum.duel.Objects.PvpPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -33,23 +32,6 @@ public class Join extends DuelCmd {
 
         Player player = (Player) sender;
 
-        Collection<PotionEffect> effects = player.getActivePotionEffects();
-
-        if (effects.size() == 0)
-            sendMessage("The player has no Potion effects");
-
-        else {
-            for (PotionEffect effect : effects) {
-                sendMessage("Name: " + effect.getType().getName());
-                sendMessage("Duration: " + effect.getDuration());
-                sendMessage("Amplifier: " + effect.getAmplifier());
-                sendMessage("Ambient: " + effect.isAmbient());
-                sendMessage("HasParticles: " + effect.hasParticles());
-                sendMessage(" ");
-
-            }
-
-        }
 
         if (plugin.player == null) {
             plugin.player = new PvpPlayer(player, plugin);
