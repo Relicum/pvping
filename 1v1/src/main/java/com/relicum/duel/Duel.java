@@ -3,14 +3,15 @@ package com.relicum.duel;
 import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
+import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Handlers.GameQueueHandler;
 import com.relicum.duel.Objects.PvpPlayer;
+import com.relicum.pvpcore.Arenas.ZoneManager;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,6 +27,7 @@ public class Duel extends JavaPlugin implements Listener {
     private static Duel instance;
     private CommandRegister commandRegister;
     private GameQueueHandler gameQueue;
+    private ZoneManager<Duel> zoneManager;
 
     public PvpPlayer player;
 
@@ -34,7 +36,7 @@ public class Duel extends JavaPlugin implements Listener {
         instance = this;
 
         saveConfig();
-
+        zoneManager = new ZoneManager<>(this);
         gameQueue = new GameQueueHandler(this);
 
         commandRegister = new CommandRegister(this);
@@ -44,6 +46,7 @@ public class Duel extends JavaPlugin implements Listener {
         getCommand("noxarena").setTabCompleter(commandRegister);
         commandRegister.register(new Leave(this));
         commandRegister.register(new Join(this));
+        commandRegister.register(new ZoneCreator(this));
         commandRegister.endRegistration();
 
     }
@@ -63,8 +66,11 @@ public class Duel extends JavaPlugin implements Listener {
 
     }
 
-    public GameQueueHandler getGameQueue()
-    {
+    public ZoneManager<Duel> getZoneManager() {
+        return zoneManager;
+    }
+
+    public GameQueueHandler getGameQueue() {
         return gameQueue;
     }
 

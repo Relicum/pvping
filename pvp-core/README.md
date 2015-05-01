@@ -1,4 +1,4 @@
-PVP_CORE-1.0.4-SNAPSHOT
+PVP_CORE-1.0.5-SNAPSHOT
 ---
 Contains all core functionality that most of the plugins require 
 

@@ -6,17 +6,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * PvPZones
+ * ZoneCollection
  *
  * @author Relicum
  * @version 0.0.1
  */
-public class PvPZones {
+public class ZoneCollection {
 
     private String name;
     private Map<UUID, PvPZone> zones = Maps.newHashMap();
 
-    public PvPZones(String name) {
+    public ZoneCollection(String name) {
 
         this.name = name;
     }
@@ -51,7 +51,6 @@ public class PvPZones {
         return zones.size();
     }
 
-
     public int getZonesWaiting() {
 
         return getZonesInState(ArenaState.WAITING);
@@ -67,7 +66,6 @@ public class PvPZones {
 
         return getZonesInState(ArenaState.DISABLED);
     }
-
 
     public int getZonesInState(ArenaState state) {
 

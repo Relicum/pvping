@@ -2,25 +2,24 @@ package com.relicum.pvpcore.Configs;
 
 import com.google.gson.reflect.TypeToken;
 import com.relicum.configs.Gson.Loaders.AbstractLoader;
-import com.relicum.pvpcore.Game.PlayerStats;
+import com.relicum.pvpcore.Arenas.PvPZone;
 
 /**
- * Name: StatsLoader.java Created: 01 May 2015
+ * Name: ZoneLoader.java Created: 01 May 2015
  *
  * @author Relicum
  * @version 0.0.1
  */
-public class StatsLoader extends AbstractLoader<PlayerStats> {
+public class ZoneLoader extends AbstractLoader<PvPZone> {
 
-    public StatsLoader(String paramPath) {
-        super(paramPath);
+    public ZoneLoader(String directoryPath) {
+        super(directoryPath);
         setToken();
-
     }
 
     @Override
     public void setToken() {
-        super.token = new TypeToken<PlayerStats>() {
+        super.token = new TypeToken<PvPZone>() {
         }.getType();
     }
 }

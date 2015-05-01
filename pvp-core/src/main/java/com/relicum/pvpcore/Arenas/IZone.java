@@ -1,0 +1,152 @@
+package com.relicum.pvpcore.Arenas;
+
+import com.relicum.locations.SpawnPoint;
+import com.relicum.pvpcore.Enums.ArenaState;
+import com.relicum.pvpcore.Enums.ArenaType;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * IZone represents an Arena that players can pvp in under controlled
+ * conditions.
+ */
+public interface IZone {
+
+    /**
+     * Gets name of this Zone, this does not need to be unique.
+     * <p>
+     * Zones can be stored under a Collection of identical Zones that only
+     * differ by location.
+     * <p>
+     * The {@link UUID} will be unique to each zone.
+     *
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * Gets the zones {@link UUID}.
+     *
+     * @return the {@link UUID}
+     */
+    UUID getUuid();
+
+    /**
+     * Sets the zones current {@link ArenaState}.
+     *
+     * @param state the {@link ArenaState} to be set.
+     */
+    void setState(ArenaState state);
+
+    /**
+     * Gets the current zones {@link ArenaState}.
+     *
+     * @return the {@link ArenaState}
+     */
+    ArenaState getState();
+
+    /**
+     * Gets a player {@link SpawnPoint} by index.
+     *
+     * @param index the index
+     * @return the spawn
+     */
+    SpawnPoint getSpawn(int index);
+
+    /**
+     * Add a player {@link SpawnPoint}.
+     * <p>
+     * The total number of spawns should be equal to the max players.
+     *
+     * @param paramSpawn the {@link SpawnPoint} to add.
+     */
+    void addSpawn(SpawnPoint paramSpawn);
+
+    /**
+     * Set all the {@link SpawnPoint} at once.
+     * <p>
+     * The total number of spawns should be equal to the max players.
+     *
+     * @param points the list of {@link SpawnPoint}
+     */
+    void setSpawns(List<SpawnPoint> points);
+
+    /**
+     * Remove a player {@link SpawnPoint} by index.
+     *
+     * @param index the index of the {@link SpawnPoint} to remove.
+     * @return the {@link SpawnPoint} that's been removed.
+     */
+    SpawnPoint removeSpawn(int index);
+
+    /**
+     * Set the {@link SpawnPoint} players will be sent at the end of the game.
+     *
+     * @param endSpawn the {@link SpawnPoint}
+     */
+    void setEndSpawn(SpawnPoint endSpawn);
+
+    /**
+     * Get the {@link SpawnPoint} players are sent to at the end of the game.
+     *
+     * @return the end spawn
+     */
+    SpawnPoint getEndSpawn();
+
+    /**
+     * Set the spectator {@link SpawnPoint} if spectating is allowed.
+     *
+     * @param specSpawn the spectator {@link SpawnPoint}
+     */
+    void setSpecSpawn(SpawnPoint specSpawn);
+
+    /**
+     * Get the spectator {@link SpawnPoint}.
+     *
+     * @return the spectator {@link SpawnPoint}
+     */
+    SpawnPoint getSpecSpawn();
+
+    /**
+     * Set the {@link ArenaType}.
+     *
+     * @param types the {@link ArenaType}
+     */
+    void setArenaType(ArenaType types);
+
+    /**
+     * Get the {@link ArenaType}.
+     *
+     * @return the arena type
+     */
+    ArenaType getArenaType();
+
+    /**
+     * Set max players.
+     *
+     * @param maxPlayers the max players
+     */
+    void setMaxPlayers(int maxPlayers);
+
+    /**
+     * Get max players.
+     *
+     * @return the max players
+     */
+    int getMaxPlayers();
+
+    /**
+     * Set min players.
+     *
+     * @param minPlayers the min players
+     */
+    void setMinPlayers(int minPlayers);
+
+    /**
+     * Get min players.
+     *
+     * @return the min players
+     */
+    int getMinPlayers();
+
+}
