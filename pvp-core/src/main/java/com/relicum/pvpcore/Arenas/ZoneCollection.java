@@ -3,7 +3,6 @@ package com.relicum.pvpcore.Arenas;
 import com.google.common.collect.Maps;
 import com.relicum.pvpcore.Enums.ArenaState;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * ZoneCollection
@@ -14,7 +13,7 @@ import java.util.UUID;
 public class ZoneCollection {
 
     private String name;
-    private Map<UUID, PvPZone> zones = Maps.newHashMap();
+    private Map<String, PvPZone> zones = Maps.newHashMap();
 
     public ZoneCollection(String name) {
 
@@ -26,29 +25,34 @@ public class ZoneCollection {
         return name;
     }
 
-    public boolean contains(UUID paramUUID) {
+    public boolean contains(String paramNameId) {
 
-        return zones.containsKey(paramUUID);
+        return zones.containsKey(paramNameId);
     }
 
     public void addZone(PvPZone paramZone) {
 
-        zones.putIfAbsent(paramZone.getUuid(), paramZone);
+        zones.putIfAbsent(paramZone.getNameId(), paramZone);
     }
 
-    public PvPZone getZone(UUID paramUUID) {
+    public PvPZone getZone(String paramNameId) {
 
-        return zones.get(paramUUID);
+        return zones.get(paramNameId);
     }
 
-    public PvPZone removeZone(UUID paramUUID) {
+    public PvPZone removeZone(String paramNameId) {
 
-        return zones.remove(paramUUID);
+        return zones.remove(paramNameId);
     }
 
     public int getTotalZones() {
 
         return zones.size();
+    }
+
+    public int getZonesSetup() {
+
+        return getZonesInState(ArenaState.SETUP);
     }
 
     public int getZonesWaiting() {

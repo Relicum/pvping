@@ -25,11 +25,16 @@ public interface IZone {
     String getName();
 
     /**
-     * Gets the zones {@link UUID}.
+     * Get the name id for the zone, this is made up of the name with id number
+     * on the end.
+     * <p>
+     * The id number is just an auto incrementing number as another zone gets
+     * added its id number will be 1 higher. This allows for easy human
+     * identification.
      *
-     * @return the {@link UUID}
+     * @return the name id
      */
-    UUID getUuid();
+    String getNameId();
 
     /**
      * Sets the zones current {@link ArenaState}.

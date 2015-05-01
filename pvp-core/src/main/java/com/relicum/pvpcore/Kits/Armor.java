@@ -51,7 +51,7 @@ public class Armor implements ConfigurationSerializable {
         if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("HELMET"))
             armor.put(ArmorType.HELMET, helmet);
         else
-            throw new IllegalArgumentException("Just be an instance of a Helmet");
+            throw new IllegalArgumentException("Must be an instance of a Helmet");
     }
 
     public void setChestPlate(ItemStack chestPlate) {
@@ -60,7 +60,7 @@ public class Armor implements ConfigurationSerializable {
         if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("CHESTPLATE"))
             armor.put(ArmorType.CHEST_PLATE, chestPlate);
         else
-            throw new IllegalArgumentException("Just be an instance of a Chestplate");
+            throw new IllegalArgumentException("Must be an instance of a Chestplate");
     }
 
     public void setLeggings(ItemStack leggings) {
@@ -69,7 +69,7 @@ public class Armor implements ConfigurationSerializable {
         if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("LEGGINGS"))
             armor.put(ArmorType.LEGGINGS, leggings);
         else
-            throw new IllegalArgumentException("Just be an instance of a Leggings");
+            throw new IllegalArgumentException("Must be an instance of a Leggings");
     }
 
     public void setBoots(ItemStack boots) {
@@ -78,7 +78,7 @@ public class Armor implements ConfigurationSerializable {
         if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("BOOTS"))
             armor.put(ArmorType.BOOTS, boots);
         else
-            throw new IllegalArgumentException("Just be an instance of a Boots");
+            throw new IllegalArgumentException("Must be an instance of a Boots");
     }
 
     public ItemStack getArmorPart(ArmorType part) {

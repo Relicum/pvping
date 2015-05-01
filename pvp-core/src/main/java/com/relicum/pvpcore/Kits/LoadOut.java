@@ -75,9 +75,9 @@ public class LoadOut implements ConfigurationSerializable {
 
     public ItemStack[] getItems() {
 
-        ItemStack[] hotbar = new ItemStack[9];
+        ItemStack[] hotbar = new ItemStack[36];
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 36; i++) {
             if (items.containsKey(i))
                 hotbar[i] = items.get(i);
             else

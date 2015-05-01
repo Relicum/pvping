@@ -6,7 +6,6 @@ import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
 import org.apache.commons.lang.Validate;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * PvPZone represents a simple 1v1 PVP battle between 2 players.
@@ -16,7 +15,7 @@ import java.util.UUID;
  */
 public class PvPZone implements IZone {
 
-    private UUID uuid;
+    private String nameId;
     private String name;
     private PointList<SpawnPoint> spawns;
     private SpawnPoint endSpawn;
@@ -24,15 +23,16 @@ public class PvPZone implements IZone {
     private int minPlayers;
     private int maxPlayers;
     private ArenaType arenaType;
-    private ArenaState state = ArenaState.LOADING;
+    private ArenaState state = ArenaState.SETUP;
 
     private PvPZone() {
     }
 
-    public PvPZone(ArenaType arenaType, String name) {
-        this.arenaType = arenaType;
+    public PvPZone(ArenaType arenaType, String name, int nextId) {
         this.name = name;
-        this.uuid = UUID.randomUUID();
+        this.nameId = name + "-" + nextId;
+        setArenaType(arenaType);
+        endSpawn = new SpawnPoint("world", -159.0d, 68.0d, 248.0d);
     }
 
     /**
@@ -47,8 +47,8 @@ public class PvPZone implements IZone {
      * {@inheritDoc}
      */
     @Override
-    public UUID getUuid() {
-        return uuid;
+    public String getNameId() {
+        return nameId;
     }
 
     /**

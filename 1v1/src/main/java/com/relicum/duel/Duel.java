@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -36,7 +37,8 @@ public class Duel extends JavaPlugin implements Listener {
         instance = this;
 
         saveConfig();
-        zoneManager = new ZoneManager<>(this);
+
+        zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
         gameQueue = new GameQueueHandler(this);
 
         commandRegister = new CommandRegister(this);
@@ -52,7 +54,7 @@ public class Duel extends JavaPlugin implements Listener {
     }
 
     public void onDisable() {
-
+        saveConfig();
     }
 
     /**

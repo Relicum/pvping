@@ -3,10 +3,16 @@ package com.relicum.pvpcore.Arenas;
 import com.relicum.pvpcore.Configs.ZoneLoader;
 import com.relicum.utilities.Files.FileUtils;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Name: ZoneManager.java Created: 01 May 2015
@@ -26,10 +32,11 @@ public class ZoneManager<T extends JavaPlugin> {
 
     private String BASE_DIR;
 
-    public ZoneManager(T plugin) {
+    public ZoneManager(T plugin, Set<String> names) {
 
         this.plugin = plugin;
         BASE_DIR = plugin.getDataFolder().toString() + File.separator + "zones" + File.separator;
+
         try {
             FileUtils.createDirectory(BASE_DIR);
         } catch (IOException e) {
@@ -37,6 +44,39 @@ public class ZoneManager<T extends JavaPlugin> {
         }
 
         this.zoneLoader = new ZoneLoader(BASE_DIR);
+
+        if (names != null && names.size() > 0) {
+            init(names);
+        }
+    }
+
+    private void init(Set<String> names) {
+
+        zoneNames.addAll(names);
+
+        for (String name : zoneNames) {
+            zonesMap.putIfAbsent(name, new ZoneCollection(name));
+            plugin.getLogger().info("New ZoneCollection Initialized for " + name);
+            List<Path> paths;
+            try {
+                paths = FileUtils.getAllFilesInDirectory(BASE_DIR + name + File.separator, "json");
+
+                if (paths.size() > 0) {
+                    for (Path path : paths) {
+                        zoneLoader.setPath(path);
+                        PvPZone tp = zoneLoader.load();
+
+                        zonesMap.get(name).addZone(tp);
+                        plugin.getLogger().info("New zone added to collection " + name);
+                    }
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public T getPlugin() {
@@ -69,10 +109,10 @@ public class ZoneManager<T extends JavaPlugin> {
         if (!zoneNames.contains(coll))
             throw new InvalidZoneException("Unable to locate ZoneCollection with the name: " + coll);
 
-        if (containsZone(coll, zone.getUuid()))
-            throw new InvalidZoneException("The zone " + coll + " already exists with uuid: " + zone.getUuid().toString());
+        if (containsZone(coll, zone.getNameId()))
+            throw new InvalidZoneException("The zone " + coll + " already exists with uuid: " + zone.getNameId());
 
-        zoneLoader.setPath(Paths.get(BASE_DIR + coll + File.separator + zone.getUuid().toString() + ".json"));
+        zoneLoader.setPath(Paths.get(BASE_DIR + coll + File.separator + zone.getNameId() + ".json"));
         zoneLoader.save(zone);
 
         zonesMap.get(coll).addZone(zone);
@@ -88,9 +128,9 @@ public class ZoneManager<T extends JavaPlugin> {
         zonesMap.get(name).addZone(pZone);
     }
 
-    public boolean containsZone(String name, UUID uuid) {
+    public boolean containsZone(String name, String nameId) {
 
-        return containsCollection(name) && zonesMap.get(name).contains(uuid);
+        return containsCollection(name) && zonesMap.get(name).contains(nameId);
     }
 
     /**
@@ -101,6 +141,20 @@ public class ZoneManager<T extends JavaPlugin> {
      */
     public boolean containsCollection(String name) {
         return zonesMap.containsKey(name);
+    }
+
+    /**
+     * Gets the total number of {@link PvPZone} in a {@link ZoneCollection}.
+     *
+     * @param name the name of the {@link ZoneCollection}
+     * @return the total number of {@link PvPZone} or -1 if the name is not a
+     *         valid collection.
+     */
+    public int getCollectionSize(String name) {
+        if (!containsCollection(name))
+            return -1;
+
+        return zonesMap.get(name).getTotalZones();
     }
 
     public boolean createDirectory(String path) {
