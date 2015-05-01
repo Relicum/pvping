@@ -6,6 +6,7 @@ import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
 import org.apache.commons.lang.Validate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * PvPZone represents a simple 1v1 PVP battle between 2 players.
@@ -15,6 +16,7 @@ import java.util.List;
  */
 public class PvPZone {
 
+    private UUID uuid;
     private String name;
     private PointList<SpawnPoint> spawns;
     private SpawnPoint endSpawn;
@@ -26,6 +28,10 @@ public class PvPZone {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public ArenaState getState() {

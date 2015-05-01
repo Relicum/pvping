@@ -33,6 +33,10 @@ public class PlayerStats implements ConfigurationSerializable {
     public PlayerStats() {
     }
 
+    public PlayerStats(String uuid) {
+        this.uuid = uuid;
+    }
+
     /**
      * Increment the number of player wins by 1.
      */

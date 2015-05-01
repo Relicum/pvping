@@ -3,6 +3,7 @@ package com.relicum.duel;
 import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
+import com.relicum.duel.Handlers.GameQueueHandler;
 import com.relicum.duel.Objects.PvpPlayer;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,6 +25,7 @@ public class Duel extends JavaPlugin implements Listener {
 
     private static Duel instance;
     private CommandRegister commandRegister;
+    private GameQueueHandler gameQueue;
 
     public PvpPlayer player;
 
@@ -32,6 +34,8 @@ public class Duel extends JavaPlugin implements Listener {
         instance = this;
 
         saveConfig();
+
+        gameQueue = new GameQueueHandler(this);
 
         commandRegister = new CommandRegister(this);
         getCommand("1v1").setExecutor(commandRegister);
@@ -57,6 +61,11 @@ public class Duel extends JavaPlugin implements Listener {
 
         return instance;
 
+    }
+
+    public GameQueueHandler getGameQueue()
+    {
+        return gameQueue;
     }
 
     public boolean checkAndCreate(String filePath) {

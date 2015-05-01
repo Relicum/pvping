@@ -51,10 +51,6 @@ public class PvPZones {
         return zones.size();
     }
 
-    public int getAvailableZones() {
-
-        return getZonesInState(ArenaState.AVAILABLE);
-    }
 
     public int getZonesWaiting() {
 
@@ -72,10 +68,6 @@ public class PvPZones {
         return getZonesInState(ArenaState.DISABLED);
     }
 
-    public int getZonesRestarting() {
-
-        return getZonesInState(ArenaState.RESTARTING);
-    }
 
     public int getZonesInState(ArenaState state) {
 
@@ -85,7 +77,7 @@ public class PvPZones {
     public PvPZone getNextAvailableZone() throws Exception {
 
         for (PvPZone zone : zones.values()) {
-            if (zone.getState().equals(ArenaState.AVAILABLE)) {
+            if (zone.getState().equals(ArenaState.WAITING)) {
                 zone.setState(ArenaState.WAITING);
                 return zone;
             }
