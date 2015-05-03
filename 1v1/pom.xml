@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.6-SNAPSHOT</version>
+        <version>1.0.7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>1v1</artifactId>
-
+    <name>1V1</name>
     <build>
         <plugins>
             <plugin>
@@ -45,31 +45,43 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <relocations>
-                        <relocation>
-                            <pattern>
-                                com.relicum.commands
-                            </pattern>
-                            <shadedPattern>
-                                com.relicum.duel.Commands
-                            </shadedPattern>
-                        </relocation>
-                    </relocations>
                     <minimizeJar>true</minimizeJar>
                     <outputDirectory>${project.basedir}/target</outputDirectory>
                     <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.relicum.commands</pattern>
+                            <shadedPattern>com.relicum.duel.Commands</shadedPattern>
+                        </relocation>
+                    </relocations>
                     <shadedClassifierName/>
                     <useBaseVersion>true</useBaseVersion>
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
+    <profiles>
+        <profile>
+            <id>polish</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <outputDirectory>G:\Users\Relicum\Desktop\MCPolish\plugins</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>pvp-core</artifactId>
-            <version>1.0.6-SNAPSHOT</version>
+            <version>1.0.7-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -78,6 +90,11 @@
             <version>1.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.relicum</groupId>
+            <artifactId>TitleApi</artifactId>
+            <version>1.0.9-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
 </project>

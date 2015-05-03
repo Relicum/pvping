@@ -58,6 +58,10 @@ public class PlayerStats implements ConfigurationSerializable {
         this.streak = 0;
     }
 
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
     /**
      * Increment the number of player draws by 1.
      */

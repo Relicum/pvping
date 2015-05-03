@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
  */
 public class PlayerSettings {
 
-    private Long playerTime;
-    private boolean timeRelative;
     private float exhaustion;
     private float saturation;
     private double playerHealth;
@@ -30,8 +28,7 @@ public class PlayerSettings {
     private int fireTicks;
 
     private PlayerSettings(Player player) {
-        playerTime = player.getPlayerTime();
-        timeRelative = player.isPlayerTimeRelative();
+
         exhaustion = player.getExhaustion();
         saturation = player.getSaturation();
         playerHealth = player.getHealth();
@@ -55,7 +52,6 @@ public class PlayerSettings {
 
     public void restore(Player player) {
 
-        player.setPlayerTime(playerTime, timeRelative);
         player.setExhaustion(exhaustion);
         player.setSaturation(saturation);
         player.setHealth(playerHealth);

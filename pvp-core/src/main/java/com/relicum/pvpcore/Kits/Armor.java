@@ -2,10 +2,12 @@ package com.relicum.pvpcore.Kits;
 
 import com.relicum.pvpcore.Enums.ArmorItems;
 import com.relicum.pvpcore.Enums.ArmorType;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +24,38 @@ public class Armor implements ConfigurationSerializable {
     private String name;
     private EnumMap<ArmorType, ItemStack> armor = new EnumMap<>(ArmorType.class);
 
-    public Armor(String name) {
+    public Armor(String name, Color color) {
 
         this.name = name;
+
+        ItemStack hel = new ItemStack(Material.LEATHER_HELMET);
+        LeatherArmorMeta hm = (LeatherArmorMeta) hel.getItemMeta();
+        hm.setColor(color);
+        hel.setItemMeta(hm);
+
+        armor.put(ArmorType.HELMET, hel);
+
+        ItemStack ch = new ItemStack(Material.LEATHER_CHESTPLATE);
+        LeatherArmorMeta cm = (LeatherArmorMeta) ch.getItemMeta();
+        cm.setColor(color);
+        ch.setItemMeta(cm);
+
+        armor.put(ArmorType.CHEST_PLATE, ch);
+
+        ItemStack leg = new ItemStack(Material.LEATHER_LEGGINGS);
+        LeatherArmorMeta lm = (LeatherArmorMeta) leg.getItemMeta();
+        lm.setColor(color);
+        leg.setItemMeta(lm);
+
+        armor.put(ArmorType.LEGGINGS, leg);
+
+        ItemStack bot = new ItemStack(Material.LEATHER_BOOTS);
+        LeatherArmorMeta bm = (LeatherArmorMeta) bot.getItemMeta();
+        bm.setColor(color);
+        bot.setItemMeta(bm);
+
+        armor.put(ArmorType.BOOTS, bot);
+
     }
 
     public Armor(String name, ItemStack helmet, ItemStack chest, ItemStack leg, ItemStack boots) {
@@ -44,6 +75,7 @@ public class Armor implements ConfigurationSerializable {
         }
 
     }
+
 
     public void setHelmet(ItemStack helmet) {
 

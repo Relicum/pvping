@@ -30,7 +30,14 @@ public class Join extends DuelCmd {
 
         Player player = (Player) sender;
 
-        if (!plugin.getGameQueue().add((Player) sender)) {
+        if (!plugin.getStatsManager().hasStatsLoaded(player.getUniqueId().toString()))
+        {
+            plugin.getStatsManager().load(player.getUniqueId().toString());
+        }
+
+
+
+        if (!plugin.getGameQueue().add(player)) {
 
             sendErrorMessage("Error: You have already joined 1v1");
             return true;

@@ -1,9 +1,9 @@
 name: Duel
+version: ${project.version}
 main: com.relicum.duel.Duel
 author: Relicum
-version: ${project.version}
 description: Duel Plugin
-depends: [PvpCore]
+depends: [PvpCore,TitleApi]
 
 commands:
   1v1:

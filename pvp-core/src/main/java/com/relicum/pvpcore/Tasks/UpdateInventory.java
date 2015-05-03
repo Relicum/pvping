@@ -19,8 +19,8 @@ public class UpdateInventory extends BukkitRunnable {
         this.runTask(paramPlugin);
     }
 
-    public static void now(Player paramPlayer, Plugin paramPlugin) {
-        new UpdateInventory(paramPlayer, paramPlugin);
+    public static UpdateInventory now(Player paramPlayer, Plugin paramPlugin) {
+        return new UpdateInventory(paramPlayer, paramPlugin);
     }
 
     @Override

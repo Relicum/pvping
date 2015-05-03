@@ -7,7 +7,10 @@ import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Handlers.GameQueueHandler;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
+import com.relicum.pvpcore.Game.StatsManager;
 import com.relicum.pvpcore.Menus.MenuAPI;
+import com.relicum.titleapi.TitleApi;
+import com.relicum.titleapi.TitleMaker;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -31,8 +34,10 @@ public class Duel extends JavaPlugin implements Listener {
     private GameQueueHandler gameQueue;
     private ZoneManager<Duel> zoneManager;
     private MenuAPI<Duel> menuAPI;
+    private StatsManager statsManager;
     private CommandRegister playerCommands;
     private CommandRegister adminCommands;
+    private TitleMaker titleMaker;
 
     public PvpPlayer player;
 
@@ -41,6 +46,14 @@ public class Duel extends JavaPlugin implements Listener {
         instance = this;
 
         saveConfig();
+        statsManager = new StatsManager(this);
+
+        try {
+            this.titleMaker = ((TitleApi) getServer().getPluginManager().getPlugin("TitleApi")).getTitleApi(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         menuAPI = new MenuAPI<>(this);
         zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
         gameQueue = new GameQueueHandler(this);
@@ -62,6 +75,7 @@ public class Duel extends JavaPlugin implements Listener {
     public void onDisable() {
 
         saveConfig();
+        statsManager.saveAndClearAll();
         gameQueue.clearAllPlayers();
     }
 
@@ -85,7 +99,18 @@ public class Duel extends JavaPlugin implements Listener {
     }
 
     public GameQueueHandler getGameQueue() {
+
         return gameQueue;
+
+    }
+
+    public StatsManager getStatsManager() {
+
+        return statsManager;
+    }
+
+    public TitleMaker getTitleMaker() {
+        return titleMaker;
     }
 
     public boolean checkAndCreate(String filePath) {

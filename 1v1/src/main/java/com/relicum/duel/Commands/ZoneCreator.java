@@ -7,6 +7,7 @@ import com.relicum.pvpcore.Arenas.DuplicateZoneException;
 import com.relicum.pvpcore.Arenas.InvalidZoneException;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaType;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.command.CommandSender;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressFBWarnings({ "CLI_CONSTANT_LIST_INDEX" })
 @Command(aliases = { "create" }, desc = "Create new Zones and Zone Collections", perm = "duel.admin.create", usage = "/noxarena create", isSub = true, parent = "noxarena", min = 2, useTab = true)
 public class ZoneCreator extends DuelCmd {
 

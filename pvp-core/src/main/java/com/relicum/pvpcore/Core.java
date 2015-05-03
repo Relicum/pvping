@@ -6,7 +6,7 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
+        System.out.println("hello");
     }
 
     @Override
