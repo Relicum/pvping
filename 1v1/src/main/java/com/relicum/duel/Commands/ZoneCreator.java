@@ -8,8 +8,6 @@ import com.relicum.pvpcore.Arenas.InvalidZoneException;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaType;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +38,7 @@ public class ZoneCreator extends DuelCmd {
 
     }
 
-    public void loadNames() {
+    public final void loadNames() {
 
         zones = new HashMap<>();
         for (Map.Entry<String, Object> entry : plugin.getConfig().getConfigurationSection("zone.name").getValues(false).entrySet()) {
@@ -57,18 +55,18 @@ public class ZoneCreator extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
-        Player player = (Player) sender;
-
         if (!OPTIONS.contains(args[0])) {
             sendErrorMessage("Invalid argument, try using tab complete");
             return true;
         }
-
-        if (args[0].equalsIgnoreCase("collection")) {
-
-            if (zones.containsKey(args[1])) {
-                sendErrorMessage("Error: the name " + args[1] + " is already registered");
-                return true;
+        String str = args[1];
+        if ("collection".equals(str)) {
+            String str2 = args[1];
+            for (String z : zones.keySet()) {
+                if (z.equals(str2)) {
+                    sendErrorMessage("Error: the name " + str + " is already registered");
+                    return true;
+                }
             }
 
             try {
@@ -96,9 +94,8 @@ public class ZoneCreator extends DuelCmd {
                 e.printStackTrace();
                 return true;
             }
-            Integer ti = zones.get(args[1]);
-            ti++;
-            zones.put(args[1], ti);
+
+            zones.put(args[1], zones.get(args[1]) + 1);
             saveNames();
             sendMessage("Successfully registered a new zone under collection " + args[1]);
             return true;
@@ -108,12 +105,13 @@ public class ZoneCreator extends DuelCmd {
     }
 
     @Override
-    public List<String> tabComp(int i) {
+    public List<String> tabComp(int i, String[] args) {
 
         if (i == 2) {
             return OPTIONS;
         }
         if (i == 3) {
+
             return zones.keySet().stream().collect(Collectors.toList());
         }
 

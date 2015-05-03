@@ -7,12 +7,13 @@ import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Handlers.GameQueueHandler;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
+import com.relicum.pvpcore.Menus.MenuAPI;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,12 +24,15 @@ import java.nio.file.Paths;
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressFBWarnings({ "UNKNOWN" })
 public class Duel extends JavaPlugin implements Listener {
 
     private static Duel instance;
-    private CommandRegister commandRegister;
     private GameQueueHandler gameQueue;
     private ZoneManager<Duel> zoneManager;
+    private MenuAPI<Duel> menuAPI;
+    private CommandRegister playerCommands;
+    private CommandRegister adminCommands;
 
     public PvpPlayer player;
 
@@ -37,24 +41,28 @@ public class Duel extends JavaPlugin implements Listener {
         instance = this;
 
         saveConfig();
-
+        menuAPI = new MenuAPI<>(this);
         zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
         gameQueue = new GameQueueHandler(this);
 
-        commandRegister = new CommandRegister(this);
-        getCommand("1v1").setExecutor(commandRegister);
-        getCommand("1v1").setTabCompleter(commandRegister);
-        getCommand("noxarena").setExecutor(commandRegister);
-        getCommand("noxarena").setTabCompleter(commandRegister);
-        commandRegister.register(new Leave(this));
-        commandRegister.register(new Join(this));
-        commandRegister.register(new ZoneCreator(this));
-        commandRegister.endRegistration();
+        playerCommands = new CommandRegister(this);
+        adminCommands = new CommandRegister(this);
+        getCommand("1v1").setExecutor(playerCommands);
+        getCommand("1v1").setTabCompleter(playerCommands);
+        getCommand("noxarena").setExecutor(adminCommands);
+        getCommand("noxarena").setTabCompleter(adminCommands);
+        playerCommands.register(new Leave(this));
+        playerCommands.register(new Join(this));
+        adminCommands.register(new ZoneCreator(this));
+        playerCommands.endRegistration();
+        adminCommands.endRegistration();
 
     }
 
     public void onDisable() {
+
         saveConfig();
+        gameQueue.clearAllPlayers();
     }
 
     /**
@@ -62,10 +70,14 @@ public class Duel extends JavaPlugin implements Listener {
      *
      * @return Duel a static instance of the main plugin Class
      */
-    public static Duel getInstance() {
+    public static Duel get() {
 
         return instance;
 
+    }
+
+    public MenuAPI<Duel> getMenuAPI() {
+        return menuAPI;
     }
 
     public ZoneManager<Duel> getZoneManager() {

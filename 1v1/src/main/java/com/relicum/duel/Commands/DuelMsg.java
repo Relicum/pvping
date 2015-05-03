@@ -34,7 +34,7 @@ public final class DuelMsg implements Msg {
     @Override
     public String getPrefix() {
 
-        return DARK_RED + "" + BOLD + "|-" + GOLD + "" + BOLD + "1V1" + DARK_RED + BOLD + "-| " + RESET;
+        return String.valueOf(DARK_RED) + BOLD + "|-" + GOLD + BOLD + "1V1" + DARK_RED + BOLD + "-| " + RESET;
     }
 
 }

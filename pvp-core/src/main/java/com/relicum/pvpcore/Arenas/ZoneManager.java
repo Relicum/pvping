@@ -3,7 +3,6 @@ package com.relicum.pvpcore.Arenas;
 import com.relicum.pvpcore.Configs.ZoneLoader;
 import com.relicum.utilities.Files.FileUtils;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Name: ZoneManager.java Created: 01 May 2015
@@ -155,6 +155,34 @@ public class ZoneManager<T extends JavaPlugin> {
             return -1;
 
         return zonesMap.get(name).getTotalZones();
+    }
+
+    /**
+     * Gets total unique {@link ZoneCollection}.
+     *
+     * @return the total unique {@link ZoneCollection}
+     */
+    public int getTotalUniqueCollections() {
+        return zoneNames.size();
+    }
+
+    /**
+     * Gets {@link ZoneCollection} by name id.
+     *
+     * @param name the name
+     * @return the {@link ZoneCollection}
+     */
+    public ZoneCollection getAllInCollection(String name) {
+        return zonesMap.get(name);
+    }
+
+    /**
+     * Gets a list of all {@link ZoneCollection} names.
+     *
+     * @return the {@link ZoneCollection} names
+     */
+    public List<String> getCollectionNames() {
+        return zoneNames.stream().collect(Collectors.toList());
     }
 
     public boolean createDirectory(String path) {

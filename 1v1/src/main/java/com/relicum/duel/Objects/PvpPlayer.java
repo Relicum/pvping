@@ -10,15 +10,15 @@ import com.relicum.pvpcore.Gamers.InventoryStore;
 import com.relicum.pvpcore.Gamers.PlayerSettings;
 import com.relicum.pvpcore.Gamers.WeakGamer;
 import com.relicum.pvpcore.Kits.Armor;
+import com.relicum.pvpcore.Tasks.TeleportTask;
+import com.relicum.pvpcore.Tasks.UpdateInventory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -30,12 +30,13 @@ import java.util.Collection;
  * @author Relicum
  * @version 0.0.1
  */
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({ "DLS_DEAD_LOCAL_STORE" })
 public class PvpPlayer extends WeakGamer<Duel> {
 
     private PlayerState state;
     private boolean saveInv = true;
     private boolean queueing = false;
-    private String name;
+    private String name = "";
     private InventoryStore store;
     private SpawnPoint backLocation;
     private Armor lobbyArmor;
@@ -55,20 +56,24 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param paramPlayer the param player
      * @param paramPlugin the param plugin
      */
-    public PvpPlayer(Player paramPlayer, Duel paramPlugin) {
+    public PvpPlayer(final Player paramPlayer, final Duel paramPlugin) {
 
         super(paramPlayer, paramPlugin);
         this.backLocation = new SpawnPoint(paramPlayer.getLocation());
         this.lobbyArmor = new Armor("LOBBY_DEFAULT", new ItemStack(Material.LEATHER_HELMET), new ItemStack(Material.LEATHER_CHESTPLATE),
                                     new ItemStack(Material.LEATHER_LEGGINGS), new ItemStack(Material.LEATHER_BOOTS));
 
-        this.name = paramPlayer.getName();
+        setName(paramPlayer.getName());
         teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
         setState(PlayerState.LOBBY);
         createScoreboard();
     }
 
-    public void setState(PlayerState playerState) {
+    public final void setName(String name) {
+        this.name = name;
+    }
+
+    public final void setState(PlayerState playerState) {
 
         this.state = playerState;
 
@@ -179,22 +184,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public final void teleport(final Location location) {
 
-        if (!location.getChunk().isLoaded())
-            location.getChunk().load();
-
-        sendMessage("Teleporting in 2 seconds");
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                getPlayer().playSound(location, Sound.PORTAL_TRAVEL, 10.0f, 1.0f);
-                getPlayer().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
-
-            }
-        }.runTaskLater(getPlugin(), 40l);
-
+        TeleportTask.create(getPlayer(), location, plugin, 20);
     }
 
     /**
@@ -217,35 +207,43 @@ public class PvpPlayer extends WeakGamer<Duel> {
     /**
      * Clear inventory.
      */
+    @SuppressFBWarnings({ "DLS_DEAD_LOCAL_STORE" })
     public void clearInventory() {
 
         PlayerInventory inv = getPlayer().getInventory();
         getPlayer().closeInventory();
         inv.setArmorContents(new ItemStack[4]);
         inv.clear();
-        updateInventory();
+
+        UpdateInventory.now(getPlayer(), plugin);
+
     }
 
-    /**
-     * Update inventory on the next tick.
-     */
+    // /**
+    // * Update inventory on the next tick.
+    // */
+    // @SuppressFBWarnings({"CD_CIRCULAR_DEPENDENCY"})
+    // public final void updateInventory() {
+    //
+    // final BukkitTask task = new BukkitRunnable() {
+    //
+    // @Override
+    // public void run() {
+    //
+    // getPlayer().updateInventory();
+    //
+    // }
+    // }.runTask(getPlugin());
+    // }
+
     public void updateInventory() {
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                getPlayer().updateInventory();
-
-            }
-        }.runTask(getPlugin());
+        UpdateInventory.now(getPlayer(), getPlugin());
     }
 
     public void applyLobbyInventory() {
 
         getPlayer().getInventory().setArmorContents(lobbyArmor.getArmor());
-        updateInventory();
+        UpdateInventory.now(getPlayer(), plugin);
     }
 
     /**
@@ -259,7 +257,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
         pl.getInventory().setContents(store.getContents().clone());
         pl.addPotionEffects(store.getEffects());
         store.getSettings().restore(pl);
-        updateInventory();
+        UpdateInventory.now(pl, plugin);
         store = null;
     }
 
@@ -268,7 +266,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      *
      * @return true if the player is in the queue, false if not.
      */
-    public boolean isQueueing() {
+    public final boolean isQueueing() {
 
         return queueing;
     }
@@ -279,7 +277,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param queueing true to mark the player as in the queue, of false to
      *        remove them from the queue.
      */
-    public void setQueueing(boolean queueing) {
+    public final void setQueueing(boolean queueing) {
 
         this.queueing = queueing;
     }

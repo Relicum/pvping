@@ -34,11 +34,11 @@ public class Leave extends DuelCmd {
      * the sub command which will auto complete it for you.
      *
      * @param length the current command argument position
+     * @param strings list of current args
      * @return the list of available options for Tab complete.
      */
     @Override
-    public List<String> tabComp(int length) {
-
+    public List<String> tabComp(int i, String[] strings) {
         return Collections.emptyList();
     }
 
@@ -53,16 +53,19 @@ public class Leave extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
 
-        Player player = (Player) sender;
+        if (!plugin.getGameQueue().removeAndDestroy((Player) sender, EndReason.LEAVE_CMD)) {
 
-        if (plugin.player.getUuid().equals(player.getUniqueId())) {
-            plugin.player.gameEnd(EndReason.LEAVE_CMD);
-            sendMessage("You have been removed from PvpPlayer");
+            sendErrorMessage("Error: removing you from 1v1");
             return true;
+
         } else {
-            sendErrorMessage("You are not a PvpPlayer at the moment");
-            return true;
+
+            sendMessage("You have left 1v1");
+
         }
+
+        return true;
+
     }
 
 }

@@ -4,7 +4,12 @@ import com.relicum.locations.PointList;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
+import com.relicum.pvpcore.Menus.OpenMenuItem;
+import lombok.ToString;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,10 +18,12 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
+@ToString
 public class PvPZone implements IZone {
 
     private String nameId;
     private String name;
+    private int id;
     private PointList<SpawnPoint> spawns;
     private SpawnPoint endSpawn;
     private SpawnPoint specSpawn;
@@ -30,6 +37,7 @@ public class PvPZone implements IZone {
 
     public PvPZone(ArenaType arenaType, String name, int nextId) {
         this.name = name;
+        this.id = nextId;
         this.nameId = name + "-" + nextId;
         setArenaType(arenaType);
         endSpawn = new SpawnPoint("world", -159.0d, 68.0d, 248.0d);
@@ -206,4 +214,25 @@ public class PvPZone implements IZone {
     public void setMinPlayers(int minPlayers) {
         this.minPlayers = minPlayers;
     }
+
+    public int getId() {
+
+        return id;
+    }
+
+    public OpenMenuItem getOpenMenuItem(int index) {
+        return new OpenMenuItem("&a" + nameId, new ItemStack(Material.PAPER, 1), index, Arrays.asList(" ",
+                "&6PVPZone name:&b " + name,
+                "&6PVPZone ID:&b " + id,
+                "&6Zone Type:&b " + arenaType.getType(),
+                "&6Zone State: &b " + state.name(),
+                " ",
+                "&aMin Players &c" + minPlayers,
+                "&aMax Players &c" + maxPlayers,
+                " ",
+                "&6End Spawn:",
+                "&a" + endSpawn.toString()));
+
+    }
+
 }

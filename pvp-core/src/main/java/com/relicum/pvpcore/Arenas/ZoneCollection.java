@@ -3,6 +3,7 @@ package com.relicum.pvpcore.Arenas;
 import com.google.common.collect.Maps;
 import com.relicum.pvpcore.Enums.ArenaState;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * ZoneCollection
@@ -28,6 +29,10 @@ public class ZoneCollection {
     public boolean contains(String paramNameId) {
 
         return zones.containsKey(paramNameId);
+    }
+
+    public Set<Map.Entry<String, PvPZone>> getZones() {
+        return zones.entrySet();
     }
 
     public void addZone(PvPZone paramZone) {

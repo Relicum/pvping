@@ -2,10 +2,8 @@ package com.relicum.duel.Commands;
 
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
-import com.relicum.duel.Objects.PvpPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -28,28 +26,22 @@ public class Join extends DuelCmd {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, String s, String[] strings) {
+    public boolean onCommand(CommandSender sender, String s, String[] strings) {
 
         Player player = (Player) sender;
 
+        if (!plugin.getGameQueue().add((Player) sender)) {
 
-        if (plugin.player == null) {
-            plugin.player = new PvpPlayer(player, plugin);
-            sendMessage("You have joined");
+            sendErrorMessage("Error: You have already joined 1v1");
             return true;
         }
-        if (plugin.player.getUuid().equals(player.getUniqueId())) {
-            sendErrorMessage("You are already joined");
-            return true;
-        } else {
-            sendMessage("Sorry its currently full");
-            return true;
-        }
+
+        return true;
 
     }
 
     @Override
-    public List<String> tabComp(int i) {
+    public List<String> tabComp(int i, String[] strings) {
         return Collections.emptyList();
     }
 }
