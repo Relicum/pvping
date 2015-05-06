@@ -9,6 +9,9 @@ import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,11 +60,23 @@ public class ZoneCreator extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
+        String str = args[0];
+        if ("save".equals(str)) {
+            Player player = (Player)sender;
+
+            ItemStack stack = player.getItemInHand();
+
+            plugin.getConfig().set("join.book",stack);
+            plugin.saveConfig();
+
+            return true;
+        }
+
         if (!OPTIONS.contains(args[0])) {
             sendErrorMessage("Invalid argument, try using tab complete");
             return true;
         }
-        String str = args[1];
+
         if ("collection".equals(str)) {
             String str2 = args[1];
             for (String z : zones.keySet()) {

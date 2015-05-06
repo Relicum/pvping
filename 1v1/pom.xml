@@ -5,7 +5,7 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.7-SNAPSHOT</version>
+        <version>1.0.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>1v1</artifactId>
@@ -58,6 +58,26 @@
                     <useBaseVersion>true</useBaseVersion>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
+                    <alwaysGenerate>true</alwaysGenerate>
+                    <rebelXmlDirectory>${basedir}/src/main/resources/</rebelXmlDirectory>
+                    <showGenerated>true</showGenerated>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -81,7 +101,7 @@
         <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>pvp-core</artifactId>
-            <version>1.0.7-SNAPSHOT</version>
+            <version>1.0.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

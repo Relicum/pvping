@@ -4,7 +4,9 @@ import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
 import com.relicum.duel.Commands.ZoneCreator;
+import com.relicum.duel.Commands.ZoneModify;
 import com.relicum.duel.Handlers.GameQueueHandler;
+import com.relicum.duel.Menus.MenuManager;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
 import com.relicum.pvpcore.Game.StatsManager;
@@ -38,6 +40,7 @@ public class Duel extends JavaPlugin implements Listener {
     private CommandRegister playerCommands;
     private CommandRegister adminCommands;
     private TitleMaker titleMaker;
+    private MenuManager menuManager;
 
     public PvpPlayer player;
 
@@ -57,7 +60,7 @@ public class Duel extends JavaPlugin implements Listener {
         menuAPI = new MenuAPI<>(this);
         zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
         gameQueue = new GameQueueHandler(this);
-
+        menuManager = new MenuManager(this);
         playerCommands = new CommandRegister(this);
         adminCommands = new CommandRegister(this);
         getCommand("1v1").setExecutor(playerCommands);
@@ -67,6 +70,7 @@ public class Duel extends JavaPlugin implements Listener {
         playerCommands.register(new Leave(this));
         playerCommands.register(new Join(this));
         adminCommands.register(new ZoneCreator(this));
+        adminCommands.register(new ZoneModify(this));
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 
@@ -88,6 +92,10 @@ public class Duel extends JavaPlugin implements Listener {
 
         return instance;
 
+    }
+
+    public MenuManager getMenuManager() {
+        return menuManager;
     }
 
     public MenuAPI<Duel> getMenuAPI() {

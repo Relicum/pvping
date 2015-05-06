@@ -48,7 +48,7 @@ public class StatsManager {
 
         if (!checkFile(uuid)) {
 
-            PlayerStats ps = new PlayerStats(uuid, 0, 0, 0, 0, 0, 0, 0);
+            PlayerStats ps = new PlayerStats(uuid, 0, 0, 0, 0, 0, 0, 0, 0);
 
             loader.save(ps);
             playerStatsMap.put(uuid, ps);

@@ -22,7 +22,7 @@ public class Game<T extends JavaPlugin> {
     private int rounds = 3;
     private int maxRoundLength = 120;
     private LoadOut kit;
-    private int countDown = 10;
+    private int countDown = 5;
     private boolean ranked = false;
     private int rewardPerRound = 10;
     private int rewardPerWin = 5;

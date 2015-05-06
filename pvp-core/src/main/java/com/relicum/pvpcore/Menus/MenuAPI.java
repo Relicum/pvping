@@ -1,5 +1,6 @@
 package com.relicum.pvpcore.Menus;
 
+import com.relicum.pvpcore.Tasks.UpdateInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,7 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     public MenuAPI(T plugin) {
         this.plugin = plugin;
         INSTANCE = this;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public static MenuAPI get() {
@@ -47,36 +49,69 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     }
 
     public static void switchMenu(final Player player, Menu fromMenu, Menu toMenu) {
-        fromMenu.closeMenu(player);
+
         new BukkitRunnable() {
+            int c = 0;
+
             public void run() {
-                toMenu.openMenu(player);
+                c++;
+                if (c == 1) {
+                    fromMenu.closeMenu(player);
+                } else if (c == 2) {
+                    toMenu.openMenu(player);
+                } else if (c == 3) {
+                    UpdateInventory.now(player, MenuAPI.get().getPlugin());
+                } else {
+                    player.sendMessage("finished switch menu task");
+                    cancel();
+                }
             }
-        }.runTask(MenuAPI.get().getPlugin());
+        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onMenuItemClicked(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
-        if ((inventory.getHolder() instanceof Menu)) {
+        if ((inventory.getHolder() instanceof Menu) || (inventory.getHolder() instanceof ActionMenu)) {
             event.setCancelled(true);
             if (event.getAction().name().startsWith("DROP")) {
                 return;
             }
-            Menu menu = (Menu) inventory.getHolder();
-            if ((event.getWhoClicked() instanceof Player)) {
-                Player player = (Player) event.getWhoClicked();
-                if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-                    if (menu.exitOnClickOutside())
-                        menu.closeMenu(player);
-                } else {
-                    int index = event.getRawSlot();
-                    if (index < inventory.getSize()) {
-                        menu.selectMenuItem(player, index);
-                    } else if (menu.exitOnClickOutside())
-                        menu.closeMenu(player);
+            if (inventory.getHolder() instanceof Menu) {
+                Menu menu = (Menu) inventory.getHolder();
+                if ((event.getWhoClicked() instanceof Player)) {
+                    Player player = (Player) event.getWhoClicked();
+                    if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
+                        if (menu.exitOnClickOutside())
+                            menu.closeMenu(player);
+                    } else {
+                        int index = event.getRawSlot();
+                        if (index < inventory.getSize()) {
+                            menu.selectMenuItem(player, index);
+                        } else if (menu.exitOnClickOutside())
+                            menu.closeMenu(player);
+                    }
+                }
+
+                return;
+            }
+            if (inventory.getHolder() instanceof ActionMenu) {
+                ActionMenu menu = (ActionMenu) inventory.getHolder();
+                if ((event.getWhoClicked() instanceof Player)) {
+                    Player player = (Player) event.getWhoClicked();
+                    if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
+                        if (menu.exitOnClickOutside())
+                            menu.closeMenu(player);
+                    } else {
+                        int index = event.getRawSlot();
+                        if (index < inventory.getSize()) {
+                            menu.selectMenuItem(player, index);
+                        } else if (menu.exitOnClickOutside())
+                            menu.closeMenu(player);
+                    }
                 }
             }
+
         }
     }
 
@@ -102,5 +137,49 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
         menu.setBypassMenuCloseBehaviour(true);
         menu.setMenuCloseBehaviour(null);
         event.getPlayer().closeInventory();
+    }
+
+    public static void switchMenu(Player player, ActionMenu fromMenu, ActionMenu toMenu) {
+
+        new BukkitRunnable() {
+            int c = 0;
+
+            public void run() {
+                c++;
+                if (c == 1) {
+                    fromMenu.closeMenu(player);
+                } else if (c == 2) {
+                    toMenu.openMenu(player);
+                } else if (c == 3) {
+                    UpdateInventory.now(player, MenuAPI.get().getPlugin());
+                } else {
+                    player.sendMessage("finished switch menu task");
+                    cancel();
+                }
+            }
+        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
+
+    }
+
+    public static void switchMenu(Player player, Menu fromMenu, ActionMenu toMenu) {
+
+        new BukkitRunnable() {
+            int c = 0;
+
+            public void run() {
+                c++;
+                if (c == 1) {
+                    fromMenu.closeMenu(player);
+                } else if (c == 2) {
+                    toMenu.openMenu(player);
+                } else if (c == 3) {
+                    UpdateInventory.now(player, MenuAPI.get().getPlugin());
+                } else {
+                    player.sendMessage("finished switch menu task");
+                    cancel();
+                }
+            }
+        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
+
     }
 }

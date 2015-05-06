@@ -1,3 +1,7 @@
 enable: true
+dedicated: false
+lobby-world: world
+game-world: world
+wager-games: false
 zone:
   name:[]

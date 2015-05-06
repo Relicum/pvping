@@ -11,6 +11,7 @@ import com.relicum.pvpcore.Gamers.InventoryStore;
 import com.relicum.pvpcore.Gamers.PlayerSettings;
 import com.relicum.pvpcore.Gamers.WeakGamer;
 import com.relicum.pvpcore.Kits.Armor;
+import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import com.relicum.pvpcore.Tasks.UpdateInventory;
 import com.relicum.titleapi.Exception.ReflectionException;
@@ -25,7 +26,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-
 import java.util.Collection;
 
 /**
@@ -44,6 +44,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private InventoryStore store;
     private SpawnPoint backLocation;
     private Armor lobbyArmor;
+    private ItemStack[] lobbyBar;
     private PlayerStats stats;
 
     public void destroy() {
@@ -71,6 +72,10 @@ public class PvpPlayer extends WeakGamer<Duel> {
         // new ItemStack(Material.LEATHER_LEGGINGS), new
         // ItemStack(Material.LEATHER_BOOTS));
         this.lobbyArmor = new Armor("LOBBY_AQUA", Color.GREEN);
+
+        LobbyHotBar bar = new LobbyHotBar();
+        lobbyBar = bar.getItems();
+
         stats = paramPlugin.getStatsManager().getAPlayersStats(paramPlayer.getUniqueId().toString());
 
         setName(paramPlayer.getName());
@@ -240,7 +245,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     }
 
-
     public void updateInventory() {
         UpdateInventory.now(getPlayer(), getPlugin());
     }
@@ -249,6 +253,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         getPlayer().getInventory().setArmorContents(lobbyArmor.getArmor());
         getPlayer().setGameMode(GameMode.ADVENTURE);
+        getPlayer().getInventory().setContents(lobbyBar);
 
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-public abstract class MenuItem {
+public abstract class MenuItem implements ItemClickHandler {
     private Menu menu;
     private int index;
     private ItemStack icon;
@@ -80,7 +80,9 @@ public abstract class MenuItem {
     }
 
     public void setDescriptions(List<String> lines) {
-        this.descriptions = lines;
+
+        lines.forEach(this::addDescription);
+
     }
 
     public void addDescription(String line) {

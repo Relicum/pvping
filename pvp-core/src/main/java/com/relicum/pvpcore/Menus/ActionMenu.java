@@ -15,21 +15,21 @@ import java.util.Map;
  * @author Relicum
  * @version 0.0.1
  */
-public class Menu implements InventoryHolder {
-    private Map<Integer, MenuItem> items;
-    private Inventory inventory;
-    private String title;
-    private int rows;
-    private boolean exitOnClickOutside;
-    private MenuCloseBehaviour menuCloseBehaviour;
-    private boolean bypassMenuCloseBehaviour;
-    private Menu parentMenu;
+public class ActionMenu implements InventoryHolder {
+    protected Map<Integer, AbstractItem> items;
+    protected Inventory inventory;
+    protected String title;
+    protected int rows;
+    protected boolean exitOnClickOutside;
+    protected MenuCloseBehaviour menuCloseBehaviour;
+    protected boolean bypassMenuCloseBehaviour;
+    protected ActionMenu parentMenu;
 
-    public Menu(String title, int rows) {
+    public ActionMenu(String title, int rows) {
         this(title, rows, null);
     }
 
-    public Menu(String title, int rows, Menu parentMenu) {
+    public ActionMenu(String title, int rows, ActionMenu parentMenu) {
         this.items = new HashMap<>();
         this.exitOnClickOutside = true;
         this.bypassMenuCloseBehaviour = false;
@@ -38,7 +38,7 @@ public class Menu implements InventoryHolder {
         this.parentMenu = parentMenu;
     }
 
-    public void setParentMenu(Menu parentMenu) {
+    public void setParentMenu(ActionMenu parentMenu) {
         this.parentMenu = parentMenu;
     }
 
@@ -62,20 +62,20 @@ public class Menu implements InventoryHolder {
         this.exitOnClickOutside = exit;
     }
 
-    public Map<Integer, MenuItem> getMenuItems() {
+    public Map<Integer, AbstractItem> getMenuItems() {
         return this.items;
     }
 
-    public boolean addMenuItem(MenuItem item, int x, int y) {
+    public boolean addMenuItem(AbstractItem item, int x, int y) {
         return addMenuItem(item, y * 9 + x);
     }
 
-    public boolean addMenuItem(MenuItem item, int index) {
+    public boolean addMenuItem(AbstractItem item, int index) {
         ItemStack slot = getInventory().getItem(index);
         if ((slot != null) && (slot.getType() != Material.AIR)) {
             return false;
         }
-        getInventory().setItem(index, item.getItemStack());
+        getInventory().setItem(index, item.getIcon());
         this.items.put(index, item);
         item.addToMenu(this);
         return true;
@@ -97,7 +97,7 @@ public class Menu implements InventoryHolder {
 
     protected void selectMenuItem(Player player, int index) {
         if (this.items.containsKey(index)) {
-            MenuItem item = this.items.get(index);
+            AbstractItem item = this.items.get(index);
             item.onClick(player);
         }
     }
@@ -116,13 +116,8 @@ public class Menu implements InventoryHolder {
         }
     }
 
-    public Menu getParent() {
+    public ActionMenu getParent() {
         return this.parentMenu;
-    }
-
-    public void switchMenu(Player player, Menu toMenu) {
-
-        MenuAPI.switchMenu(player, this, toMenu);
     }
 
     public void switchMenu(Player player, ActionMenu toMenu) {
@@ -141,8 +136,8 @@ public class Menu implements InventoryHolder {
         return this.exitOnClickOutside;
     }
 
-    protected Menu clone() {
-        Menu clone = new Menu(this.title, this.rows);
+    protected ActionMenu clone() {
+        ActionMenu clone = new ActionMenu(this.title, this.rows);
         clone.setExitOnClickOutside(this.exitOnClickOutside);
         clone.setMenuCloseBehaviour(this.menuCloseBehaviour);
         for (Integer index : this.items.keySet()) {

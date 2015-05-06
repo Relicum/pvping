@@ -31,6 +31,7 @@ public class PvPZone implements IZone {
     private int maxPlayers;
     private ArenaType arenaType;
     private ArenaState state = ArenaState.SETUP;
+    private boolean editing = false;
 
     private PvPZone() {
     }
@@ -41,6 +42,24 @@ public class PvPZone implements IZone {
         this.nameId = name + "-" + nextId;
         setArenaType(arenaType);
         endSpawn = new SpawnPoint("world", -159.0d, 68.0d, 248.0d);
+    }
+
+    /**
+     * Is editing.
+     *
+     * @return the boolean
+     */
+    public boolean isEditing() {
+        return editing;
+    }
+
+    /**
+     * Sets editing.
+     *
+     * @param editing the editing
+     */
+    public void setEditing(boolean editing) {
+        this.editing = editing;
     }
 
     /**
@@ -233,6 +252,21 @@ public class PvPZone implements IZone {
                 "&6End Spawn:",
                 "&a" + endSpawn.toString()));
 
+    }
+
+    public List<String> getLore() {
+
+        return Arrays.asList(" ",
+                "&6PVPZone name:&b " + name,
+                "&6PVPZone ID:&b " + id,
+                "&6Zone Type:&b " + arenaType.getType(),
+                "&6Zone State: &b " + state.name(),
+                " ",
+                "&aMin Players &c" + minPlayers,
+                "&aMax Players &c" + maxPlayers,
+                " ",
+                "&6End Spawn:",
+                "&a" + endSpawn.toString());
     }
 
 }
