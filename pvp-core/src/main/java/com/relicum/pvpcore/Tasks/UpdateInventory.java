@@ -15,11 +15,13 @@ public class UpdateInventory extends BukkitRunnable {
     private Player player;
 
     private UpdateInventory(Player paramPlayer, Plugin paramPlugin) {
+
         this.player = paramPlayer;
         this.runTask(paramPlugin);
     }
 
     public static UpdateInventory now(Player paramPlayer, Plugin paramPlugin) {
+
         return new UpdateInventory(paramPlayer, paramPlugin);
     }
 

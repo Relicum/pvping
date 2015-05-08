@@ -21,6 +21,7 @@ public class PlayerStat {
      * @param uuid the players uuid as a string.
      */
     public PlayerStat(String uuid) {
+
         this.uuid = uuid;
     }
 
@@ -30,6 +31,7 @@ public class PlayerStat {
      * @return the uuid as a string.
      */
     public String getUuid() {
+
         return uuid;
     }
 
@@ -39,6 +41,7 @@ public class PlayerStat {
      * @return the number of deaths the player had in the game.
      */
     public int getDeaths() {
+
         return deaths;
     }
 
@@ -48,6 +51,7 @@ public class PlayerStat {
      * @param deaths the number of deaths
      */
     public void setDeaths(int deaths) {
+
         this.deaths = deaths;
     }
 
@@ -57,6 +61,7 @@ public class PlayerStat {
      * @return the number of kills
      */
     public int getKills() {
+
         return kills;
     }
 
@@ -66,6 +71,7 @@ public class PlayerStat {
      * @param kills the number of kills
      */
     public void setKills(int kills) {
+
         this.kills = kills;
     }
 
@@ -75,6 +81,7 @@ public class PlayerStat {
      * @return the result see {@link GameResult}
      */
     public GameResult getResult() {
+
         return result;
     }
 
@@ -84,6 +91,7 @@ public class PlayerStat {
      * @param result the result of the game, see {@link GameResult}
      */
     public void setResult(GameResult result) {
+
         this.result = result;
     }
 }

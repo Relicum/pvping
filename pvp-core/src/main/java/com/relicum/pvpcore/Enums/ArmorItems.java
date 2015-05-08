@@ -6,13 +6,34 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ArmorItems {
+public enum ArmorItems
+{
 
-    GOLD_BOOTS("BOOTS"), GOLD_LEGGINGS("LEGGINGS"), GOLD_CHESTPLATE("CHESTPLATE"), GOLD_HELMET("HELMET"), IRON_BOOTS("BOOTS"), IRON_LEGGINGS("LEGGINGS"), IRON_CHESTPLATE("CHESTPLATE"), IRON_HELMET("HELMET"), DIAMOND_BOOTS("BOOTS"), DIAMOND_LEGGINGS("LEGGINGS"), DIAMOND_CHESTPLATE("CHESTPLATE"), DIAMOND_HELMET("HELMET"), CHAINMAIL_BOOTS("BOOTS"), CHAINMAIL_LEGGINGS("LEGGINGS"), CHAINMAIL_CHESTPLATE("CHESTPLATE"), CHAINMAIL_HELMET("HELMET"), LEATHER_BOOTS("BOOTS"), LEATHER_LEGGINGS("LEGGINGS"), LEATHER_CHESTPLATE("CHESTPLATE"), LEATHER_HELMET("HELMET");
+    GOLD_BOOTS("BOOTS"),
+    GOLD_LEGGINGS("LEGGINGS"),
+    GOLD_CHESTPLATE("CHESTPLATE"),
+    GOLD_HELMET("HELMET"),
+    IRON_BOOTS("BOOTS"),
+    IRON_LEGGINGS("LEGGINGS"),
+    IRON_CHESTPLATE("CHESTPLATE"),
+    IRON_HELMET("HELMET"),
+    DIAMOND_BOOTS("BOOTS"),
+    DIAMOND_LEGGINGS("LEGGINGS"),
+    DIAMOND_CHESTPLATE("CHESTPLATE"),
+    DIAMOND_HELMET("HELMET"),
+    CHAINMAIL_BOOTS("BOOTS"),
+    CHAINMAIL_LEGGINGS("LEGGINGS"),
+    CHAINMAIL_CHESTPLATE("CHESTPLATE"),
+    CHAINMAIL_HELMET("HELMET"),
+    LEATHER_BOOTS("BOOTS"),
+    LEATHER_LEGGINGS("LEGGINGS"),
+    LEATHER_CHESTPLATE("CHESTPLATE"),
+    LEATHER_HELMET("HELMET");
 
     private String part;
 
     ArmorItems(String paramPart) {
+
         this.part = paramPart;
     }
 
@@ -25,8 +46,11 @@ public enum ArmorItems {
      * @return the boolean
      */
     public static boolean find(String item) {
-        for (ArmorItems v : values()) {
-            if (v.name().equalsIgnoreCase(item)) {
+
+        for (ArmorItems v : values())
+        {
+            if (v.name().equalsIgnoreCase(item))
+            {
                 return true;
             }
         }
@@ -34,6 +58,7 @@ public enum ArmorItems {
     }
 
     public String getItem() {
+
         return part;
     }
 

@@ -66,10 +66,8 @@ public class LobbyHotBar implements InventoryRow {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &a&lJoin Match Queue &3&l\u00AB"));
 
-        meta.setLore(Arrays.asList(" ",
-                FormatUtil.colorize("&3Right Click to open queue"),
-                FormatUtil.colorize("&3menu where you can select"),
-                FormatUtil.colorize("&3from a range of game modes")));
+        meta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to open queue"), FormatUtil.colorize("&3menu where you can select"),
+            FormatUtil.colorize("&3from a range of game modes")));
         stack.setItemMeta(meta);
 
         addItem(4, stack.clone());
@@ -79,11 +77,8 @@ public class LobbyHotBar implements InventoryRow {
         BookMeta bmeta = (BookMeta) book.getItemMeta();
         bmeta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &b&lHelp and Rules &3&l\u00AB"));
 
-        bmeta.setLore(Arrays.asList(" ",
-                FormatUtil.colorize("&3Right Click to open Help"),
-                FormatUtil.colorize("&3Guide which will explain"),
-                FormatUtil.colorize("&3all of game modes and"),
-                FormatUtil.colorize("&3and the rules for each.")));
+        bmeta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to open Help"), FormatUtil.colorize("&3Guide which will explain"),
+            FormatUtil.colorize("&3all of game modes and"), FormatUtil.colorize("&3and the rules for each.")));
 
         book.setItemMeta(bmeta);
 
@@ -94,10 +89,8 @@ public class LobbyHotBar implements InventoryRow {
         ItemMeta wmeta = watch.getItemMeta();
         wmeta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &a&lLeave 1v1 Lobby &3&l\u00AB"));
 
-        wmeta.setLore(Arrays.asList(" ",
-                FormatUtil.colorize("&3Right Click to leave the"),
-                FormatUtil.colorize("&31v1 lobby and go back to"),
-                FormatUtil.colorize("&3where you came from")));
+        wmeta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to leave the"), FormatUtil.colorize("&31v1 lobby and go back to"),
+            FormatUtil.colorize("&3where you came from")));
         watch.setItemMeta(wmeta);
 
         addItem(8, watch.clone());
@@ -119,7 +112,8 @@ public class LobbyHotBar implements InventoryRow {
 
         ItemStack[] tmp = new ItemStack[9];
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++)
+        {
             if (!items.containsKey(i))
                 tmp[i] = new ItemStack(Material.AIR);
             else

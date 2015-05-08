@@ -51,9 +51,12 @@ public class GameQueueHandler {
 
         players.put(uuidToString(player.getUniqueId()), pvp);
 
-        if (isFull()) {
+        if (isFull())
+        {
             pvp.sendMessage("You are in luck we have found a match get ready");
-        } else {
+        }
+        else
+        {
             playerQueue.add(pvp.getUuid().toString());
             pvp.setQueueing(true);
             pvp.sendMessage("You have been added to the queue");
@@ -68,11 +71,12 @@ public class GameQueueHandler {
      *
      * @param player the {@link Player}
      * @return the players {@link PvpPlayer} object. Returns null if no player
-     *         was found.
+     * was found.
      */
     public PvpPlayer remove(Player player, EndReason reason) {
 
-        if (isKnown(player.getUniqueId().toString())) {
+        if (isKnown(player.getUniqueId().toString()))
+        {
             PvpPlayer pvpPlayer = players.remove(player.getUniqueId().toString());
             pvpPlayer.gameEnd(reason);
             return pvpPlayer;
@@ -86,16 +90,19 @@ public class GameQueueHandler {
      *
      * @param player the {@link Player}
      * @return true on success, false if the {@link Player} was not found or an
-     *         error occured.
+     * error occured.
      */
     public boolean removeAndDestroy(Player player, EndReason reason) {
 
-        try {
+        try
+        {
             removeFromQueue(player.getUniqueId().toString());
             remove(player, reason).clearRef();
             System.out.println("Player: " + player.getName() + " with UUID: " + player.getUniqueId().toString() + " has been removed from player store");
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             return false;
         }
@@ -107,7 +114,7 @@ public class GameQueueHandler {
      * they are in the queue before trying to remove them.
      *
      * @param uuid the string uuid of the {@link Player} to remove from the
-     *        queue.
+     * queue.
      */
     public void removeFromQueue(String uuid) {
 
@@ -165,13 +172,16 @@ public class GameQueueHandler {
     }
 
     public void clearQueue() {
+
         playerQueue.clear();
     }
 
     public void clearAllPlayers() {
+
         clearQueue();
 
-        for (PvpPlayer pvpPlayer : players.values()) {
+        for (PvpPlayer pvpPlayer : players.values())
+        {
             pvpPlayer.clearRef();
         }
 

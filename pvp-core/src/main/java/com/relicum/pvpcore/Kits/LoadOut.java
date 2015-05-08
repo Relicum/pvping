@@ -77,7 +77,8 @@ public class LoadOut implements ConfigurationSerializable {
 
         ItemStack[] hotbar = new ItemStack[36];
 
-        for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 36; i++)
+        {
             if (items.containsKey(i))
                 hotbar[i] = items.get(i);
             else
@@ -122,6 +123,6 @@ public class LoadOut implements ConfigurationSerializable {
     public String toString() {
 
         return new ToStringBuilder(this).append("permission", permission).append("name", name).append("items", items).append("icon", icon)
-                                        .append("armor", armor).toString();
+                .append("armor", armor).toString();
     }
 }

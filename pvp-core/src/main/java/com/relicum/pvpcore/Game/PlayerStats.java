@@ -32,9 +32,11 @@ public class PlayerStats implements ConfigurationSerializable {
     private int highestStreak = 0;
 
     private PlayerStats() {
+
     }
 
     public PlayerStats(String uuid) {
+
         this.uuid = uuid;
     }
 
@@ -42,6 +44,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * Increment the number of player wins by 1.
      */
     public void incrementWin() {
+
         this.wins += 1;
         this.streak += 1;
         if (streak > highestStreak)
@@ -52,6 +55,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * Increment the number of player loss by 1.
      */
     public void incrementLoss() {
+
         this.losses += 1;
         if (streak > highestStreak)
             highestStreak = streak;
@@ -60,6 +64,7 @@ public class PlayerStats implements ConfigurationSerializable {
     }
 
     public void setLosses(int losses) {
+
         this.losses = losses;
     }
 
@@ -67,6 +72,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * Increment the number of player draws by 1.
      */
     public void incrementDraws() {
+
         this.draws += 1;
     }
 
@@ -76,6 +82,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @param kills the number of kills to increment the total by.
      */
     public void incrementKills(int kills) {
+
         this.kills += kills;
     }
 
@@ -85,6 +92,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @param deaths the number of deaths to increment the total by.
      */
     public void incrementDeaths(int deaths) {
+
         this.deaths += deaths;
     }
 
@@ -94,6 +102,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @param paramPlayed the number to increment the number of games played.
      */
     public void incrementPlayed(int paramPlayed) {
+
         this.played += paramPlayed;
     }
 
@@ -101,6 +110,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * Increment games played by 1.
      */
     public void incrementPlayed() {
+
         this.played += 1;
     }
 
@@ -110,6 +120,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return the number of games played
      */
     public int getPlayed() {
+
         return played;
     }
 
@@ -119,6 +130,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return the KDR
      */
     public int getKD() {
+
         return kills / deaths;
     }
 
@@ -128,6 +140,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of deaths.
      */
     public int getDeaths() {
+
         return deaths;
     }
 
@@ -137,6 +150,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of draws.
      */
     public int getDraws() {
+
         return draws;
     }
 
@@ -146,6 +160,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of wins.
      */
     public int getWins() {
+
         return wins;
     }
 
@@ -155,6 +170,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of losses.
      */
     public int getLosses() {
+
         return losses;
     }
 
@@ -164,6 +180,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of highestStreak.
      */
     public int getHighestStreak() {
+
         return highestStreak;
     }
 
@@ -173,6 +190,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of streak.
      */
     public int getStreak() {
+
         return streak;
     }
 
@@ -182,6 +200,7 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of uuid.
      */
     public String getUuid() {
+
         return uuid;
     }
 
@@ -191,11 +210,13 @@ public class PlayerStats implements ConfigurationSerializable {
      * @return Value of kills.
      */
     public int getKills() {
+
         return kills;
     }
 
     @Override
     public Map<String, Object> serialize() {
+
         Map<String, Object> map = new HashMap<>();
         map.put("uuid", getUuid());
         map.put("played", getPlayed());
@@ -210,9 +231,11 @@ public class PlayerStats implements ConfigurationSerializable {
     }
 
     public static PlayerStats deserialize(Map<String, Object> map) {
-        Object objUUID = map.get("uuid"), objPlay = map.get("played"), objWins = map.get("wins"), objLosses = map.get("losses"), objDraws = map.get("draws"), objKills = map.get("kills"), objDeaths = map.get("deaths"), objStreak = map.get("streak"), objHight = map.get("highestStreak");
+
+        Object objUUID = map.get("uuid"), objPlay = map.get("played"), objWins = map.get("wins"), objLosses = map.get("losses"), objDraws = map.get("draws"), objKills = map
+                .get("kills"), objDeaths = map.get("deaths"), objStreak = map.get("streak"), objHight = map.get("highestStreak");
 
         return new PlayerStats((String) objUUID, (Integer) objWins, (Integer) objLosses, (Integer) objDraws, (Integer) objKills, (Integer) objDeaths,
-                               (Integer) objStreak, (Integer) objHight, (Integer) objPlay);
+                (Integer) objStreak, (Integer) objHight, (Integer) objPlay);
     }
 }

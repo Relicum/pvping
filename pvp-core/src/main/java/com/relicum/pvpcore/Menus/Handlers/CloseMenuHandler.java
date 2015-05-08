@@ -16,16 +16,17 @@ public class CloseMenuHandler implements ActionHandler {
 
     @Override
     public CloseMenuHandler getExecutor() {
+
         return this;
     }
 
     @Override
     public ActionResponse perform(Player player, AbstractItem icon) {
 
-        ActionResponse response = new ActionResponse(icon);
-        response.setWillClose(true);
         player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
-        icon.getMenu().closeMenu(player);
+        ActionResponse response = new ActionResponse(icon);
+        response.setPlayer(player);
+        response.setWillClose(true);
 
         return response;
 

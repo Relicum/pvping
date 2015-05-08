@@ -39,6 +39,7 @@ public class Leave extends DuelCmd {
      */
     @Override
     public List<String> tabComp(int i, String[] strings) {
+
         return Collections.emptyList();
     }
 
@@ -53,12 +54,15 @@ public class Leave extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
 
-        if (!plugin.getGameQueue().removeAndDestroy((Player) sender, EndReason.LEAVE_CMD)) {
+        if (!plugin.getGameQueue().removeAndDestroy((Player) sender, EndReason.LEAVE_CMD))
+        {
 
             sendErrorMessage("Error: removing you from 1v1");
             return true;
 
-        } else {
+        }
+        else
+        {
 
             sendMessage("You have left the Noxious 1V1's");
 

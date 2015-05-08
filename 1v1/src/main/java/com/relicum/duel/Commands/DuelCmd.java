@@ -3,7 +3,6 @@ package com.relicum.duel.Commands;
 import com.relicum.commands.AbstractCommand;
 import com.relicum.duel.Duel;
 
-
 /**
  * DuelCmd
  *

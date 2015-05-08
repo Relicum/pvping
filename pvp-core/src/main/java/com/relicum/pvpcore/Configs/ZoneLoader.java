@@ -13,12 +13,14 @@ import com.relicum.pvpcore.Arenas.PvPZone;
 public class ZoneLoader extends AbstractLoader<PvPZone> {
 
     public ZoneLoader(String directoryPath) {
+
         super(directoryPath);
         setToken();
     }
 
     @Override
     public void setToken() {
+
         super.token = new TypeToken<PvPZone>() {
         }.getType();
     }

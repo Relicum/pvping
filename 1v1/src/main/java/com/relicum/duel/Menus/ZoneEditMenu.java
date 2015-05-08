@@ -1,11 +1,13 @@
 package com.relicum.duel.Menus;
 
+import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.*;
 import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
 import com.relicum.pvpcore.Menus.Handlers.TeleportHandler;
+import com.relicum.utilities.Items.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -76,15 +78,16 @@ public class ZoneEditMenu extends ActionMenu {
     }
 
     public void updateIcons() {
+
         ItemStack tp = new ItemStack(Material.SIGN, 1);
         ItemMeta meta = tp.getItemMeta();
         meta.setDisplayName(FormatUtil.colorize("&a&lTeleport to Spawn"));
         meta.setLore(Arrays.asList(" ", "Teleport back to the world s spawn"));
         tp.setItemMeta(meta);
-        AbstractItem<TeleportHandler> ai = new ActionItem<>(tp, 1, ClickAction.TELEPORT, new TeleportHandler() {
+        AbstractItem ai = new ActionItem(tp, 1, ClickAction.TELEPORT, new TeleportHandler(Bukkit.getWorld("world").getSpawnLocation()) {
 
             @Override
-            public ActionResponse perform(Player player, AbstractItem<TeleportHandler> icon) {
+            public ActionResponse perform(Player player, AbstractItem icon) {
 
                 ActionResponse response = new ActionResponse(icon);
                 response.setPlayer(player);
@@ -95,11 +98,35 @@ public class ZoneEditMenu extends ActionMenu {
             }
         });
 
-        AbstractItem<CloseMenuHandler> cm = new ActionItem<>(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
+        AbstractItem cm = new ActionItem(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
 
-        ai.getActionHandler().getExecutor().setLocation(Bukkit.getWorld("world").getSpawnLocation());
+        SpawnPointItem sp1;
+
+        short dy = 10;
+
+        if (zone.containsSpawn(Spawns1v1.PLAYER_ONE.getName()))
+        {
+            sp1 = getSpawnItem(true, 1, Spawns1v1.PLAYER_ONE);
+        }
+        else
+        {
+            sp1 = getSpawnItem(false, 1, Spawns1v1.PLAYER_ONE);
+        }
+
+        SpawnPointItem sp2;
+
+        if (zone.containsSpawn(Spawns1v1.PLAYER_TWO.getName()))
+        {
+            sp2 = getSpawnItem(true, 2, Spawns1v1.PLAYER_TWO);
+        }
+        else
+        {
+            sp2 = getSpawnItem(false, 2, Spawns1v1.PLAYER_TWO);
+        }
 
         addMenuItem(ai, 0);
+        addMenuItem(sp1, 1);
+        addMenuItem(sp2, 2);
         addMenuItem(cm, ((rows * 9) - 1));
 
     }
@@ -107,7 +134,8 @@ public class ZoneEditMenu extends ActionMenu {
     @Override
     public Inventory getInventory() {
 
-        if (isChanged() || this.inventory == null) {
+        if (isChanged() || this.inventory == null)
+        {
 
             this.inventory = Bukkit.createInventory(this, this.rows * 9, this.title);
             setChanged(false);
@@ -134,10 +162,41 @@ public class ZoneEditMenu extends ActionMenu {
      * Sets field changed if a new {@link PvPZone} has been set.
      *
      * @param changed set true if new {@link PvPZone} is set. Default is set to
-     *        false.
+     * false.
      */
     public void setChanged(boolean changed) {
 
         this.changed = changed;
+    }
+
+    public void addSpawnItem(int index, boolean set, String text) {
+
+    }
+
+    public SpawnPointItem getSpawnItem(boolean state, int slot, Spawns1v1 spawn) {
+
+        if (state)
+        {
+            return new SpawnPointItem(getBooleanStack(true, spawn), slot, ClickAction.CONFIG, new SpawnSetHandler());
+        }
+        return new SpawnPointItem(getBooleanStack(false, spawn), slot, ClickAction.CONFIG, new SpawnSetHandler());
+    }
+
+    public ItemStack getBooleanStack(boolean state, Spawns1v1 spawn) {
+
+        if (state)
+        {
+            SpawnPoint end = zone.getSpawn(spawn.getName());
+            return new ItemBuilder(Material.INK_SACK)
+                    .setDisplayName("&6" + spawn.getTitle())
+                    .setDurability((short) 10)
+                    .setItemLores(
+                        Arrays.asList(" ", "&a" + spawn.getTitle() + " is set to", " ", "&eWorld: &c" + end.getWorld(), "&eX:      &c" + end.getX(),
+                            "&eY:      &c" + end.getY(), "&eZ:      &c" + end.getZ(), "&eYaw:   &c" + end.getYaw(), "&ePitch:  &c" + end.getPitch())).build();
+        }
+
+        else
+            return new ItemBuilder(Material.INK_SACK).setDisplayName("&5" + spawn.getTitle()).setDurability((short) 8)
+                    .setItemLores(Arrays.asList(" ", "&5" + spawn.getTitle() + " has not been set")).build();
     }
 }

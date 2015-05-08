@@ -6,7 +6,8 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum EndReason {
+public enum EndReason
+{
 
     LEAVE_CMD, QUIT_CMD, KICK, BANNED, LOGGED, WON, LOST, UNKNOWN
 

@@ -15,6 +15,7 @@ import java.util.List;
  * @version 0.0.1
  */
 public abstract class MenuItem implements ItemClickHandler {
+
     private Menu menu;
     private int index;
     private ItemStack icon;
@@ -22,21 +23,26 @@ public abstract class MenuItem implements ItemClickHandler {
     private List<String> descriptions;
 
     public MenuItem(ItemStack icon) {
+
         this(null, icon);
     }
 
     public MenuItem(String text) {
+
         this(text, new ItemStack(Material.PAPER));
     }
 
     public MenuItem(String text, ItemStack icon) {
+
         this(text, icon, 1);
     }
 
     public MenuItem(String text, ItemStack icon, int index) {
+
         this.text = null;
         this.descriptions = new ArrayList<>();
-        if (text != null) {
+        if (text != null)
+        {
             this.text = FormatUtil.format(text, new Object[0]);
         }
         this.icon = icon;
@@ -44,9 +50,11 @@ public abstract class MenuItem implements ItemClickHandler {
     }
 
     public MenuItem(String text, ItemStack icon, int index, List<String> desc) {
+
         this.text = null;
         this.descriptions = new ArrayList<>();
-        if (text != null) {
+        if (text != null)
+        {
             this.text = FormatUtil.format(text);
         }
 
@@ -55,27 +63,33 @@ public abstract class MenuItem implements ItemClickHandler {
     }
 
     protected void addToMenu(Menu menu) {
+
         this.menu = menu;
     }
 
     protected void removeFromMenu(Menu menu) {
+
         if (this.menu == menu)
             this.menu = null;
     }
 
     public Menu getMenu() {
+
         return this.menu;
     }
 
     public int getIndex() {
+
         return this.index;
     }
 
     public ItemStack getIcon() {
+
         return this.icon;
     }
 
     public String getText() {
+
         return this.text;
     }
 
@@ -86,18 +100,24 @@ public abstract class MenuItem implements ItemClickHandler {
     }
 
     public void addDescription(String line) {
+
         this.descriptions.add(FormatUtil.format(line, new Object[0]));
     }
 
     protected ItemStack getItemStack() {
+
         ItemStack slot = getIcon().clone();
         ItemMeta meta = slot.getItemMeta();
-        if (meta.hasLore()) {
+        if (meta.hasLore())
+        {
             meta.getLore().addAll(this.descriptions);
-        } else {
+        }
+        else
+        {
             meta.setLore(this.descriptions);
         }
-        if (getText() != null) {
+        if (getText() != null)
+        {
             meta.setDisplayName(getText());
         }
         slot.setItemMeta(meta);

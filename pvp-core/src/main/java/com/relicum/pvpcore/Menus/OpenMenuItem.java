@@ -16,11 +16,13 @@ public class OpenMenuItem extends FixedMenuItem {
     private Menu toMenu;
 
     public OpenMenuItem(String text, ItemStack icon, int index, List<String> desc) {
+
         super(text, icon, index, desc);
     }
 
     @Override
     public void onClick(Player paramPlayer) {
+
         paramPlayer.sendMessage("Openmenu on click has fired");
         Menu menu = MenuAPI.get().createMenu(getText(), 1);
 
@@ -31,12 +33,8 @@ public class OpenMenuItem extends FixedMenuItem {
 
                 getMenu().closeMenu(paramPlayer);
 
-                paramPlayer.getWorld().createExplosion(paramPlayer.getLocation().getX(),
-                        paramPlayer.getLocation().getY(),
-                        paramPlayer.getLocation().getZ(),
-                        2.0f,
-                        false,
-                        false);
+                paramPlayer.getWorld().createExplosion(paramPlayer.getLocation().getX(), paramPlayer.getLocation().getY(), paramPlayer.getLocation().getZ(),
+                    2.0f, false, false);
             }
         };
         menu.addMenuItem(item, 0);

@@ -27,7 +27,8 @@ public class StatsManager {
         this.plugin = paramPlugin;
         this.DIR_PATH = plugin.getDataFolder().toString() + File.separator + "stats" + File.separator;
 
-        if (checkDir()) {
+        if (checkDir())
+        {
 
             plugin.getLogger().info("Duel stats directory successfully located");
 
@@ -46,14 +47,16 @@ public class StatsManager {
 
         loader.setPath(Paths.get(DIR_PATH + uuid + ".json"));
 
-        if (!checkFile(uuid)) {
+        if (!checkFile(uuid))
+        {
 
             PlayerStats ps = new PlayerStats(uuid, 0, 0, 0, 0, 0, 0, 0, 0);
 
             loader.save(ps);
             playerStatsMap.put(uuid, ps);
 
-        } else
+        }
+        else
 
             playerStatsMap.put(uuid, loader.load());
 
@@ -133,18 +136,22 @@ public class StatsManager {
      *
      * @param fileName the string uuid of the {@link org.bukkit.entity.Player}
      * @return true if they have a file, false if they do not. In it is false a
-     *         blank file is automatically created for them.
+     * blank file is automatically created for them.
      */
     public boolean checkFile(String fileName) {
 
-        if (!Files.exists(Paths.get(DIR_PATH + fileName + ".json"))) {
+        if (!Files.exists(Paths.get(DIR_PATH + fileName + ".json")))
+        {
 
-            try {
+            try
+            {
 
                 Files.createFile(Paths.get(DIR_PATH + fileName + ".json"));
                 return false;
 
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
 
                 e.printStackTrace();
                 return false;
@@ -162,14 +169,18 @@ public class StatsManager {
      */
     public boolean checkDir() {
 
-        if (!Files.exists(Paths.get(DIR_PATH))) {
+        if (!Files.exists(Paths.get(DIR_PATH)))
+        {
 
-            try {
+            try
+            {
 
                 Files.createDirectory(Paths.get(DIR_PATH));
                 return true;
 
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
 
                 e.printStackTrace();
                 return false;
@@ -190,7 +201,9 @@ public class StatsManager {
      * Save and clear all stats from the internal map.
      */
     public void saveAndClearAll() {
-        for (PlayerStats playerStats : playerStatsMap.values()) {
+
+        for (PlayerStats playerStats : playerStatsMap.values())
+        {
 
             save(playerStats.getUuid());
 

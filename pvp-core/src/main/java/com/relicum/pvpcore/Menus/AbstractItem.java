@@ -4,6 +4,9 @@ import com.relicum.pvpcore.FormatUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,11 +16,11 @@ import java.util.stream.Collectors;
  * @author Relicum
  * @version 0.0.1
  */
-public abstract class AbstractItem<T extends ActionHandler> implements BaseItem, Permissible, Actionable {
+public abstract class AbstractItem implements BaseItem, Permissible, Actionable {
 
     protected String displayName;
-    protected ActionHandler<T> actionHandler;
-    protected List<String> lores;
+    protected ActionHandler actionHandler;
+    protected List<String> lores = new ArrayList<>();
     protected ItemStack item;
     protected int slot;
     protected String permission;
@@ -37,6 +40,12 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
         item = paramItem;
         slot = paramSlot;
 
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasDisplayName())
+            setText(paramItem.getItemMeta().getDisplayName());
+        if (meta.hasLore())
+            setDescription(paramItem.getItemMeta().getLore());
+
     }
 
     /**
@@ -45,14 +54,19 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
      * @param paramItem the {@link ItemStack} used as the icon
      * @param paramSlot the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
-     *        {@link ClickAction}
+     * {@link ClickAction}
      */
-    public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler<T> actionHandler) {
+    public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
 
         item = paramItem;
         slot = paramSlot;
         action = paramAction;
         this.actionHandler = actionHandler;
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasDisplayName())
+            setText(paramItem.getItemMeta().getDisplayName());
+        if (meta.hasLore())
+            setDescription(paramItem.getItemMeta().getLore());
     }
 
     /**
@@ -61,7 +75,7 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
      * @param paramItem the {@link ItemStack} used as the icon
      * @param paramSlot the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
-     *        {@link ClickAction}
+     * {@link ClickAction}
      * @param paramDisplayName the icon display name
      */
     public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
@@ -70,6 +84,9 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
         slot = paramSlot;
         action = paramAction;
         displayName = paramDisplayName;
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasLore())
+            setDescription(paramItem.getItemMeta().getLore());
     }
 
     /**
@@ -78,7 +95,7 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
      * @param paramItem the {@link ItemStack} used as the icon
      * @param paramSlot the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
-     *        {@link ClickAction}
+     * {@link ClickAction}
      * @param paramDisplayName the icon display name
      * @param paramLores the icon lores
      */
@@ -91,19 +108,23 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
         lores = paramLores;
     }
 
-    public ActionHandler<T> getActionHandler() {
+    public ActionHandler getActionHandler() {
+
         return actionHandler;
     }
 
     public ActionMenu getMenu() {
+
         return menu;
     }
 
     public void addToMenu(ActionMenu menu) {
+
         this.menu = menu;
     }
 
-    public void setActionHandler(ActionHandler<T> paramActionHandler) {
+    public void setActionHandler(ActionHandler paramActionHandler) {
+
         actionHandler = paramActionHandler;
     }
 
@@ -268,13 +289,15 @@ public abstract class AbstractItem<T extends ActionHandler> implements BaseItem,
     }
 
     public ActionResponse onClick(Player paramPlayer) {
+
         getActionHandler().perform(paramPlayer, this);
         return null;
     }
 
     public void removeFromMenu(ActionMenu actionMenu) {
 
-        if (this.menu == actionMenu) {
+        if (this.menu == actionMenu)
+        {
 
             menu = null;
 

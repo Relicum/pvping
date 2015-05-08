@@ -31,6 +31,7 @@ public class Game<T extends JavaPlugin> {
     private transient Map<UUID, WeakGamer> players;
 
     public Game() {
+
     }
 
     public Game(T plugin, PvPZone pZone, LoadOut loadOut) {
@@ -72,6 +73,7 @@ public class Game<T extends JavaPlugin> {
     }
 
     public void setCountDown(int countDown) {
+
         this.countDown = countDown;
     }
 
@@ -81,6 +83,7 @@ public class Game<T extends JavaPlugin> {
     }
 
     public int getMaxPlayers() {
+
         return zone.getMaxPlayers();
     }
 
@@ -90,6 +93,7 @@ public class Game<T extends JavaPlugin> {
     }
 
     public void setRounds(int rounds) {
+
         this.rounds = rounds;
     }
 
@@ -99,10 +103,12 @@ public class Game<T extends JavaPlugin> {
     }
 
     public int getMaxRoundLength() {
+
         return maxRoundLength;
     }
 
     public void setMaxRoundLength(int maxRoundLength) {
+
         this.maxRoundLength = maxRoundLength;
     }
 

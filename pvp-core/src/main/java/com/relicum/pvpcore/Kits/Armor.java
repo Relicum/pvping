@@ -61,21 +61,24 @@ public class Armor implements ConfigurationSerializable {
     public Armor(String name, ItemStack helmet, ItemStack chest, ItemStack leg, ItemStack boots) {
 
         this.name = name;
-        if (!helmet.getType().equals(Material.AIR)) {
+        if (!helmet.getType().equals(Material.AIR))
+        {
             setHelmet(helmet);
         }
-        if (!chest.getType().equals(Material.AIR)) {
+        if (!chest.getType().equals(Material.AIR))
+        {
             setChestPlate(chest);
         }
-        if (!leg.getType().equals(Material.AIR)) {
+        if (!leg.getType().equals(Material.AIR))
+        {
             setLeggings(leg);
         }
-        if (!boots.getType().equals(Material.AIR)) {
+        if (!boots.getType().equals(Material.AIR))
+        {
             setBoots(boots);
         }
 
     }
-
 
     public void setHelmet(ItemStack helmet) {
 

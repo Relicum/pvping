@@ -80,9 +80,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         setName(paramPlayer.getName());
         teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
-        try {
+        try
+        {
             plugin.getTitleMaker().sendTitlePacket(paramPlayer, "&aWelcome to 1v1", 40, 60, 20);
-        } catch (ReflectionException e) {
+        }
+        catch (ReflectionException e)
+        {
             e.printStackTrace();
         }
         setState(PlayerState.LOBBY);
@@ -90,6 +93,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     }
 
     public final void setName(String name) {
+
         this.name = name;
     }
 
@@ -104,29 +108,31 @@ public class PvpPlayer extends WeakGamer<Duel> {
     }
 
     public PlayerStats getStats() {
+
         return stats;
     }
 
     public void gameEnd(EndReason reason) {
 
-        switch (reason) {
-            case LEAVE_CMD: {
-                clearInventory();
-                restorePlayerSettings();
-                updateScoreboard(true);
-                UpdateInventory.now(getPlayer(), plugin);
-                stats.incrementLoss();
-                plugin.getStatsManager().removeAndSave(getUuid().toString());
-                teleport(backLocation.toLocation());
+        switch (reason)
+        {
+        case LEAVE_CMD: {
+            clearInventory();
+            restorePlayerSettings();
+            updateScoreboard(true);
+            UpdateInventory.now(getPlayer(), plugin);
+            stats.incrementLoss();
+            plugin.getStatsManager().removeAndSave(getUuid().toString());
+            teleport(backLocation.toLocation());
 
-                break;
-            }
-            default: {
-                setState(PlayerState.LOBBY);
-                teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
-                sendMessage("You are returning to the lobby spawn");
-                break;
-            }
+            break;
+        }
+        default: {
+            setState(PlayerState.LOBBY);
+            teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
+            sendMessage("You are returning to the lobby spawn");
+            break;
+        }
         }
 
     }
@@ -143,14 +149,17 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void stateLobby() {
 
-        if (saveInv) {
+        if (saveInv)
+        {
 
             savePlayerSettings();
             clearInventory();
             applyLobbyInventory();
             UpdateInventory.now(getPlayer(), plugin);
             saveInv = false;
-        } else {
+        }
+        else
+        {
             updateScoreboard();
             clearInventory();
             applyLobbyInventory();
@@ -196,7 +205,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void updateScoreboard(boolean remove) {
 
-        if (remove) {
+        if (remove)
+        {
             getPlayer().setScoreboard(getPlugin().getServer().getScoreboardManager().getNewScoreboard());
 
             return;
@@ -224,7 +234,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         Collection<PotionEffect> tmpEffects = pl.getActivePotionEffects();
 
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
+        for (PotionEffect effect : pl.getActivePotionEffects())
+        {
             pl.removePotionEffect(effect.getType());
         }
 
@@ -246,6 +257,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     }
 
     public void updateInventory() {
+
         UpdateInventory.now(getPlayer(), getPlugin());
     }
 
@@ -285,7 +297,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * Sets queueing players queuing status.
      *
      * @param queueing true to mark the player as in the queue, of false to
-     *        remove them from the queue.
+     * remove them from the queue.
      */
     public final void setQueueing(boolean queueing) {
 

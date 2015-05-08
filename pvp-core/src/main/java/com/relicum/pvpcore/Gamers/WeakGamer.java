@@ -79,15 +79,18 @@ public abstract class WeakGamer<T extends JavaPlugin> {
 
         Player pl = null;
 
-        try {
+        try
+        {
             pl = getPlugin().getServer().getPlayer(uuid);
-        } catch (Exception ignored) {
         }
+        catch (Exception ignored)
+        {}
 
         if (pl == null)
             return null;
 
-        else {
+        else
+        {
             setPlayer(pl);
             return pl;
         }

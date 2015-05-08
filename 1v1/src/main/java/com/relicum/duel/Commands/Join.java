@@ -22,6 +22,7 @@ public class Join extends DuelCmd {
      * @param plugin the plugin
      */
     public Join(Duel plugin) {
+
         super(plugin);
     }
 
@@ -35,9 +36,8 @@ public class Join extends DuelCmd {
             plugin.getStatsManager().load(player.getUniqueId().toString());
         }
 
-
-
-        if (!plugin.getGameQueue().add(player)) {
+        if (!plugin.getGameQueue().add(player))
+        {
 
             sendErrorMessage("Error: You have already joined 1v1");
             return true;
@@ -49,6 +49,7 @@ public class Join extends DuelCmd {
 
     @Override
     public List<String> tabComp(int i, String[] strings) {
+
         return Collections.emptyList();
     }
 }

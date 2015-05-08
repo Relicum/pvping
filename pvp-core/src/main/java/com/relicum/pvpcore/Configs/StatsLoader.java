@@ -13,6 +13,7 @@ import com.relicum.pvpcore.Game.PlayerStats;
 public class StatsLoader extends AbstractLoader<PlayerStats> {
 
     public StatsLoader(String paramPath) {
+
         super(paramPath);
         setToken();
 
@@ -20,6 +21,7 @@ public class StatsLoader extends AbstractLoader<PlayerStats> {
 
     @Override
     public void setToken() {
+
         super.token = new TypeToken<PlayerStats>() {
         }.getType();
     }

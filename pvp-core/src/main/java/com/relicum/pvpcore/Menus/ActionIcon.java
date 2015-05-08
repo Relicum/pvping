@@ -1,15 +1,16 @@
 package com.relicum.pvpcore.Menus;
 
 import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
 
 /**
- * Name: ActionItem.java Created: 04 May 2015
+ * Name: ActionIcon.java Created: 07 May 2015
  *
  * @author Relicum
  * @version 0.0.1
  */
-public class ActionItem extends AbstractItem {
+public class ActionIcon extends AbstractItem {
 
     /**
      * Instantiates a new Abstract item.
@@ -17,7 +18,7 @@ public class ActionItem extends AbstractItem {
      * @param paramItem the {@link ItemStack} used as the icon
      * @param paramSlot the slot inventory position
      */
-    public ActionItem(ItemStack paramItem, int paramSlot) {
+    public ActionIcon(ItemStack paramItem, int paramSlot) {
 
         super(paramItem, paramSlot);
     }
@@ -29,12 +30,11 @@ public class ActionItem extends AbstractItem {
      * @param paramSlot the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
      * {@link ClickAction}
+     * @param actionHandler
      */
-    public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
+    public ActionIcon(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
 
         super(paramItem, paramSlot, paramAction, actionHandler);
-        this.setActionHandler(actionHandler);
-
     }
 
     /**
@@ -46,7 +46,7 @@ public class ActionItem extends AbstractItem {
      * {@link ClickAction}
      * @param paramDisplayName the icon display name
      */
-    public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
+    public ActionIcon(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
 
         super(paramItem, paramSlot, paramAction, paramDisplayName);
     }
@@ -61,10 +61,8 @@ public class ActionItem extends AbstractItem {
      * @param paramDisplayName the icon display name
      * @param paramLores the icon lores
      */
-    public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName, List<String> paramLores) {
+    public ActionIcon(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName, List<String> paramLores) {
 
         super(paramItem, paramSlot, paramAction, paramDisplayName, paramLores);
-
     }
-
 }

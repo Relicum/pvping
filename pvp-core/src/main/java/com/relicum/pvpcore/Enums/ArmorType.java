@@ -6,7 +6,8 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ArmorType {
+public enum ArmorType
+{
 
     HELMET, CHEST_PLATE, LEGGINGS, BOOTS
 }

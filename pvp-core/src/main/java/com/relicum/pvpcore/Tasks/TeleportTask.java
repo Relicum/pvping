@@ -26,7 +26,8 @@ public class TeleportTask extends BukkitRunnable {
         this.location = location;
         this.runTaskLater(paramPlugin, delay);
 
-        if (!location.getChunk().isLoaded()) {
+        if (!location.getChunk().isLoaded())
+        {
             location.getChunk().load();
         }
 

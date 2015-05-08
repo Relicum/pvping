@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 /**
  * Name: Duel.java Created: 17 April 2015
@@ -51,14 +52,20 @@ public class Duel extends JavaPlugin implements Listener {
         saveConfig();
         statsManager = new StatsManager(this);
 
-        try {
+        try
+        {
             this.titleMaker = ((TitleApi) getServer().getPluginManager().getPlugin("TitleApi")).getTitleApi(this);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
         menuAPI = new MenuAPI<>(this);
-        zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
+        if (getConfig().contains("zone.name"))
+            zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
+        else
+            zoneManager = new ZoneManager<>(this, Collections.<String> emptySet());
         gameQueue = new GameQueueHandler(this);
         menuManager = new MenuManager(this);
         playerCommands = new CommandRegister(this);
@@ -95,14 +102,17 @@ public class Duel extends JavaPlugin implements Listener {
     }
 
     public MenuManager getMenuManager() {
+
         return menuManager;
     }
 
     public MenuAPI<Duel> getMenuAPI() {
+
         return menuAPI;
     }
 
     public ZoneManager<Duel> getZoneManager() {
+
         return zoneManager;
     }
 
@@ -118,16 +128,21 @@ public class Duel extends JavaPlugin implements Listener {
     }
 
     public TitleMaker getTitleMaker() {
+
         return titleMaker;
     }
 
     public boolean checkAndCreate(String filePath) {
 
-        if (!Files.exists(Paths.get(filePath))) {
-            try {
+        if (!Files.exists(Paths.get(filePath)))
+        {
+            try
+            {
                 Files.createFile(Paths.get(filePath));
                 return false;
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
 
             }
@@ -151,15 +166,20 @@ public class Duel extends JavaPlugin implements Listener {
 
     public void onQuit(PlayerQuitEvent e) {
 
-        try {
-            if (player != null) {
-                if (player.getUuid().equals(e.getPlayer().getUniqueId())) {
+        try
+        {
+            if (player != null)
+            {
+                if (player.getUuid().equals(e.getPlayer().getUniqueId()))
+                {
                     player.destroy();
                     player = null;
                 }
 
             }
-        } catch (Exception ignored) {
+        }
+        catch (Exception ignored)
+        {
             System.out.println("Already null");
         }
 

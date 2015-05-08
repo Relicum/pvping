@@ -3,7 +3,8 @@ package com.relicum.pvpcore.Arenas;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
-import java.util.List;
+
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -51,38 +52,47 @@ public interface IZone {
     ArenaState getState();
 
     /**
-     * Gets a player {@link SpawnPoint} by index.
+     * Gets a player {@link SpawnPoint} by key.
      *
-     * @param index the index
+     * @param key the key
      * @return the spawn
      */
-    SpawnPoint getSpawn(int index);
+    SpawnPoint getSpawn(String key);
 
     /**
      * Add a player {@link SpawnPoint}.
      * <p>
      * The total number of spawns should be equal to the max players.
      *
+     * @param paramKey the String key the spawn is identified
      * @param paramSpawn the {@link SpawnPoint} to add.
      */
-    void addSpawn(SpawnPoint paramSpawn);
+    void addSpawn(String paramKey, SpawnPoint paramSpawn);
 
     /**
      * Set all the {@link SpawnPoint} at once.
      * <p>
      * The total number of spawns should be equal to the max players.
      *
-     * @param points the list of {@link SpawnPoint}
+     * @param points the map of {@link SpawnPoint}
      */
-    void setSpawns(List<SpawnPoint> points);
+    void setSpawns(Map<String, SpawnPoint> points);
 
     /**
-     * Remove a player {@link SpawnPoint} by index.
+     * Checks if the specified spawn point is set.
      *
-     * @param index the index of the {@link SpawnPoint} to remove.
+     * @param key to check if a spawn point has been set.
+     * @return true if it has been set, false if ot.
+     */
+    boolean containsSpawn(String key);
+
+    /**
+     * Remove a player {@link SpawnPoint} by key.
+     *
+     * @param key the key of the {@link SpawnPoint} to remove.
      * @return the {@link SpawnPoint} that's been removed.
      */
-    SpawnPoint removeSpawn(int index);
+    SpawnPoint removeSpawn(String key);
 
     /**
      * Set the {@link SpawnPoint} players will be sent at the end of the game.

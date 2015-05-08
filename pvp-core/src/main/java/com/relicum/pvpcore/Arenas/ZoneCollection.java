@@ -32,6 +32,7 @@ public class ZoneCollection {
     }
 
     public Set<Map.Entry<String, PvPZone>> getZones() {
+
         return zones.entrySet();
     }
 
@@ -83,8 +84,10 @@ public class ZoneCollection {
 
     public PvPZone getNextAvailableZone() throws Exception {
 
-        for (PvPZone zone : zones.values()) {
-            if (zone.getState().equals(ArenaState.WAITING)) {
+        for (PvPZone zone : zones.values())
+        {
+            if (zone.getState().equals(ArenaState.WAITING))
+            {
                 zone.setState(ArenaState.WAITING);
                 return zone;
             }

@@ -7,6 +7,7 @@ import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.*;
 import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
 import com.relicum.pvpcore.Menus.Handlers.TeleportHandler;
+import com.relicum.utilities.Items.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,76 +35,109 @@ public class MenuManager {
     private ZoneEditMenu zoneEditMenu;
 
     public MenuManager(Duel plugin) {
+
         instance = this;
         this.plugin = plugin;
     }
 
     public static MenuManager getInstance() {
+
         return instance;
     }
 
     public Duel getPlugin() {
+
         return plugin;
     }
 
     public ZoneMainMenu createZoneEdit() {
+
         zoneMainMenu = new ZoneMainMenu(FormatUtil.colorize("&4Zone Collection Menu"), 1);
 
         List<String> cnames = plugin.getZoneManager().getCollectionNames();
         int c = 0;
-        for (String cname : cnames) {
+        for (String cname : cnames)
+        {
+            ItemStack stack = new ItemBuilder(Material.PAPER, 1)
+                    .setDisplayName("&6&l" + cname)
+                    .setItemLores(
+                        Arrays.asList(" ", "&aRight click to open this", "&aZoneCollection to view and edit " + "zones", " " + "", "&aNumber of Zones: &6999"))
+                    .build();
 
-            CollectionItem item = new CollectionItem("&6&l" + cname, new ItemStack(Material.PAPER), c);
-            List<String> lore = Arrays.asList(" ", "&aRight click to open this", "&aZoneCollection to view and edit zones", " ", "&aNumber of Zones: &6999");
-            item.setDescriptions(lore);
+            // ItemStack stack = new ItemStack(Material.PAPER, 1);
+            // ItemMeta meta = stack.getItemMeta();
+            // meta.setDisplayName(FormatUtil.colorize("&6&l" + cname));
+            // meta.setLore(Arrays.asList(" ", "&aRight click to open this",
+            // "&aZoneCollection to view and edit zones", " ",
+            // "&aNumber of Zones: &6999"));
+            // stack.setItemMeta(meta);
+
+            AbstractItem item = new ActionItem(stack, c, ClickAction.SWITCH_MENU, new CollectionItem(cname));
+            item.setText(FormatUtil.colorize("&6&l" + cname));
             zoneMainMenu.addMenuItem(item, c);
             c++;
         }
-
+        AbstractItem cm = new ActionItem(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
         zoneMainMenu.setExitOnClickOutside(true);
-        zoneMainMenu.addMenuItem(new CloseMenuItem(), 8);
+        zoneMainMenu.addMenuItem(cm, 8);
 
         return zoneMainMenu;
     }
 
     public ZoneSelectMenu createSelectMenu(String zone) {
+
         System.out.println(zone);
 
         ZoneCollection zc = plugin.getZoneManager().getAllInCollection(ChatColor.stripColor(zone));
+        int icons = zc.getTotalZones();
         System.out.println("Number in the zone is " + zc.getTotalZones());
         zoneSelectMenu = new ZoneSelectMenu(FormatUtil.colorize("&4&lZone Edit Selector"), 1);
 
         int c = 0;
-        for (Map.Entry<String, PvPZone> entry : zc.getZones()) {
+        for (Map.Entry<String, PvPZone> entry : zc.getZones())
+        {
             List<String> tl = new ArrayList<>();
 
-            for (String s : entry.getValue().getLore()) {
+            for (String s : entry.getValue().getLore())
+            {
                 tl.add(FormatUtil.colorize(s));
             }
 
             ItemStack stack = new ItemStack(Material.PAPER, 1);
             ItemMeta meta = stack.getItemMeta();
-            meta.setDisplayName("&6&l" + entry.getKey());
+            meta.setDisplayName(FormatUtil.colorize("&6&l" + entry.getKey()));
             meta.setLore(tl);
             stack.setItemMeta(meta);
+            AbstractItem it = new ActionItem(stack, 1, ClickAction.SWITCH_MENU, new OpenEditZoneItem(entry.getValue()));
 
-            OpenEditZoneItem item = new OpenEditZoneItem("&6&l" + entry.getKey(), stack, c, tl, entry.getValue());
-            zoneSelectMenu.addMenuItem(item, c);
+            zoneSelectMenu.addMenuItem(it, c);
             c++;
 
         }
+        AbstractItem cm = new ActionItem(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
+
         zoneSelectMenu.setExitOnClickOutside(true);
-        zoneSelectMenu.addMenuItem(new CloseMenuItem(), 8);
-        System.out.println("Totsl in menu is " + zoneSelectMenu.getMenuItems().size());
+        zoneSelectMenu.addMenuItem(cm, (fit(icons) - 1));
+        System.out.println("Total in menu is " + zoneSelectMenu.getMenuItems().size());
         return zoneSelectMenu;
     }
 
     public void buildEditMenu() {
+
         int rows = 1;
 
         zoneEditMenu = new ZoneEditMenu("Default Title", rows);
 
-        AbstractItem<TeleportHandler> tp = new ActionItem<>(new ItemStack(Material.DIAMOND_SWORD), 1, ClickAction.TELEPORT, new TeleportHandler() {
+        SpawnPointItem sp1 = new SpawnPointItem(new ItemBuilder(Material.INK_SACK).setDisplayName("&5Spawn 1").setDurability((short) 10)
+                .setItemLores(Arrays.asList(" ", "&aSet Spawn 1")).build(), new ItemBuilder(Material.INK_SACK).setDurability((short) 5)
+                .setDisplayName("&5Spawn 1").setItemLores(Arrays.asList(" ", "&aSet Spawn 1")).build(), 1, ClickAction.CONFIG, new CloseMenuHandler());
+
+        SpawnPointItem sp2 = new SpawnPointItem(new ItemBuilder(Material.INK_SACK).setDisplayName("&5Spawn 2").setDurability((short) 5)
+                .setItemLores(Arrays.asList(" ", "&aSet Spawn 2 true")).build(), new ItemBuilder(Material.INK_SACK).setDurability((short) 10)
+                .setDisplayName("&5Spawn 2").setItemLores(Arrays.asList(" ", "&aSet Spawn 2 false")).build(), 1, ClickAction.CONFIG, new CloseMenuHandler());
+
+        AbstractItem tp = new ActionItem(new ItemStack(Material.DIAMOND_SWORD), 1, ClickAction.TELEPORT, new TeleportHandler(Bukkit.getWorld("world")
+                .getSpawnLocation()) {
 
             @Override
             public ActionResponse perform(Player player, AbstractItem icon) {
@@ -117,11 +151,13 @@ public class MenuManager {
             }
         });
 
-        tp.getActionHandler().getExecutor().setLocation(Bukkit.getWorld("world").getSpawnLocation());
+        ((TeleportHandler) tp.getActionHandler().getExecutor()).setLocation(Bukkit.getWorld("world").getSpawnLocation());
 
-        ActionItem<CloseMenuHandler> cm = new ActionItem<>(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
+        AbstractItem cm = new ActionItem(new ItemStack(Material.GLASS), 1, ClickAction.CLOSE_MENU, new CloseMenuHandler());
 
-        zoneEditMenu.addMenuItem(tp, 0);
+        zoneEditMenu.addMenuItem(tp, 1);
+        zoneEditMenu.addMenuItem(sp1, 2);
+        zoneEditMenu.addMenuItem(sp2, 3);
         zoneEditMenu.addMenuItem(cm, ((rows * 9) - 1));
 
     }
@@ -134,5 +170,22 @@ public class MenuManager {
         zoneEditMenu.setZone(zone);
 
         return zoneEditMenu;
+    }
+
+    public int fit(int slots) {
+
+        if (slots < 10)
+            return 9;
+        if (slots < 19)
+            return 18;
+        if (slots < 28)
+            return 27;
+        if (slots < 37)
+            return 36;
+        if (slots < 46)
+            return 45;
+
+        return 54;
+
     }
 }

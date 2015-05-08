@@ -18,6 +18,7 @@ public class KitManager<T extends JavaPlugin> {
     }
 
     public T getPlugin() {
+
         return plugin;
     }
 }

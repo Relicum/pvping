@@ -13,7 +13,7 @@ public interface Actionable {
      * Used to mark a menu item having a {@link ClickAction} or not.
      *
      * @return true and it has a {@link ClickAction}, false and no action is
-     *         performed on clicking the menu item.
+     * performed on clicking the menu item.
      */
     boolean hasAction();
 

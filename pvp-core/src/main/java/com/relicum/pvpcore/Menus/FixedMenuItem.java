@@ -13,6 +13,7 @@ import java.util.List;
 public class FixedMenuItem extends MenuItem {
 
     public FixedMenuItem(String text, ItemStack icon, int index, List<String> desc) {
+
         super(text, icon, index, desc);
     }
 

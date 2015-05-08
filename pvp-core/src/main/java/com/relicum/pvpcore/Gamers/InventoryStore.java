@@ -20,6 +20,7 @@ public class InventoryStore {
     private final PlayerSettings settings;
 
     public InventoryStore(ItemStack[] armor, ItemStack[] contents, Collection<PotionEffect> potionEffects, PlayerSettings paramSettings) {
+
         this.armor = armor.clone();
         this.contents = contents.clone();
         this.effects = potionEffects;
@@ -40,6 +41,7 @@ public class InventoryStore {
      * @return the {@link ItemStack} array containing the armor.
      */
     public ItemStack[] getArmor() {
+
         return armor;
     }
 
@@ -49,6 +51,7 @@ public class InventoryStore {
      * @return the {@link ItemStack} array containing the contents.
      */
     public ItemStack[] getContents() {
+
         return contents;
     }
 
@@ -58,6 +61,7 @@ public class InventoryStore {
      * @return the list of {@link PotionEffect} the player had before joining.
      */
     public Collection<PotionEffect> getEffects() {
+
         return effects;
     }
 
@@ -67,6 +71,7 @@ public class InventoryStore {
      * @return the player settings
      */
     public PlayerSettings getSettings() {
+
         return settings;
     }
 }

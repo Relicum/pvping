@@ -6,7 +6,8 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum GameResult {
+public enum GameResult
+{
 
     WIN, LOSS, DRAW
 }

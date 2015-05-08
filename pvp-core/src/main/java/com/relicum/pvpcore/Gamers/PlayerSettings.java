@@ -47,6 +47,7 @@ public class PlayerSettings {
     }
 
     public static PlayerSettings save(Player player) {
+
         return new PlayerSettings(player);
     }
 

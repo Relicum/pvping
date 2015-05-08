@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
  * @author Relicum
  * @version 0.0.1
  */
-public interface ActionHandler<T extends ActionHandler> {
+public interface ActionHandler {
 
-    T getExecutor();
+    ActionHandler getExecutor();
 
-    ActionResponse perform(Player player, AbstractItem<T> icon);
+    ActionResponse perform(Player player, AbstractItem icon);
 }

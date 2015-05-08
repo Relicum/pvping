@@ -9,23 +9,31 @@ import org.bukkit.Location;
  * @author Relicum
  * @version 0.0.1
  */
-public abstract class TeleportHandler implements ActionHandler<TeleportHandler> {
+public abstract class TeleportHandler implements ActionHandler {
 
     private Location location;
+
+    public TeleportHandler(Location location) {
+
+        this.location = location;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public TeleportHandler getExecutor() {
+
         return this;
     }
 
     public Location getLocation() {
+
         return location;
     }
 
     public void setLocation(Location location) {
+
         this.location = location;
     }
 }

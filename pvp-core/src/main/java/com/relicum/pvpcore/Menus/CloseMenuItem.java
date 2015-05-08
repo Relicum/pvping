@@ -16,6 +16,7 @@ import java.util.Arrays;
 public class CloseMenuItem extends FixedMenuItem {
 
     public CloseMenuItem() {
+
         super(ChatColor.DARK_RED + "Close Menu", new ItemStack(Material.GLASS, 1), 8, Arrays.asList(" ", "&bClick to close the menu"));
 
     }

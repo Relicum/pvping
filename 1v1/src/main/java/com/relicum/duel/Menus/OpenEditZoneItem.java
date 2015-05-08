@@ -1,10 +1,10 @@
 package com.relicum.duel.Menus;
 
 import com.relicum.pvpcore.Arenas.PvPZone;
-import com.relicum.pvpcore.Menus.FixedMenuItem;
+import com.relicum.pvpcore.Menus.AbstractItem;
+import com.relicum.pvpcore.Menus.ActionHandler;
+import com.relicum.pvpcore.Menus.ActionResponse;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import java.util.List;
 
 /**
  * Name: OpenEditZoneItem.java Created: 06 May 2015
@@ -12,24 +12,36 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-public class OpenEditZoneItem extends FixedMenuItem {
+public class OpenEditZoneItem implements ActionHandler {
 
     private PvPZone zone;
 
-    public OpenEditZoneItem(String text, ItemStack icon, int index, List<String> desc, PvPZone zone) {
-        super(text, icon, index, desc);
+    public OpenEditZoneItem(PvPZone zone) {
+
         this.zone = zone;
     }
 
     public PvPZone getZone() {
+
         return zone;
     }
 
     @Override
-    public void onClick(Player paramPlayer) {
-        paramPlayer.sendMessage("Openmenu on click has fired");
+    public OpenEditZoneItem getExecutor() {
 
-        getMenu().switchMenu(paramPlayer, MenuManager.getInstance().getZoneEditMenu(getZone()));
+        return this;
+    }
 
+    @Override
+    public ActionResponse perform(Player player, AbstractItem icon) {
+
+        player.sendMessage("Open Zone Editor has fired");
+        ActionResponse response = new ActionResponse(icon);
+
+        response.setPlayer(player);
+        response.setDoNothing(true);
+
+        icon.getMenu().switchMenu(player, MenuManager.getInstance().getZoneEditMenu(getZone()));
+        return response;
     }
 }
