@@ -17,17 +17,14 @@ import java.util.EnumMap;
  */
 public class LobbyArmor {
 
-    private final static EnumMap<RankArmor, ItemStack[]> armor = new EnumMap<>(RankArmor.class);
+    private EnumMap<RankArmor, ItemStack[]> armor = new EnumMap<>(RankArmor.class);
 
-    static {
+
+    public LobbyArmor() {
         initArmor();
     }
 
-    public LobbyArmor() {
-
-    }
-
-    private static void initArmor() {
+    private void initArmor() {
 
         for (RankArmor rankArmor : RankArmor.values()) {
 
@@ -90,7 +87,7 @@ public class LobbyArmor {
      * @param rank the players {@link RankArmor}
      * @return the armor ItemStack[]
      */
-    public static ItemStack[] getAmour(RankArmor rank) {
+    public ItemStack[] getAmour(RankArmor rank) {
 
         return armor.get(rank).clone();
     }

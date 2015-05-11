@@ -5,11 +5,16 @@ import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
 import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Commands.ZoneModify;
+import com.relicum.duel.Configs.LobbyLoader;
+import com.relicum.duel.Configs.LobbyPlayerConfigs;
 import com.relicum.duel.Handlers.GameHandler;
+import com.relicum.duel.Handlers.LobbyArmor;
 import com.relicum.duel.Menus.MenuManager;
+import com.relicum.duel.Objects.LobbySettings;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
 import com.relicum.pvpcore.Game.StatsManager;
+import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Menus.MenuAPI;
 import com.relicum.titleapi.TitleApi;
 import com.relicum.titleapi.TitleMaker;
@@ -18,8 +23,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,6 +51,8 @@ public class Duel extends JavaPlugin implements Listener {
     private CommandRegister adminCommands;
     private TitleMaker titleMaker;
     private MenuManager menuManager;
+    private LobbyLoader lobbyLoader;
+    private LobbySettings lobbySettings;
 
 
     public PvpPlayer player;
@@ -59,6 +69,21 @@ public class Duel extends JavaPlugin implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        LobbyPlayerConfigs lc;
+        //lc.setDefaults();
+
+        lobbyLoader = new LobbyLoader(getDataFolder().toString() + File.separator, "lobbysettings");
+        lc = lobbyLoader.load();
+
+        lobbySettings = new LobbySettings();
+        lobbySettings.setSettings(lc.getSettings());
+        lobbySettings.setArmor(new LobbyArmor());
+        lobbySettings.setContents(LobbyHotBar.create().getItems());
+
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.SPEED, 100000, 2, false, false);
+        lobbySettings.addPotionEffect(potionEffect);
+
 
         menuAPI = new MenuAPI<>(this);
         if (getConfig().contains("zone.name"))
@@ -104,6 +129,10 @@ public class Duel extends JavaPlugin implements Listener {
     public MenuManager getMenuManager() {
 
         return menuManager;
+    }
+
+    public LobbySettings getLobbySettings() {
+        return lobbySettings;
     }
 
     public MenuAPI<Duel> getMenuAPI() {

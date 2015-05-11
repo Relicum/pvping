@@ -5,9 +5,12 @@ import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -245,6 +248,29 @@ public class GameHandler implements Listener {
 
     public Location getWorldSpawn() {
         return worldSpawn.toLocation();
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            if (players.containsKey(event.getEntity().getUniqueId().toString())) {
+
+                if (players.get(event.getEntity().getUniqueId().toString()).isGod())
+                    event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onFoodDrop(FoodLevelChangeEvent event) {
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            if (players.containsKey(event.getEntity().getUniqueId().toString())) {
+
+                if (players.get(event.getEntity().getUniqueId().toString()).isGod())
+                    event.setCancelled(true);
+            }
+        }
+
     }
 
     @EventHandler

@@ -2,7 +2,6 @@ package com.relicum.duel.Objects;
 
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
-import com.relicum.duel.Handlers.LobbyArmor;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
@@ -11,12 +10,10 @@ import com.relicum.pvpcore.Game.PlayerStats;
 import com.relicum.pvpcore.Gamers.InventoryStore;
 import com.relicum.pvpcore.Gamers.PlayerSettings;
 import com.relicum.pvpcore.Gamers.WeakGamer;
-import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import com.relicum.pvpcore.Tasks.UpdateInventory;
 import com.relicum.titleapi.Exception.ReflectionException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -28,7 +25,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * PvpPlayer
@@ -47,6 +46,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private SpawnPoint backLocation;
     private ItemStack[] lobbyArmor;
     private ItemStack[] lobbyBar;
+    private List<PotionEffect> lobbyEffects;
     private PlayerStats stats;
     Scoreboard board;
 
@@ -73,10 +73,13 @@ public class PvpPlayer extends WeakGamer<Duel> {
         super(paramPlayer, paramPlugin);
         this.backLocation = new SpawnPoint(paramPlayer.getLocation());
 
-        lobbyArmor = LobbyArmor.getAmour(RankArmor.DEV);
+        lobbyArmor = plugin.getLobbySettings().getArmor(RankArmor.DEV);
 
-        LobbyHotBar bar = new LobbyHotBar();
-        lobbyBar = bar.getItems();
+        lobbyBar = plugin.getLobbySettings().getContents();
+
+        lobbyEffects = new ArrayList<>();
+
+        lobbyEffects.addAll(plugin.getLobbySettings().getEffects());
 
         stats = paramPlugin.getStatsManager().getAPlayersStats(paramPlayer.getUniqueId().toString());
 
@@ -148,6 +151,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
                     p.teleport(backLocation.toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
                     p.getInventory().setArmorContents(store.getArmor());
                     p.getInventory().setContents(store.getContents());
+                    for (PotionEffect effect : p.getActivePotionEffects()) {
+                        p.removePotionEffect(effect.getType());
+                    }
                     p.addPotionEffects(store.getEffects());
                     store.getSettings().restore(p);
                     p.setScoreboard(plugin.getServer().getScoreboardManager().getNewScoreboard());
@@ -295,9 +301,16 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void applyLobbyInventory() {
 
-        getPlayer().getInventory().setArmorContents(lobbyArmor);
-        getPlayer().setGameMode(GameMode.ADVENTURE);
-        getPlayer().getInventory().setContents(lobbyBar);
+        Player pl = getPlayer();
+        pl.getInventory().setArmorContents(lobbyArmor);
+        pl.getInventory().setContents(lobbyBar);
+        plugin.getLobbySettings().getSettings().apply(getPlayer());
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
+            pl.removePotionEffect(effect.getType());
+        }
+        pl.addPotionEffects(lobbyEffects);
+
+
 
     }
 
@@ -310,9 +323,16 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         pl.getInventory().setArmorContents(store.getArmor().clone());
         pl.getInventory().setContents(store.getContents().clone());
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
+            pl.removePotionEffect(effect.getType());
+        }
         pl.addPotionEffects(store.getEffects());
         store.getSettings().restore(pl);
         store = null;
+    }
+
+    public boolean isGod() {
+        return state.equals(PlayerState.LOBBY) || state.equals(PlayerState.QUEUED);
     }
 
     /**

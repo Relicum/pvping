@@ -23,7 +23,7 @@ public class LobbyHotBar implements InventoryRow {
     private boolean modifiable = false;
     private boolean dropable = false;
 
-    public LobbyHotBar() {
+    private LobbyHotBar() {
 
         for (int i = 0; i < 9; i++) {
             items[i] = new ItemStack(Material.AIR, 1);
@@ -34,6 +34,10 @@ public class LobbyHotBar implements InventoryRow {
         setBook();
         setLeave();
 
+    }
+
+    public static LobbyHotBar create() {
+        return new LobbyHotBar();
     }
 
 

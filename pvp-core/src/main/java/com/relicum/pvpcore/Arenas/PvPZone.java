@@ -43,7 +43,7 @@ public class PvPZone implements IZone {
         this.id = nextId;
         this.nameId = name + "-" + nextId;
         setArenaType(arenaType);
-        endSpawn = new SpawnPoint("world", -159.0d, 68.0d, 248.0d);
+
     }
 
     /**
