@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +42,7 @@ public abstract class MenuItem implements ItemClickHandler {
 
         this.text = null;
         this.descriptions = new ArrayList<>();
-        if (text != null)
-        {
+        if (text != null) {
             this.text = FormatUtil.format(text, new Object[0]);
         }
         this.icon = icon;
@@ -53,8 +53,7 @@ public abstract class MenuItem implements ItemClickHandler {
 
         this.text = null;
         this.descriptions = new ArrayList<>();
-        if (text != null)
-        {
+        if (text != null) {
             this.text = FormatUtil.format(text);
         }
 
@@ -108,16 +107,12 @@ public abstract class MenuItem implements ItemClickHandler {
 
         ItemStack slot = getIcon().clone();
         ItemMeta meta = slot.getItemMeta();
-        if (meta.hasLore())
-        {
+        if (meta.hasLore()) {
             meta.getLore().addAll(this.descriptions);
-        }
-        else
-        {
+        } else {
             meta.setLore(this.descriptions);
         }
-        if (getText() != null)
-        {
+        if (getText() != null) {
             meta.setDisplayName(getText());
         }
         slot.setItemMeta(meta);

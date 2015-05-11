@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
  * @author Relicum
  * @version 0.0.1
  */
-@SuppressFBWarnings({ "CLI_CONSTANT_LIST_INDEX" })
-@Command(aliases = { "create" }, desc = "Create new Zones and Zone Collections", perm = "duel.admin.create", usage = "/noxarena create", isSub = true, parent = "noxarena", min = 2, useTab = true)
+@SuppressFBWarnings({"CLI_CONSTANT_LIST_INDEX"})
+@Command(aliases = {"create"}, desc = "Create new Zones and Zone Collections", perm = "duel.admin.create", usage = "/noxarena create", isSub = true, parent = "noxarena", min = 2, useTab = true)
 public class ZoneCreator extends DuelCmd {
 
     private List<String> OPTIONS = ImmutableList.of("collection", "zone");
@@ -48,10 +48,8 @@ public class ZoneCreator extends DuelCmd {
 
         zones = new HashMap<>();
 
-        if (plugin.getConfig().contains("zone.name"))
-        {
-            for (Map.Entry<String, Object> entry : plugin.getConfig().getConfigurationSection("zone.name").getValues(false).entrySet())
-            {
+        if (plugin.getConfig().contains("zone.name")) {
+            for (Map.Entry<String, Object> entry : plugin.getConfig().getConfigurationSection("zone.name").getValues(false).entrySet()) {
                 zones.put(entry.getKey(), (Integer) entry.getValue());
             }
         }
@@ -59,8 +57,7 @@ public class ZoneCreator extends DuelCmd {
 
     public void saveNames() {
 
-        if (zones.size() > 0)
-        {
+        if (zones.size() > 0) {
             plugin.getConfig().createSection("zone.name", zones);
             plugin.saveConfig();
         }
@@ -70,8 +67,7 @@ public class ZoneCreator extends DuelCmd {
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
         String str = args[0];
-        if ("save".equals(str))
-        {
+        if ("save".equals(str)) {
             Player player = (Player) sender;
 
             ItemStack stack = player.getItemInHand();
@@ -82,55 +78,43 @@ public class ZoneCreator extends DuelCmd {
             return true;
         }
 
-        if (!OPTIONS.contains(args[0]))
-        {
+        if (!OPTIONS.contains(args[0])) {
             sendErrorMessage("Invalid argument, try using tab complete");
             return true;
         }
 
-        if ("collection".equals(str))
-        {
+        if ("collection".equals(str)) {
             String str2 = args[1];
-            for (String z : zones.keySet())
-            {
-                if (z.equals(str2))
-                {
+            for (String z : zones.keySet()) {
+                if (z.equals(str2)) {
                     sendErrorMessage("Error: the name " + str + " is already registered");
                     return true;
                 }
             }
 
-            try
-            {
+            try {
                 zones.put(args[1], 0);
                 saveNames();
                 plugin.getZoneManager().registerCollection(args[1]);
                 sendMessage("Successfully registered new ZoneCollection &a" + args[1]);
                 return true;
-            }
-            catch (DuplicateZoneException e)
-            {
+            } catch (DuplicateZoneException e) {
                 sendErrorMessage(e.getMessage());
                 e.printStackTrace();
                 return true;
             }
         }
 
-        if (args[0].equalsIgnoreCase("zone"))
-        {
+        if (args[0].equalsIgnoreCase("zone")) {
 
-            if (!zones.containsKey(args[1]))
-            {
+            if (!zones.containsKey(args[1])) {
                 sendErrorMessage("Error: unable to locate a ZoneCollection called " + args[1]);
                 return true;
             }
 
-            try
-            {
+            try {
                 plugin.getZoneManager().registerZone(args[1], new PvPZone(ArenaType.ARENA1v1, args[1], zones.get(args[1])));
-            }
-            catch (InvalidZoneException e)
-            {
+            } catch (InvalidZoneException e) {
                 sendErrorMessage("Error: " + e.getMessage());
                 e.printStackTrace();
                 return true;
@@ -148,12 +132,10 @@ public class ZoneCreator extends DuelCmd {
     @Override
     public List<String> tabComp(int i, String[] args) {
 
-        if (i == 2)
-        {
+        if (i == 2) {
             return OPTIONS;
         }
-        if (i == 3)
-        {
+        if (i == 3) {
 
             return zones.keySet().stream().collect(Collectors.toList());
         }

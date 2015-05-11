@@ -8,13 +8,14 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Armor //todo needs documenting.
- * 
+ *
  * @author Relicum
  * @version 0.0.1
  */
@@ -61,20 +62,16 @@ public class Armor implements ConfigurationSerializable {
     public Armor(String name, ItemStack helmet, ItemStack chest, ItemStack leg, ItemStack boots) {
 
         this.name = name;
-        if (!helmet.getType().equals(Material.AIR))
-        {
+        if (!helmet.getType().equals(Material.AIR)) {
             setHelmet(helmet);
         }
-        if (!chest.getType().equals(Material.AIR))
-        {
+        if (!chest.getType().equals(Material.AIR)) {
             setChestPlate(chest);
         }
-        if (!leg.getType().equals(Material.AIR))
-        {
+        if (!leg.getType().equals(Material.AIR)) {
             setLeggings(leg);
         }
-        if (!boots.getType().equals(Material.AIR))
-        {
+        if (!boots.getType().equals(Material.AIR)) {
             setBoots(boots);
         }
 
@@ -125,10 +122,10 @@ public class Armor implements ConfigurationSerializable {
 
         ItemStack[] stacks = new ItemStack[4];
 
-        stacks[0] = armor.getOrDefault(ArmorType.HELMET, new ItemStack(Material.AIR));
-        stacks[1] = armor.getOrDefault(ArmorType.CHEST_PLATE, new ItemStack(Material.AIR));
-        stacks[2] = armor.getOrDefault(ArmorType.LEGGINGS, new ItemStack(Material.AIR));
-        stacks[3] = armor.getOrDefault(ArmorType.BOOTS, new ItemStack(Material.AIR));
+        stacks[3] = armor.getOrDefault(ArmorType.HELMET, new ItemStack(Material.AIR));
+        stacks[2] = armor.getOrDefault(ArmorType.CHEST_PLATE, new ItemStack(Material.AIR));
+        stacks[1] = armor.getOrDefault(ArmorType.LEGGINGS, new ItemStack(Material.AIR));
+        stacks[0] = armor.getOrDefault(ArmorType.BOOTS, new ItemStack(Material.AIR));
 
         return stacks;
 

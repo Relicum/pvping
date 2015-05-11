@@ -2,6 +2,7 @@ package com.relicum.pvpcore.Game;
 
 import com.relicum.pvpcore.Configs.StatsLoader;
 import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,8 +28,7 @@ public class StatsManager {
         this.plugin = paramPlugin;
         this.DIR_PATH = plugin.getDataFolder().toString() + File.separator + "stats" + File.separator;
 
-        if (checkDir())
-        {
+        if (checkDir()) {
 
             plugin.getLogger().info("Duel stats directory successfully located");
 
@@ -47,16 +47,14 @@ public class StatsManager {
 
         loader.setPath(Paths.get(DIR_PATH + uuid + ".json"));
 
-        if (!checkFile(uuid))
-        {
+        if (!checkFile(uuid)) {
 
             PlayerStats ps = new PlayerStats(uuid, 0, 0, 0, 0, 0, 0, 0, 0);
 
             loader.save(ps);
             playerStatsMap.put(uuid, ps);
 
-        }
-        else
+        } else
 
             playerStatsMap.put(uuid, loader.load());
 
@@ -140,18 +138,14 @@ public class StatsManager {
      */
     public boolean checkFile(String fileName) {
 
-        if (!Files.exists(Paths.get(DIR_PATH + fileName + ".json")))
-        {
+        if (!Files.exists(Paths.get(DIR_PATH + fileName + ".json"))) {
 
-            try
-            {
+            try {
 
                 Files.createFile(Paths.get(DIR_PATH + fileName + ".json"));
                 return false;
 
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
 
                 e.printStackTrace();
                 return false;
@@ -165,22 +159,18 @@ public class StatsManager {
     /**
      * Check stats directory exists if not it will create it.
      *
-     * @return true,if the directory is present, false and a IO error occured.
+     * @return true, if the directory is present, false and a IO error occured.
      */
     public boolean checkDir() {
 
-        if (!Files.exists(Paths.get(DIR_PATH)))
-        {
+        if (!Files.exists(Paths.get(DIR_PATH))) {
 
-            try
-            {
+            try {
 
                 Files.createDirectory(Paths.get(DIR_PATH));
                 return true;
 
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
 
                 e.printStackTrace();
                 return false;
@@ -202,8 +192,7 @@ public class StatsManager {
      */
     public void saveAndClearAll() {
 
-        for (PlayerStats playerStats : playerStatsMap.values())
-        {
+        for (PlayerStats playerStats : playerStatsMap.values()) {
 
             save(playerStats.getUuid());
 

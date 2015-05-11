@@ -18,8 +18,8 @@ public class DuplicateZoneException extends Exception {
      * for other throwables (for example, {@link PrivilegedActionException}).
      *
      * @param cause the cause (which is saved for later retrieval by the
-     * {@link #getCause()} method). (A <tt>null</tt> value is permitted, and
-     * indicates that the cause is nonexistent or unknown.)
+     *              {@link #getCause()} method). (A <tt>null</tt> value is permitted, and
+     *              indicates that the cause is nonexistent or unknown.)
      * @since 1.4
      */
     public DuplicateZoneException(Throwable cause) {
@@ -33,7 +33,7 @@ public class DuplicateZoneException extends Exception {
      * {@link #initCause}.
      *
      * @param message the detail message. The detail message is saved for later
-     * retrieval by the {@link #getMessage()} method.
+     *                retrieval by the {@link #getMessage()} method.
      */
     public DuplicateZoneException(String message) {
 
@@ -47,10 +47,10 @@ public class DuplicateZoneException extends Exception {
      * automatically incorporated in this exception's detail message.
      *
      * @param message the detail message (which is saved for later retrieval by
-     * the {@link #getMessage()} method).
-     * @param cause the cause (which is saved for later retrieval by the
-     * {@link #getCause()} method). (A <tt>null</tt> value is permitted, and
-     * indicates that the cause is nonexistent or unknown.)
+     *                the {@link #getMessage()} method).
+     * @param cause   the cause (which is saved for later retrieval by the
+     *                {@link #getCause()} method). (A <tt>null</tt> value is permitted, and
+     *                indicates that the cause is nonexistent or unknown.)
      * @since 1.4
      */
     public DuplicateZoneException(String message, Throwable cause) {

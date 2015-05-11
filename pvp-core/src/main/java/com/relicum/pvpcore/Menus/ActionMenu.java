@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,8 +96,7 @@ public class ActionMenu implements InventoryHolder {
     public boolean addMenuItem(AbstractItem item, int index) {
 
         ItemStack slot = getInventory().getItem(index);
-        if ((slot != null) && (slot.getType() != Material.AIR))
-        {
+        if ((slot != null) && (slot.getType() != Material.AIR)) {
             return false;
         }
         getInventory().setItem(index, item.getIcon());
@@ -113,8 +113,7 @@ public class ActionMenu implements InventoryHolder {
     public boolean removeMenuItem(int index) {
 
         ItemStack slot = getInventory().getItem(index);
-        if ((slot == null) || (slot.getType().equals(Material.AIR)))
-        {
+        if ((slot == null) || (slot.getType().equals(Material.AIR))) {
             return false;
         }
         getInventory().clear(index);
@@ -124,53 +123,49 @@ public class ActionMenu implements InventoryHolder {
 
     protected void selectMenuItem(Player player, int index) {
 
-        if (this.items.containsKey(index))
-        {
+        if (this.items.containsKey(index)) {
             AbstractItem item = this.items.get(index);
             item.onClick(player);
         }
     }
 
     public void onInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
 
-        if (isEditing())
-        {
+        if (event.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && exitOnClickOutside()) {
+            event.setCancelled(true);
+            player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
+            closeMenu(player);
+            return;
+        }
+
+        if (isEditing()) {
 
             editHandler(event);
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+
         int index = event.getRawSlot();
-        if (index > getSize())
-        {
+        if (index > getSize()) {
             event.setCancelled(true);
             closeMenu(player);
             return;
         }
 
-        if (event.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && exitOnClickOutside())
-        {
-            event.setCancelled(true);
-            closeMenu(player);
-            return;
-        }
 
-        if (!items.containsKey(index))
-        {
+        if (!items.containsKey(index)) {
             event.setCancelled(true);
             return;
         }
 
         AbstractItem item = items.get(index);
 
-        if (!item.hasAction())
-        {
+        if (!item.hasAction()) {
             event.setCancelled(true);
             return;
         }
 
-        if (item.getAction().equals(ClickAction.CLOSE_MENU))
-        {
+        if (item.getAction().equals(ClickAction.CLOSE_MENU)) {
             event.setCancelled(true);
             player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
             closeMenu(player);
@@ -179,20 +174,17 @@ public class ActionMenu implements InventoryHolder {
 
         ActionResponse response = item.getActionHandler().perform(player, item);
 
-        if (response.isUpdate())
-        {
+        if (response.isUpdate()) {
             updateMenu();
         }
 
-        if (response.isClose())
-        {
+        if (response.isClose()) {
             event.setCancelled(true);
             response.getPlayer().sendMessage(ChatColor.GREEN + "Closing from Action Response !");
             item.getMenu().closeMenu(response.getPlayer());
             return;
         }
-        if (response.isNothing())
-        {
+        if (response.isNothing()) {
             event.setCancelled(true);
             response.getPlayer().sendMessage(ChatColor.GREEN + "Ok will do nothing");
             return;
@@ -200,16 +192,50 @@ public class ActionMenu implements InventoryHolder {
 
     }
 
+
     public void editHandler(InventoryClickEvent event) {
 
         Player player = (Player) event.getWhoClicked();
+
+        AbstractItem item;
+
+        int index = event.getRawSlot();
+        if (!items.containsKey(index)) {
+
+            if (index < getSize()) {
+                event.setCancelled(true);
+                return;
+            } else {
+                event.setCancelled(true);
+                closeMenu(player);
+                return;
+            }
+
+
+        } else {
+
+            item = items.get(index);
+        }
+
+
+        ActionResponse response = item.getActionHandler().perform(player, item, event);
+
+        if (response.isClose()) {
+            item.getMenu().closeMenu(response.getPlayer());
+            return;
+        }
+
+        if (response.isUpdate()) {
+            updateMenu();
+            return;
+        }
+
         player.sendMessage(ChatColor.GREEN + "You are in the editing handler");
     }
 
     public void openMenu(Player player) {
 
-        if (getInventory().getViewers().contains(player))
-        {
+        if (getInventory().getViewers().contains(player)) {
             throw new IllegalArgumentException(String.valueOf(player.getName()) + " is already viewing " + getInventory().getTitle());
         }
         player.openInventory(getInventory());
@@ -217,8 +243,7 @@ public class ActionMenu implements InventoryHolder {
 
     public void closeMenu(Player player) {
 
-        if (getInventory().getViewers().contains(player))
-        {
+        if (getInventory().getViewers().contains(player)) {
             getInventory().getViewers().remove(player);
             player.closeInventory();
         }
@@ -236,8 +261,7 @@ public class ActionMenu implements InventoryHolder {
 
     public Inventory getInventory() {
 
-        if (this.inventory == null)
-        {
+        if (this.inventory == null) {
             this.inventory = Bukkit.createInventory(this, this.rows * 9, this.title);
 
         }
@@ -259,7 +283,7 @@ public class ActionMenu implements InventoryHolder {
      * constructed.
      *
      * @param altered set true if the menu has been altered and requires the
-     * inventory to be re constructed.
+     *                inventory to be re constructed.
      */
     public void setAltered(boolean altered) {
 
@@ -286,8 +310,7 @@ public class ActionMenu implements InventoryHolder {
         ActionMenu clone = new ActionMenu(this.title, this.rows);
         clone.setExitOnClickOutside(this.exitOnClickOutside);
         clone.setMenuCloseBehaviour(this.menuCloseBehaviour);
-        for (Integer index : this.items.keySet())
-        {
+        for (Integer index : this.items.keySet()) {
             addMenuItem(this.items.get(index), index);
         }
         return clone;

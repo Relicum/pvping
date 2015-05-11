@@ -3,6 +3,7 @@ package com.relicum.pvpcore.Menus;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class OpenMenuItem extends FixedMenuItem {
                 getMenu().closeMenu(paramPlayer);
 
                 paramPlayer.getWorld().createExplosion(paramPlayer.getLocation().getX(), paramPlayer.getLocation().getY(), paramPlayer.getLocation().getZ(),
-                    2.0f, false, false);
+                        2.0f, false, false);
             }
         };
         menu.addMenuItem(item, 0);

@@ -83,8 +83,7 @@ public class ActionResponse {
     public void setWillClose(boolean close) {
 
         this.close = close;
-        if (close)
-        {
+        if (close) {
             this.goBack = false;
             this.update = false;
         }
@@ -98,8 +97,7 @@ public class ActionResponse {
     public void setWillGoBack(boolean goBack) {
 
         this.goBack = goBack;
-        if (goBack)
-        {
+        if (goBack) {
             this.close = false;
             this.update = false;
         }
@@ -113,8 +111,7 @@ public class ActionResponse {
     public void setWillUpdate(boolean update) {
 
         this.update = update;
-        if (update)
-        {
+        if (update) {
             this.goBack = false;
             this.close = false;
         }

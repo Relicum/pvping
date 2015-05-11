@@ -2,6 +2,7 @@ package com.relicum.pvpcore.Arenas;
 
 import com.google.common.collect.Maps;
 import com.relicum.pvpcore.Enums.ArenaState;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -84,10 +85,8 @@ public class ZoneCollection {
 
     public PvPZone getNextAvailableZone() throws Exception {
 
-        for (PvPZone zone : zones.values())
-        {
-            if (zone.getState().equals(ArenaState.WAITING))
-            {
+        for (PvPZone zone : zones.values()) {
+            if (zone.getState().equals(ArenaState.WAITING)) {
                 zone.setState(ArenaState.WAITING);
                 return zone;
             }

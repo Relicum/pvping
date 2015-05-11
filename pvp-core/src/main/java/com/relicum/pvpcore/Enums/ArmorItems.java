@@ -6,8 +6,7 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ArmorItems
-{
+public enum ArmorItems {
 
     GOLD_BOOTS("BOOTS"),
     GOLD_LEGGINGS("LEGGINGS"),
@@ -47,10 +46,8 @@ public enum ArmorItems
      */
     public static boolean find(String item) {
 
-        for (ArmorItems v : values())
-        {
-            if (v.name().equalsIgnoreCase(item))
-            {
+        for (ArmorItems v : values()) {
+            if (v.name().equalsIgnoreCase(item)) {
                 return true;
             }
         }

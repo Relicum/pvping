@@ -2,6 +2,7 @@ package com.relicum.duel.Objects;
 
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
+import com.relicum.duel.Handlers.LobbyArmor;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
@@ -10,22 +11,23 @@ import com.relicum.pvpcore.Game.PlayerStats;
 import com.relicum.pvpcore.Gamers.InventoryStore;
 import com.relicum.pvpcore.Gamers.PlayerSettings;
 import com.relicum.pvpcore.Gamers.WeakGamer;
-import com.relicum.pvpcore.Kits.Armor;
 import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import com.relicum.pvpcore.Tasks.UpdateInventory;
 import com.relicum.titleapi.Exception.ReflectionException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+
 import java.util.Collection;
 
 /**
@@ -34,7 +36,7 @@ import java.util.Collection;
  * @author Relicum
  * @version 0.0.1
  */
-@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({ "DLS_DEAD_LOCAL_STORE" })
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
 public class PvpPlayer extends WeakGamer<Duel> {
 
     private PlayerState state;
@@ -43,9 +45,13 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private String name = "";
     private InventoryStore store;
     private SpawnPoint backLocation;
-    private Armor lobbyArmor;
+    private ItemStack[] lobbyArmor;
     private ItemStack[] lobbyBar;
     private PlayerStats stats;
+    Scoreboard board;
+
+    private Objective objective;
+    private int start = 30;
 
     public void destroy() {
 
@@ -66,12 +72,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         super(paramPlayer, paramPlugin);
         this.backLocation = new SpawnPoint(paramPlayer.getLocation());
-        // this.lobbyArmor = new Armor("LOBBY_DEFAULT", new
-        // ItemStack(Material.LEATHER_HELMET), new
-        // ItemStack(Material.LEATHER_CHESTPLATE),
-        // new ItemStack(Material.LEATHER_LEGGINGS), new
-        // ItemStack(Material.LEATHER_BOOTS));
-        this.lobbyArmor = new Armor("LOBBY_AQUA", Color.GREEN);
+
+        lobbyArmor = LobbyArmor.getAmour(RankArmor.DEV);
 
         LobbyHotBar bar = new LobbyHotBar();
         lobbyBar = bar.getItems();
@@ -80,16 +82,29 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         setName(paramPlayer.getName());
         teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
-        try
-        {
+        try {
             plugin.getTitleMaker().sendTitlePacket(paramPlayer, "&aWelcome to 1v1", 40, 60, 20);
-        }
-        catch (ReflectionException e)
-        {
+        } catch (ReflectionException e) {
             e.printStackTrace();
         }
         setState(PlayerState.LOBBY);
+
         createScoreboard();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                board.resetScores(FormatUtil.colorize("&5&lGame Starts: " + start));
+                start--;
+                objective.getScore(FormatUtil.colorize("&5&lGame Starts: " + start)).setScore(15);
+                if (start == 0) {
+                    sendMessage("Countdown ended");
+                    cancel();
+                }
+
+            }
+        }.runTaskTimer(plugin, 100l, 20l);
     }
 
     public final void setName(String name) {
@@ -114,25 +129,44 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void gameEnd(EndReason reason) {
 
-        switch (reason)
-        {
-        case LEAVE_CMD: {
-            clearInventory();
-            restorePlayerSettings();
-            updateScoreboard(true);
-            UpdateInventory.now(getPlayer(), plugin);
-            stats.incrementLoss();
-            plugin.getStatsManager().removeAndSave(getUuid().toString());
-            teleport(backLocation.toLocation());
+        switch (reason) {
+            case LEAVE_CMD: {
+                clearInventory();
+                restorePlayerSettings();
+                updateScoreboard(true);
+                UpdateInventory.now(getPlayer(), plugin);
+                stats.incrementWin();
+                plugin.getStatsManager().removeAndSave(getUuid().toString());
+                teleport(backLocation.toLocation());
 
-            break;
-        }
-        default: {
-            setState(PlayerState.LOBBY);
-            teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
-            sendMessage("You are returning to the lobby spawn");
-            break;
-        }
+                break;
+            }
+            case LOGGED: {
+                try {
+
+                    Player p = plugin.getServer().getPlayer(getUuid());
+                    p.teleport(backLocation.toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                    p.getInventory().setArmorContents(store.getArmor());
+                    p.getInventory().setContents(store.getContents());
+                    p.addPotionEffects(store.getEffects());
+                    store.getSettings().restore(p);
+                    p.setScoreboard(plugin.getServer().getScoreboardManager().getNewScoreboard());
+                    stats.incrementLoss();
+                    plugin.getStatsManager().removeAndSave(p.getUniqueId().toString());
+                    store = null;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Tried to reset player settings for a player who quit or logged will part of 1v1");
+                break;
+            }
+            default: {
+                setState(PlayerState.LOBBY);
+                teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
+                sendMessage("You are returning to the lobby spawn");
+                break;
+            }
         }
 
     }
@@ -149,17 +183,14 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void stateLobby() {
 
-        if (saveInv)
-        {
+        if (saveInv) {
 
             savePlayerSettings();
             clearInventory();
             applyLobbyInventory();
             UpdateInventory.now(getPlayer(), plugin);
             saveInv = false;
-        }
-        else
-        {
+        } else {
             updateScoreboard();
             clearInventory();
             applyLobbyInventory();
@@ -176,8 +207,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void createScoreboard() {
 
-        Scoreboard board = getPlugin().getServer().getScoreboardManager().getNewScoreboard();
-        Objective objective = board.registerNewObjective(getName(), "dummy");
+        board = getPlugin().getServer().getScoreboardManager().getNewScoreboard();
+        objective = board.registerNewObjective(getName(), "dummy");
         objective.setDisplayName(FormatUtil.format("&6&lNoxiousPVP &a&l1v1", new Object[0]));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         getPlayer().setScoreboard(board);
@@ -186,27 +217,29 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     private void setScoreboardInfo(Scoreboard scoreboard) {
 
-        Objective objective = scoreboard.getObjective(getName());
-        objective.getScore(FormatUtil.format("&b&l{0}'s Stats", new Object[] { getName() })).setScore(13);
+        //objective = scoreboard.getObjective(getName());
+        objective.getScore(FormatUtil.colorize("&5&lGame Starts: " + start)).setScore(15);
+        //objective.getScore(FormatUtil.colorize("&a&l"+start)).setScore(14);
+        objective.getScore("§r").setScore(14);
+        objective.getScore(FormatUtil.format("&b&l{0}'s Stats", new Object[]{getName()})).setScore(13);
         objective.getScore("§r").setScore(12);
         objective.getScore(FormatUtil.format("&a&lWins:", new Object[0])).setScore(11);
         objective.getScore(String.valueOf(stats.getWins())).setScore(10);
         objective.getScore("§a").setScore(9);
         objective.getScore(FormatUtil.format("&c&lLosses:", new Object[0])).setScore(8);
-        objective.getScore(FormatUtil.format("&f{0}", new Object[] { String.valueOf(stats.getLosses()) })).setScore(7);
+        objective.getScore(FormatUtil.format("&f{0}", new Object[]{String.valueOf(stats.getLosses())})).setScore(7);
         objective.getScore("§b").setScore(6);
         objective.getScore(FormatUtil.format("&d&lWinstreak:", new Object[0])).setScore(5);
-        objective.getScore(FormatUtil.format("&r{0}", new Object[] { String.valueOf(stats.getStreak()) })).setScore(4);
+        objective.getScore(FormatUtil.format("&r{0}", new Object[]{String.valueOf(stats.getStreak())})).setScore(4);
         objective.getScore("§c").setScore(3);
         objective.getScore(FormatUtil.format("&6&lBest Streak:", new Object[0])).setScore(2);
-        objective.getScore(FormatUtil.format("&f&f{0}", new Object[] { String.valueOf(stats.getHighestStreak()) })).setScore(1);
+        objective.getScore(FormatUtil.format("&f&f{0}", new Object[]{String.valueOf(stats.getHighestStreak())})).setScore(1);
 
     }
 
     public void updateScoreboard(boolean remove) {
 
-        if (remove)
-        {
+        if (remove) {
             getPlayer().setScoreboard(getPlugin().getServer().getScoreboardManager().getNewScoreboard());
 
             return;
@@ -234,8 +267,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         Collection<PotionEffect> tmpEffects = pl.getActivePotionEffects();
 
-        for (PotionEffect effect : pl.getActivePotionEffects())
-        {
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
 
@@ -246,7 +278,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     /**
      * Clear inventory.
      */
-    @SuppressFBWarnings({ "DLS_DEAD_LOCAL_STORE" })
+    @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
     public void clearInventory() {
 
         PlayerInventory inv = getPlayer().getInventory();
@@ -263,7 +295,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public void applyLobbyInventory() {
 
-        getPlayer().getInventory().setArmorContents(lobbyArmor.getArmor());
+        getPlayer().getInventory().setArmorContents(lobbyArmor);
         getPlayer().setGameMode(GameMode.ADVENTURE);
         getPlayer().getInventory().setContents(lobbyBar);
 
@@ -297,7 +329,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * Sets queueing players queuing status.
      *
      * @param queueing true to mark the player as in the queue, of false to
-     * remove them from the queue.
+     *                 remove them from the queue.
      */
     public final void setQueueing(boolean queueing) {
 
@@ -317,7 +349,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     /**
      * Send message.
      *
-     * @param mess the message to display
+     * @param mess    the message to display
      * @param objects the variables
      */
     public void sendMessage(String mess, Object[] objects) {
@@ -338,7 +370,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     /**
      * Send error message.
      *
-     * @param mess the error message to display
+     * @param mess    the error message to display
      * @param objects the variables
      */
     public void sendErrorMessage(String mess, Object[] objects) {

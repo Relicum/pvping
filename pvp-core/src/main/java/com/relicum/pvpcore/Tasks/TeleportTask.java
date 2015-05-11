@@ -26,8 +26,7 @@ public class TeleportTask extends BukkitRunnable {
         this.location = location;
         this.runTaskLater(paramPlugin, delay);
 
-        if (!location.getChunk().isLoaded())
-        {
+        if (!location.getChunk().isLoaded()) {
             location.getChunk().load();
         }
 
@@ -38,10 +37,10 @@ public class TeleportTask extends BukkitRunnable {
      * Create a new TelePort Task the player will be TP'd after the specified
      * delay.
      *
-     * @param player the player
-     * @param location the location
+     * @param player      the player
+     * @param location    the location
      * @param paramPlugin the param plugin
-     * @param delay the delay
+     * @param delay       the delay
      */
     public static void create(Player player, Location location, Plugin paramPlugin, int delay) {
 

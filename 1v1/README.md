@@ -1,4 +1,4 @@
-1V1-1.0.9-SNAPSHOT
+1V1-1.0.10-SNAPSHOT
 ===
 
 >1v1 pvping plugin

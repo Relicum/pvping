@@ -48,11 +48,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     public void removeMenu(Menu menu) {
 
         for (HumanEntity viewer : menu.getInventory().getViewers())
-            if ((viewer instanceof Player))
-            {
+            if ((viewer instanceof Player)) {
                 menu.closeMenu((Player) viewer);
-            }
-            else
+            } else
                 viewer.closeInventory();
     }
 
@@ -68,12 +66,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
             public void run() {
 
                 c++;
-                if (c == 1)
-                {
+                if (c == 1) {
                     toMenu.openMenu(player);
-                }
-                else if (c == 2)
-                {
+                } else if (c == 2) {
                     player.updateInventory();
                     player.sendMessage("finished switch menu task");
                     cancel();
@@ -87,33 +82,24 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     public void onMenuItemClicked(InventoryClickEvent event) {
 
         Inventory inventory = event.getInventory();
-        if ((inventory.getHolder() instanceof Menu) || (inventory.getHolder() instanceof ActionMenu))
-        {
+        if ((inventory.getHolder() instanceof Menu) || (inventory.getHolder() instanceof ActionMenu)) {
 
-            if (event.getAction().name().startsWith("DROP"))
-            {
+            if (event.getAction().name().startsWith("DROP")) {
                 return;
             }
-            if (inventory.getHolder() instanceof Menu)
-            {
+            if (inventory.getHolder() instanceof Menu) {
                 event.setCancelled(true);
                 Menu menu = (Menu) inventory.getHolder();
-                if ((event.getWhoClicked() instanceof Player))
-                {
+                if ((event.getWhoClicked() instanceof Player)) {
                     Player player = (Player) event.getWhoClicked();
-                    if (event.getSlotType() == InventoryType.SlotType.OUTSIDE)
-                    {
+                    if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
                         if (menu.exitOnClickOutside())
                             menu.closeMenu(player);
-                    }
-                    else
-                    {
+                    } else {
                         int index = event.getRawSlot();
-                        if (index < inventory.getSize())
-                        {
+                        if (index < inventory.getSize()) {
                             menu.selectMenuItem(player, index);
-                        }
-                        else if (menu.exitOnClickOutside())
+                        } else if (menu.exitOnClickOutside())
                             menu.closeMenu(player);
                     }
                 }
@@ -144,11 +130,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMenuClosed(InventoryCloseEvent event) {
 
-        if ((event.getPlayer() instanceof Player))
-        {
+        if ((event.getPlayer() instanceof Player)) {
             Inventory inventory = event.getInventory();
-            if ((inventory.getHolder() instanceof Menu))
-            {
+            if ((inventory.getHolder() instanceof Menu)) {
                 Menu menu = (Menu) inventory.getHolder();
                 MenuCloseBehaviour menuCloseBehaviour = menu.getMenuCloseBehaviour();
                 if (menuCloseBehaviour != null)
@@ -160,8 +144,7 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLogoutCloseMenu(PlayerQuitEvent event) {
 
-        if ((event.getPlayer().getOpenInventory() == null) || (!(event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof Menu)))
-        {
+        if ((event.getPlayer().getOpenInventory() == null) || (!(event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof Menu))) {
             return;
         }
         Menu menu = (Menu) event.getPlayer().getOpenInventory().getTopInventory().getHolder();
@@ -181,12 +164,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
             public void run() {
 
                 c++;
-                if (c == 1)
-                {
+                if (c == 1) {
                     toMenu.openMenu(player);
-                }
-                else if (c == 2)
-                {
+                } else if (c == 2) {
                     player.updateInventory();
                     player.sendMessage("finished switch menu task");
                     cancel();
@@ -208,12 +188,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
             public void run() {
 
                 c++;
-                if (c == 1)
-                {
+                if (c == 1) {
                     toMenu.openMenu(player);
-                }
-                else if (c == 2)
-                {
+                } else if (c == 2) {
                     player.updateInventory();
                     player.sendMessage("finished switch menu task");
                     cancel();

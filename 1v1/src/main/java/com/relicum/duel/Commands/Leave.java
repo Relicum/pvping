@@ -5,6 +5,7 @@ import com.relicum.duel.Duel;
 import com.relicum.pvpcore.Enums.EndReason;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-@Command(aliases = { "leave" }, desc = "Leave the 1v1 arena", perm = "duel.player.leave", parent = "1v1", usage = "/1v1 leave", isSub = true)
+@Command(aliases = {"leave"}, desc = "Leave the 1v1 arena", perm = "duel.player.leave", parent = "1v1", usage = "/1v1 leave", isSub = true)
 public class Leave extends DuelCmd {
 
     /**
@@ -33,7 +34,7 @@ public class Leave extends DuelCmd {
      * The first argument you can complete is when length is set to 2 as 1 is
      * the sub command which will auto complete it for you.
      *
-     * @param length the current command argument position
+     * @param length  the current command argument position
      * @param strings list of current args
      * @return the list of available options for Tab complete.
      */
@@ -47,22 +48,19 @@ public class Leave extends DuelCmd {
      * Runs the command
      *
      * @param sender the sender
-     * @param label the label
-     * @param args the args
+     * @param label  the label
+     * @param args   the args
      * @return the boolean
      */
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
 
-        if (!plugin.getGameQueue().removeAndDestroy((Player) sender, EndReason.LEAVE_CMD))
-        {
+        if (!plugin.getGameHandler().removeAndDestroy((Player) sender, EndReason.LEAVE_CMD)) {
 
             sendErrorMessage("Error: removing you from 1v1");
             return true;
 
-        }
-        else
-        {
+        } else {
 
             sendMessage("You have left the Noxious 1V1's");
 

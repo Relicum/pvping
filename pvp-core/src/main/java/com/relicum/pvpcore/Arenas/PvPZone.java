@@ -4,14 +4,11 @@ import com.relicum.locations.PointsGroup;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
-import com.relicum.pvpcore.FormatUtil;
-import com.relicum.pvpcore.Menus.OpenMenuItem;
+import com.relicum.pvpcore.Menus.Spawns1v1;
 import lombok.ToString;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -125,11 +122,30 @@ public class PvPZone implements IZone {
 
         Validate.isTrue(points.size() <= maxPlayers, "You can not add more spawn points than max players");
 
-        for (Map.Entry<String, SpawnPoint> entry : points.entrySet())
-        {
+        for (Map.Entry<String, SpawnPoint> entry : points.entrySet()) {
             spawns.put(entry.getKey(), entry.getValue());
         }
 
+    }
+
+    /**
+     * Checks if the spectator spawn is set.
+     *
+     * @return true if it is set, false if not
+     */
+    public boolean spectatorSet() {
+
+        return specSpawn != null;
+    }
+
+    /**
+     * Checks if the game end spawn is set.
+     *
+     * @return true if it is set, false if not
+     */
+    public boolean endSpawnSet() {
+
+        return endSpawn != null;
     }
 
     /**
@@ -213,30 +229,29 @@ public class PvPZone implements IZone {
     @Override
     public void setArenaType(ArenaType types) {
 
-        switch (types)
-        {
+        switch (types) {
 
-        case ARENA1v1: {
-            setMinPlayers(2);
-            setMaxPlayers(2);
-            spawns = new PointsGroup<>(2);
-            arenaType = types;
-            break;
-        }
-        case ARENAFFA: {
+            case ARENA1v1: {
+                setMinPlayers(2);
+                setMaxPlayers(2);
+                spawns = new PointsGroup<>(2);
+                arenaType = types;
+                break;
+            }
+            case ARENAFFA: {
 
-            setMinPlayers(2);
-            setMaxPlayers(6);
-            spawns = new PointsGroup<>(6);
-            arenaType = types;
-        }
-        default: {
+                setMinPlayers(2);
+                setMaxPlayers(6);
+                spawns = new PointsGroup<>(6);
+                arenaType = types;
+            }
+            default: {
 
-            setMinPlayers(2);
-            setMaxPlayers(2);
-            spawns = new PointsGroup<>(2);
-            arenaType = ArenaType.ARENA1v1;
-        }
+                setMinPlayers(2);
+                setMaxPlayers(2);
+                spawns = new PointsGroup<>(2);
+                arenaType = ArenaType.ARENA1v1;
+            }
         }
 
     }
@@ -287,19 +302,50 @@ public class PvPZone implements IZone {
         return spawns.size();
     }
 
-    public OpenMenuItem getOpenMenuItem(int index) {
-
-        return new OpenMenuItem("&a" + nameId, new ItemStack(Material.PAPER, 1), index, Arrays.asList(" ", "&6PVPZone name:&b " + name,
-            "&6PVPZone ID:&b " + id, "&6Zone Type:&b " + arenaType.getType(), "&6Zone State: &b " + state.name(), " ", "&aMin Players &c" + minPlayers,
-            "&aMax Players &c" + maxPlayers, " ", "&6End Spawn:", "" + FormatUtil.getFormattedPoint(endSpawn)));
-
-    }
 
     public List<String> getLore() {
 
-        return Arrays.asList(" ", "&6PVPZone name:&b " + name, "&6PVPZone ID:&b " + id, "&6Zone Type:&b " + arenaType.getType(),
-            "&6Zone State: &b " + state.name(), " ", "&aMin Players &c" + minPlayers, "&aMax Players &c" + maxPlayers, " ", "&6End Spawn:",
-            "" + FormatUtil.getFormattedPoint(endSpawn));
+        List<String> t = new ArrayList<>();
+        t.add(" ");
+        t.add("&6PVPZone name:&b " + name);
+        t.add("&6PVPZone ID:&b " + id);
+        t.add("&6Zone Type:&b " + arenaType.getType());
+        t.add("&6Zone State: &b " + state.name());
+        if (isEditing())
+            t.add("&6Edit Mode: &4 ON");
+        else
+            t.add("&6Edit Mode: &aOFF");
+        t.add(" ");
+        t.add("&aMin Players &c" + minPlayers);
+        t.add("&aMax Players &c" + maxPlayers);
+        t.add(" ");
+        t.add("&6SpawnPoints Set");
+        t.add(" ");
+        for (Spawns1v1 sp : Spawns1v1.values()) {
+
+            if (sp.equals(Spawns1v1.END)) {
+                if (this.endSpawnSet()) {
+                    t.add("&6End Spawn: &a&l " + TICK);
+                } else
+                    t.add("&6End Spawn: &4&l " + CROSS);
+            } else if (sp.equals(Spawns1v1.SPECTATOR)) {
+                if (this.spectatorSet()) {
+                    t.add("&6Spectator Spawn: &a&l " + TICK);
+                } else
+                    t.add("&6Spectator Spawn: &4&l " + CROSS);
+            } else {
+                if (containsSpawn(sp.getName())) {
+
+                    t.add("&6" + sp.getTitle() + ": &a&l " + TICK);
+                } else {
+                    t.add("&6" + sp.getTitle() + ": &4&l " + CROSS);
+                }
+            }
+        }
+        return t;
+
     }
 
+    private final transient String TICK = "✔";
+    private final transient String CROSS = "✘";
 }

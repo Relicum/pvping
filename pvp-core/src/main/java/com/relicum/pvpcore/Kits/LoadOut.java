@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,18 +76,17 @@ public class LoadOut implements ConfigurationSerializable {
 
     public ItemStack[] getItems() {
 
-        ItemStack[] hotbar = new ItemStack[36];
+        ItemStack[] stacks = new ItemStack[36];
 
-        for (int i = 0; i < 36; i++)
-        {
+        for (int i = 0; i < 36; i++) {
             if (items.containsKey(i))
-                hotbar[i] = items.get(i);
+                stacks[i] = items.get(i).clone();
             else
-                hotbar[i] = new ItemStack(Material.AIR);
+                stacks[i] = new ItemStack(Material.AIR);
 
         }
 
-        return hotbar;
+        return stacks;
     }
 
     public ItemStack[] getArmor() {

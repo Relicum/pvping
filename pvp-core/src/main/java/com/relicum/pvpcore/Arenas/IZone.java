@@ -64,7 +64,7 @@ public interface IZone {
      * <p>
      * The total number of spawns should be equal to the max players.
      *
-     * @param paramKey the String key the spawn is identified
+     * @param paramKey   the String key the spawn is identified
      * @param paramSpawn the {@link SpawnPoint} to add.
      */
     void addSpawn(String paramKey, SpawnPoint paramSpawn);

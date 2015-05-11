@@ -1,6 +1,7 @@
 package com.relicum.duel.Commands;
 
 import com.relicum.commands.Interfaces.Msg;
+
 import static org.bukkit.ChatColor.*;
 
 /**
@@ -19,8 +20,7 @@ public final class DuelMsg implements Msg {
 
     public static DuelMsg getInstance() {
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = new DuelMsg();
         }
         return instance;

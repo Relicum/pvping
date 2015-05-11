@@ -1,14 +1,15 @@
 package com.relicum.pvpcore.Kits;
 
 import com.relicum.pvpcore.FormatUtil;
+import com.relicum.pvpcore.Menus.Slot;
+import com.relicum.utilities.Items.ItemBuilder;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
+
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Name: LobbyHotBar.java Created: 04 May 2015
@@ -18,110 +19,97 @@ import java.util.HashMap;
  */
 public class LobbyHotBar implements InventoryRow {
 
-    private HashMap<Integer, ItemStack> items = new HashMap<>();
+    private ItemStack[] items = new ItemStack[9];
     private boolean modifiable = false;
+    private boolean dropable = false;
 
     public LobbyHotBar() {
 
+        for (int i = 0; i < 9; i++) {
+            items[i] = new ItemStack(Material.AIR, 1);
+        }
         setAxe();
-        setPaper();
-        others();
+        setInvites();
+        setQueue();
+        setBook();
+        setLeave();
 
     }
+
 
     private void setAxe() {
 
-        ItemStack stack = new ItemStack(Material.GOLD_AXE, 1);
+        ItemStack stacks = new ItemBuilder(Material.GOLD_AXE, 1)
+                .setDisplayName("&3&l\u00BB &6&lChallenge a Player &3&l\u00AB")
+                .setItemLores(Arrays.asList(" ", "&3Right click to challenge", "&3a player to a 1v1"))
+                .setItemFlag(ItemFlag.HIDE_ATTRIBUTES)
+                .build();
 
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &6&lChallenge a Player &3&l\u00AB"));
-
-        meta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right click to challenge"), FormatUtil.colorize("&3a player to a 1v1")));
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-        stack.setItemMeta(meta);
-
-        addItem(0, stack.clone());
+        addItem(Slot.ZERO, stacks.clone());
 
     }
 
-    private void setPaper() {
+    private void setInvites() {
 
-        ItemStack stack = new ItemStack(Material.PAPER, 1);
+        ItemStack stacks = new ItemBuilder(Material.PAPER, 1)
+                .setDisplayName("&3&l\u00BB &e&lView Waiting Requests &3&l\u00AB")
+                .setItemLores(Arrays.asList(" ", "&3Right Click to see all", "&3invites from other players"))
+                .build();
 
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &e&lView Waiting Requests &3&l\u00AB"));
-
-        meta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to see all"), FormatUtil.colorize("&3invites from other players")));
-        stack.setItemMeta(meta);
-
-        addItem(2, stack.clone());
+        addItem(Slot.TWO, stacks.clone());
 
     }
 
-    private void others() {
+    private void setQueue() {
 
-        ItemStack stack = new ItemStack(Material.NETHER_STAR, 1);
+        ItemStack stacks = new ItemBuilder(Material.NETHER_STAR, 1)
+                .setDisplayName("&3&l\u00BB &a&lJoin Match Queue &3&l\u00AB")
+                .setItemLores(Arrays.asList(" ", "&3Right Click to open queue", "&3menu where you can select", "&3from a range of game modes"))
+                .build();
 
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &a&lJoin Match Queue &3&l\u00AB"));
+        addItem(Slot.FOUR, stacks.clone());
+    }
 
-        meta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to open queue"), FormatUtil.colorize("&3menu where you can select"),
-            FormatUtil.colorize("&3from a range of game modes")));
-        stack.setItemMeta(meta);
-
-        addItem(4, stack.clone());
-
+    private void setBook() {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 
         BookMeta bmeta = (BookMeta) book.getItemMeta();
         bmeta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &b&lHelp and Rules &3&l\u00AB"));
 
         bmeta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to open Help"), FormatUtil.colorize("&3Guide which will explain"),
-            FormatUtil.colorize("&3all of game modes and"), FormatUtil.colorize("&3and the rules for each.")));
+                FormatUtil.colorize("&3all of game modes and"), FormatUtil.colorize("&3and the rules for each.")));
 
         book.setItemMeta(bmeta);
 
-        addItem(6, book.clone());
-
-        ItemStack watch = new ItemStack(Material.NETHER_STAR, 1);
-
-        ItemMeta wmeta = watch.getItemMeta();
-        wmeta.setDisplayName(FormatUtil.colorize("&3&l\u00BB &a&lLeave 1v1 Lobby &3&l\u00AB"));
-
-        wmeta.setLore(Arrays.asList(" ", FormatUtil.colorize("&3Right Click to leave the"), FormatUtil.colorize("&31v1 lobby and go back to"),
-            FormatUtil.colorize("&3where you came from")));
-        watch.setItemMeta(wmeta);
-
-        addItem(8, watch.clone());
-
+        addItem(Slot.SIX, book.clone());
     }
 
-    @Override
-    public void addItem(int slot, ItemStack item) {
+    private void setLeave() {
 
-        Validate.isTrue(slot > -1 && slot < 9, "Slot index must be between 0-9");
+        ItemStack stacks = new ItemBuilder(Material.WATCH, 1)
+                .setDisplayName("&3&l\u00BB &a&lLeave 1v1 Lobby &3&l\u00AB")
+                .setItemLores(Arrays.asList(" ", "&3Right Click to leave the", "&31v1 lobby and go back to", "&3where you came from"))
+                .build();
+
+        addItem(Slot.EIGHT, stacks.clone());
+    }
+
+
+    @Override
+    public void addItem(Slot slot, ItemStack item) {
+
+        Validate.isTrue(slot.ordinal() > -1 && slot.ordinal() < 9, "Slot index must be between 0-9");
         Validate.notNull(item);
 
-        items.put(slot, item);
+        items[slot.ordinal()] = item;
+
 
     }
 
     @Override
     public ItemStack[] getItems() {
 
-        ItemStack[] tmp = new ItemStack[9];
-
-        for (int i = 0; i < 9; i++)
-        {
-            if (!items.containsKey(i))
-                tmp[i] = new ItemStack(Material.AIR);
-            else
-                tmp[i] = items.get(i);
-        }
-
-        return tmp.clone();
-
+        return items.clone();
     }
 
     @Override
@@ -136,5 +124,15 @@ public class LobbyHotBar implements InventoryRow {
 
         modifiable = mod;
 
+    }
+
+    @Override
+    public boolean isDropable() {
+        return dropable;
+    }
+
+    @Override
+    public void setDropable(boolean drop) {
+        this.dropable = drop;
     }
 }

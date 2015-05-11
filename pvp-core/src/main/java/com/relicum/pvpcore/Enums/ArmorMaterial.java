@@ -6,8 +6,7 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ArmorMaterial
-{
+public enum ArmorMaterial {
 
     LEATHER, IRON, GOLD, CHAINMAIL, DIAMOND
 

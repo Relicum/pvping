@@ -6,6 +6,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,10 +49,9 @@ public class FormatUtil {
         StrBuilder sb = new StrBuilder();
 
         String[] sl = point.toString().split(",");
-        String[] names = new String[] { "&aWorld: ", "&aX:     ", "&aY:     ", "&aZ:     ", "&aYaw:   ", "&aPitch: " };
+        String[] names = new String[]{"&aWorld: ", "&aX:     ", "&aY:     ", "&aZ:     ", "&aYaw:   ", "&aPitch: "};
         List<String> l = new ArrayList<>();
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
 
             l.add(names[i] + "&b" + sl[i]);
             l.add(" ");
@@ -64,12 +64,10 @@ public class FormatUtil {
     public static String implode(String implode, Object[] objects) {
 
         StringBuilder sb = new StringBuilder();
-        for (Object obj : objects)
-        {
+        for (Object obj : objects) {
             sb.append(obj).append(implode);
         }
-        if (objects.length > 0)
-        {
+        if (objects.length > 0) {
             sb.setLength(sb.length() - implode.length());
         }
         return sb.toString();
@@ -78,12 +76,10 @@ public class FormatUtil {
     public static String implode(String implode, String[] objects) {
 
         StringBuilder sb = new StringBuilder();
-        for (String str : objects)
-        {
+        for (String str : objects) {
             sb.append(str).append(implode);
         }
-        if (objects.length > 0)
-        {
+        if (objects.length > 0) {
             sb.setLength(sb.length() - implode.length());
         }
         return sb.toString();
@@ -92,20 +88,15 @@ public class FormatUtil {
     public static String implode(Object[] list, String glue, String format) {
 
         StringBuilder ret = new StringBuilder();
-        for (int i = 0; i < list.length; i++)
-        {
+        for (int i = 0; i < list.length; i++) {
             Object item = list[i];
             String str = item == null ? "NULL" : item.toString();
-            if (i != 0)
-            {
+            if (i != 0) {
                 ret.append(glue);
             }
-            if (format != null)
-            {
-                ret.append(String.format(format, new Object[] { str }));
-            }
-            else
-            {
+            if (format != null) {
+                ret.append(String.format(format, new Object[]{str}));
+            } else {
                 ret.append(str);
             }
         }
@@ -129,19 +120,16 @@ public class FormatUtil {
 
     public static String implodeCommaAndDot(Collection<?> objects, String format, String comma, String and, String dot) {
 
-        if (objects.isEmpty())
-        {
+        if (objects.isEmpty()) {
             return "";
         }
-        if (objects.size() == 1)
-        {
+        if (objects.size() == 1) {
             return implode(objects, comma, format);
         }
         List ourObjects = new ArrayList<>(objects);
         String lastItem = ourObjects.get(ourObjects.size() - 1).toString();
         String nextToLastItem = ourObjects.get(ourObjects.size() - 2).toString();
-        if (format != null)
-        {
+        if (format != null) {
             lastItem = String.format(format, lastItem);
             nextToLastItem = String.format(format, nextToLastItem);
         }
@@ -206,8 +194,7 @@ public class FormatUtil {
     public static String getArticle(String string) {
 
         string = string.toLowerCase();
-        if ((string.startsWith("a")) || (string.startsWith("e")) || (string.startsWith("i")) || (string.startsWith("o")) || (string.startsWith("u")))
-        {
+        if ((string.startsWith("a")) || (string.startsWith("e")) || (string.startsWith("i")) || (string.startsWith("o")) || (string.startsWith("u"))) {
             return "an";
         }
         return "a";

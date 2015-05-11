@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,8 +85,7 @@ public class Menu implements InventoryHolder {
     public boolean addMenuItem(MenuItem item, int index) {
 
         ItemStack slot = getInventory().getItem(index);
-        if ((slot != null) && (slot.getType() != Material.AIR))
-        {
+        if ((slot != null) && (slot.getType() != Material.AIR)) {
             return false;
         }
         getInventory().setItem(index, item.getItemStack());
@@ -102,8 +102,7 @@ public class Menu implements InventoryHolder {
     public boolean removeMenuItem(int index) {
 
         ItemStack slot = getInventory().getItem(index);
-        if ((slot == null) || (slot.getType().equals(Material.AIR)))
-        {
+        if ((slot == null) || (slot.getType().equals(Material.AIR))) {
             return false;
         }
         getInventory().clear(index);
@@ -113,8 +112,7 @@ public class Menu implements InventoryHolder {
 
     protected void selectMenuItem(Player player, int index) {
 
-        if (this.items.containsKey(index))
-        {
+        if (this.items.containsKey(index)) {
             MenuItem item = this.items.get(index);
             item.onClick(player);
         }
@@ -122,8 +120,7 @@ public class Menu implements InventoryHolder {
 
     public void openMenu(Player player) {
 
-        if (getInventory().getViewers().contains(player))
-        {
+        if (getInventory().getViewers().contains(player)) {
             throw new IllegalArgumentException(String.valueOf(player.getName()) + " is already viewing " + getInventory().getTitle());
         }
         player.openInventory(getInventory());
@@ -131,8 +128,7 @@ public class Menu implements InventoryHolder {
 
     public void closeMenu(Player player) {
 
-        if (getInventory().getViewers().contains(player))
-        {
+        if (getInventory().getViewers().contains(player)) {
             getInventory().getViewers().remove(player);
             player.closeInventory();
         }
@@ -155,8 +151,7 @@ public class Menu implements InventoryHolder {
 
     public Inventory getInventory() {
 
-        if (this.inventory == null)
-        {
+        if (this.inventory == null) {
             this.inventory = Bukkit.createInventory(this, this.rows * 9, this.title);
         }
         return this.inventory;
@@ -172,8 +167,7 @@ public class Menu implements InventoryHolder {
         Menu clone = new Menu(this.title, this.rows);
         clone.setExitOnClickOutside(this.exitOnClickOutside);
         clone.setMenuCloseBehaviour(this.menuCloseBehaviour);
-        for (Integer index : this.items.keySet())
-        {
+        for (Integer index : this.items.keySet()) {
             addMenuItem(this.items.get(index), index);
         }
         return clone;

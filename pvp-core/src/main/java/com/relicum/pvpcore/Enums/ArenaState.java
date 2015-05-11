@@ -6,8 +6,7 @@ package com.relicum.pvpcore.Enums;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ArenaState
-{
+public enum ArenaState {
 
     SETUP, LOADING, WAITING, INGAME, DISABLED
 }

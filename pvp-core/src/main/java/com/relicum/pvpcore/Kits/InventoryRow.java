@@ -1,5 +1,6 @@
 package com.relicum.pvpcore.Kits;
 
+import com.relicum.pvpcore.Menus.Slot;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -10,12 +11,16 @@ import org.bukkit.inventory.ItemStack;
  */
 public interface InventoryRow {
 
-    void addItem(int slot, ItemStack item);
+    void addItem(Slot slot, ItemStack item);
 
     ItemStack[] getItems();
 
     boolean isModifiable();
 
     void setModifiable(boolean mod);
+
+    boolean isDropable();
+
+    void setDropable(boolean drop);
 
 }

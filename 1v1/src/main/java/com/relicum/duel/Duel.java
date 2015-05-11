@@ -5,7 +5,7 @@ import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
 import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Commands.ZoneModify;
-import com.relicum.duel.Handlers.GameQueueHandler;
+import com.relicum.duel.Handlers.GameHandler;
 import com.relicum.duel.Menus.MenuManager;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -30,11 +31,11 @@ import java.util.Collections;
  * @author Relicum
  * @version 0.0.1
  */
-@SuppressFBWarnings({ "UNKNOWN" })
+@SuppressFBWarnings({"UNKNOWN"})
 public class Duel extends JavaPlugin implements Listener {
 
     private static Duel instance;
-    private GameQueueHandler gameQueue;
+    private GameHandler gameHandler;
     private ZoneManager<Duel> zoneManager;
     private MenuAPI<Duel> menuAPI;
     private StatsManager statsManager;
@@ -42,6 +43,7 @@ public class Duel extends JavaPlugin implements Listener {
     private CommandRegister adminCommands;
     private TitleMaker titleMaker;
     private MenuManager menuManager;
+
 
     public PvpPlayer player;
 
@@ -52,12 +54,9 @@ public class Duel extends JavaPlugin implements Listener {
         saveConfig();
         statsManager = new StatsManager(this);
 
-        try
-        {
+        try {
             this.titleMaker = ((TitleApi) getServer().getPluginManager().getPlugin("TitleApi")).getTitleApi(this);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -65,8 +64,8 @@ public class Duel extends JavaPlugin implements Listener {
         if (getConfig().contains("zone.name"))
             zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
         else
-            zoneManager = new ZoneManager<>(this, Collections.<String> emptySet());
-        gameQueue = new GameQueueHandler(this);
+            zoneManager = new ZoneManager<>(this, Collections.<String>emptySet());
+        gameHandler = new GameHandler(this);
         menuManager = new MenuManager(this);
         playerCommands = new CommandRegister(this);
         adminCommands = new CommandRegister(this);
@@ -81,13 +80,14 @@ public class Duel extends JavaPlugin implements Listener {
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 
+
     }
 
     public void onDisable() {
 
         saveConfig();
         statsManager.saveAndClearAll();
-        gameQueue.clearAllPlayers();
+        gameHandler.clearAllPlayers();
     }
 
     /**
@@ -116,9 +116,9 @@ public class Duel extends JavaPlugin implements Listener {
         return zoneManager;
     }
 
-    public GameQueueHandler getGameQueue() {
+    public GameHandler getGameHandler() {
 
-        return gameQueue;
+        return gameHandler;
 
     }
 
@@ -134,15 +134,11 @@ public class Duel extends JavaPlugin implements Listener {
 
     public boolean checkAndCreate(String filePath) {
 
-        if (!Files.exists(Paths.get(filePath)))
-        {
-            try
-            {
+        if (!Files.exists(Paths.get(filePath))) {
+            try {
                 Files.createFile(Paths.get(filePath));
                 return false;
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
 
             }
@@ -166,20 +162,15 @@ public class Duel extends JavaPlugin implements Listener {
 
     public void onQuit(PlayerQuitEvent e) {
 
-        try
-        {
-            if (player != null)
-            {
-                if (player.getUuid().equals(e.getPlayer().getUniqueId()))
-                {
+        try {
+            if (player != null) {
+                if (player.getUuid().equals(e.getPlayer().getUniqueId())) {
                     player.destroy();
                     player = null;
                 }
 
             }
-        }
-        catch (Exception ignored)
-        {
+        } catch (Exception ignored) {
             System.out.println("Already null");
         }
 

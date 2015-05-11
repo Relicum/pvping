@@ -32,10 +32,10 @@ public class SpawnPointItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem     the {@link ItemStack} used as the icon
+     * @param paramSlot     the slot inventory position
+     * @param paramAction   the action to perform when the icon is clicked
+     *                      {@link ClickAction}
      * @param actionHandler
      */
     public SpawnPointItem(ItemStack paramItem, ItemStack altIcon, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
@@ -47,10 +47,10 @@ public class SpawnPointItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem     the {@link ItemStack} used as the icon
+     * @param paramSlot     the slot inventory position
+     * @param paramAction   the action to perform when the icon is clicked
+     *                      {@link ClickAction}
      * @param actionHandler the icon display name
      */
     public SpawnPointItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
@@ -61,12 +61,12 @@ public class SpawnPointItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
      * @param paramDisplayName the icon display name
-     * @param paramLores the icon lores
+     * @param paramLores       the icon lores
      */
     public SpawnPointItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName, List<String> paramLores) {
 

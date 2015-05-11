@@ -3,7 +3,8 @@ package com.relicum.duel.Commands;
 import com.google.common.collect.ImmutableList;
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
-import com.relicum.duel.Menus.Spawns1v1;
+import com.relicum.duel.Menus.SpawnHotBar;
+import com.relicum.pvpcore.Menus.Spawns1v1;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-@Command(aliases = { "modify" }, desc = "Modify and edit Zone settings", perm = "duel.admin.modify", usage = "/noxarena modify", isSub = true, parent = "noxarena", useTab = true, min = 1)
+@Command(aliases = {"modify"}, desc = "Modify and edit Zone settings", perm = "duel.admin.modify", usage = "/noxarena modify", isSub = true, parent = "noxarena", useTab = true, min = 1)
 public class ZoneModify extends DuelCmd {
 
     private List<String> OPTIONS = ImmutableList.of("openmenu", "zone", "set");
@@ -36,9 +37,7 @@ public class ZoneModify extends DuelCmd {
         super(plugin);
         OPTIONS5 = ImmutableList.of("setspawn", "set", "enable", "disable", "remove");
         OPTIONS6 = new ArrayList<>();
-        for (Spawns1v1 sp : Spawns1v1.values())
-        {
-            System.out.println(sp.getName());
+        for (Spawns1v1 sp : Spawns1v1.values()) {
             OPTIONS6.add(sp.getName());
         }
 
@@ -64,46 +63,91 @@ public class ZoneModify extends DuelCmd {
     @Override
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
-        if (!OPTIONS.contains(args[0]))
-        {
+        if (!OPTIONS.contains(args[0])) {
             sendErrorMessage("Invalid argument, try using tab complete");
             return true;
         }
 
         String str = args[0];
 
-        if ("openmenu".equals(str))
-        {
-            sendMessage("Trying to open Zone Main Menu");
-            plugin.getMenuManager().createZoneEdit().openMenu((Player) sender);
-            return true;
-        }
-
-        if ("zone".equals(str))
-        {
-            if (args.length == 5)
-            {
-                if (!plugin.getZoneManager().containsCollection(args[1]))
-                {
+        if ("openmenu".equals(str)) {
+            if (args.length == 1) {
+                sendMessage("Trying to open Zone Main Menu");
+                plugin.getMenuManager().createZoneEdit().openMenu((Player) sender);
+                return true;
+            } else if (args.length == 2) {
+                if (!plugin.getZoneManager().containsCollection(args[1])) {
+                    sendErrorMessage("Error: invalid collection name " + args[1]);
+                    return true;
+                }
+                sendMessage("Opening Zone Select Menu for " + args[1]);
+                plugin.getMenuManager().createSelectMenu(args[1]).openMenu((Player) sender);
+                return true;
+            } else if (args.length == 3) {
+                if (!plugin.getZoneManager().containsCollection(args[1])) {
                     sendErrorMessage("Error: invalid collection name " + args[1]);
                     return true;
                 }
 
-                if (!plugin.getZoneManager().containsZone(args[1], args[2]))
-                {
+                if (!plugin.getZoneManager().containsZone(args[1], args[2])) {
+                    sendErrorMessage("Error: invalid zone name " + args[2]);
+                    return true;
+                }
+                sendMessage("Opening Zone Edit Menu for " + args[2]);
+                plugin.getMenuManager().getZoneEditMenu(args[1], args[2]).openMenu((Player) sender);
+                return true;
+
+            }
+        }
+
+        if ("set".equals(str)) {
+            if (args.length == 3) {
+                if (!plugin.getZoneManager().containsCollection(args[1])) {
+                    sendErrorMessage("Error: invalid collection name " + args[1]);
+                    return true;
+                }
+
+                if (!plugin.getZoneManager().containsZone(args[1], args[2])) {
                     sendErrorMessage("Error: invalid zone name " + args[2]);
                     return true;
                 }
 
-                if (!OPTIONS5.contains(args[3]))
-                {
+                PvPZone pvPZone = plugin.getZoneManager().getPvpZone(args[1], args[2]);
+
+                Player player = (Player) sender;
+
+                SpawnHotBar bar = new SpawnHotBar(pvPZone, player, plugin);
+
+                // player.getInventory().setItem(0,bar.getItem(Slot.ZERO));
+                // player.getInventory().setItem(1,bar.getItem(Slot.ONE));
+                bar.saveInventory();
+                player.getInventory().setContents(bar.getItems());
+                player.updateInventory();
+                sendMessage("Items have been placed in your hot bar");
+
+                return true;
+
+            }
+        }
+
+        if ("zone".equals(str)) {
+            if (args.length == 5) {
+                if (!plugin.getZoneManager().containsCollection(args[1])) {
+                    sendErrorMessage("Error: invalid collection name " + args[1]);
+                    return true;
+                }
+
+                if (!plugin.getZoneManager().containsZone(args[1], args[2])) {
+                    sendErrorMessage("Error: invalid zone name " + args[2]);
+                    return true;
+                }
+
+                if (!OPTIONS5.contains(args[3])) {
                     sendErrorMessage("Error: invalid option " + args[3]);
                     return true;
                 }
-                if (args[3].equals("setspawn"))
-                {
-                    if (!OPTIONS6.contains(args[4]))
-                    {
+                if (args[3].equals("setspawn")) {
+                    if (!OPTIONS6.contains(args[4])) {
                         sendErrorMessage("Error: invalid spawn type " + args[4]);
                         return true;
                     }
@@ -118,15 +162,15 @@ public class ZoneModify extends DuelCmd {
                         pvPZone.setSpecSpawn(new SpawnPoint(player.getLocation()));
                     else if (spawns1v1 == Spawns1v1.END)
                         pvPZone.setEndSpawn(new SpawnPoint(player.getLocation()));
-                    else
-                    {
+                    else {
                         sendErrorMessage("Error unknown spawn type");
                         return true;
                     }
 
                     plugin.getZoneManager().saveZone(pvPZone);
 
-                    sendMessage("Spawn successfully created for " + args[4] + " for collection " + args[1] + " zone " + args[2]);
+                    sendMessage("Spawn successfully created for "
+                            + args[4] + " for collection " + args[1] + " zone " + args[2]);
                     return true;
                 }
 

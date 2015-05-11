@@ -29,6 +29,10 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
 
     protected ClickAction action;
 
+    public AbstractItem(ItemStack item) {
+        this.item = item;
+    }
+
     /**
      * Instantiates a new Abstract item.
      *
@@ -51,10 +55,10 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
+     * @param paramItem   the {@link ItemStack} used as the icon
+     * @param paramSlot   the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     *                    {@link ClickAction}
      */
     public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
 
@@ -72,10 +76,10 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
      * @param paramDisplayName the icon display name
      */
     public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
@@ -92,12 +96,12 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
      * @param paramDisplayName the icon display name
-     * @param paramLores the icon lores
+     * @param paramLores       the icon lores
      */
     public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName, List<String> paramLores) {
 
@@ -296,8 +300,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
 
     public void removeFromMenu(ActionMenu actionMenu) {
 
-        if (this.menu == actionMenu)
-        {
+        if (this.menu == actionMenu) {
 
             menu = null;
 

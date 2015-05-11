@@ -2,6 +2,7 @@ package com.relicum.pvpcore.Menus;
 
 import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
 import com.relicum.pvpcore.Menus.Handlers.TeleportHandler;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +17,7 @@ import java.util.Map;
  * @author Relicum
  * @version 0.0.1
  */
-public enum ClickAction
-{
+public enum ClickAction {
     BUNGEE(String.class),
     HEADS(String.class),
     TELEPORT(TeleportHandler.class),
@@ -32,16 +32,15 @@ public enum ClickAction
     NEXT_PREVIOUS(String.class),
     SAVE(String.class),
     UPDATE(String.class),
-    NO_ACTION(String.class);
+    NO_ACTION(String.class),
+    HOTBAR(String.class);
 
     private Class clazz;
 
     private final static Map<Class, ClickAction> actions = new HashMap<>();
 
-    static
-    {
-        for (ClickAction click_actions : EnumSet.allOf(ClickAction.class))
-        {
+    static {
+        for (ClickAction click_actions : EnumSet.allOf(ClickAction.class)) {
             actions.put(click_actions.getActionClass(), click_actions);
         }
     }
@@ -66,8 +65,8 @@ public enum ClickAction
      * of the same type.
      *
      * @param paramHandler the instance of {@link ActionHandler} to test.
-     * @param paramACTION the {@link ClickAction} to see if paramHandler is of
-     * this type.
+     * @param paramACTION  the {@link ClickAction} to see if paramHandler is of
+     *                     this type.
      * @return true if they are the same type, false if they aren't
      */
     public static boolean isType(ActionHandler paramHandler, ClickAction paramACTION) {
@@ -80,13 +79,12 @@ public enum ClickAction
      * passed in.
      *
      * @param paramHandler the instance of {@link ActionHandler} that you want
-     * the action for.
+     *                     the action for.
      * @return the corresponding action {@link ClickAction}
      */
     public static ClickAction getType(ActionHandler paramHandler) {
 
-        for (Map.Entry<Class, ClickAction> entry : actions.entrySet())
-        {
+        for (Map.Entry<Class, ClickAction> entry : actions.entrySet()) {
             if (entry.getValue().getActionClass().isInstance(paramHandler))
                 return entry.getValue();
         }

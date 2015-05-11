@@ -1,6 +1,7 @@
 package com.relicum.pvpcore.Menus;
 
 import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
 
 /**
@@ -10,6 +11,18 @@ import java.util.List;
  * @version 0.0.1
  */
 public class ActionItem extends AbstractItem {
+
+
+    /**
+     * Instantiates a new Abstract item.
+     *
+     * @param paramItem the {@link ItemStack} used as the icon
+     * @param paramSlot the slot inventory position
+     */
+    public ActionItem(ItemStack paramItem) {
+
+        super(paramItem);
+    }
 
     /**
      * Instantiates a new Abstract item.
@@ -25,10 +38,10 @@ public class ActionItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
+     * @param paramItem   the {@link ItemStack} used as the icon
+     * @param paramSlot   the slot inventory position
      * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     *                    {@link ClickAction}
      */
     public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
 
@@ -40,10 +53,10 @@ public class ActionItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
      * @param paramDisplayName the icon display name
      */
     public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
@@ -54,12 +67,12 @@ public class ActionItem extends AbstractItem {
     /**
      * Instantiates a new Abstract item.
      *
-     * @param paramItem the {@link ItemStack} used as the icon
-     * @param paramSlot the slot inventory position
-     * @param paramAction the action to perform when the icon is clicked
-     * {@link ClickAction}
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
      * @param paramDisplayName the icon display name
-     * @param paramLores the icon lores
+     * @param paramLores       the icon lores
      */
     public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName, List<String> paramLores) {
 

@@ -2,6 +2,7 @@ package com.relicum.pvpcore.Gamers;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.lang.ref.WeakReference;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public abstract class WeakGamer<T extends JavaPlugin> {
     protected T plugin;
     protected WeakReference<Player> player;
     protected UUID uuid;
+    protected String stringUUID;
 
     /**
      * Instantiates a new WeakGamer.
@@ -45,6 +47,7 @@ public abstract class WeakGamer<T extends JavaPlugin> {
     protected void setPlayer(Player paramPlayer) {
 
         this.uuid = paramPlayer.getUniqueId();
+        this.stringUUID = paramPlayer.getUniqueId().toString();
         this.player = new WeakReference<>(paramPlayer);
     }
 
@@ -79,18 +82,15 @@ public abstract class WeakGamer<T extends JavaPlugin> {
 
         Player pl = null;
 
-        try
-        {
+        try {
             pl = getPlugin().getServer().getPlayer(uuid);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored)
-        {}
 
         if (pl == null)
             return null;
 
-        else
-        {
+        else {
             setPlayer(pl);
             return pl;
         }
@@ -106,6 +106,7 @@ public abstract class WeakGamer<T extends JavaPlugin> {
 
         player.clear();
         uuid = null;
+        stringUUID = null;
     }
 
     /**
@@ -128,4 +129,12 @@ public abstract class WeakGamer<T extends JavaPlugin> {
         return uuid;
     }
 
+    /**
+     * Gets the {@link Player} {@link UUID} as a string.
+     *
+     * @return the players uuid as a string.
+     */
+    public String getStringUUID() {
+        return stringUUID;
+    }
 }
