@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,17 +34,17 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
         return plugin;
     }
 
-    public Menu createMenu(String title, int rows) {
+    public ActionMenu createMenu(String title, int rows) {
 
-        return new Menu(title, rows);
+        return new ActionMenu(title, rows);
     }
 
-    public Menu cloneMenu(Menu menu) {
+    public ActionMenu cloneMenu(ActionMenu menu) {
 
         return menu.clone();
     }
 
-    public void removeMenu(Menu menu) {
+    public void removeMenu(ActionMenu menu) {
 
         for (HumanEntity viewer : menu.getInventory().getViewers())
             if ((viewer instanceof Player)) {
@@ -54,75 +53,19 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
                 viewer.closeInventory();
     }
 
-    // todo remove this tmp dupe method
-    public static void switchMenu(final Player player, Menu fromMenu, Menu toMenu) {
-
-        fromMenu.closeMenu(player);
-
-        new BukkitRunnable() {
-
-            int c = 0;
-
-            public void run() {
-
-                c++;
-                if (c == 1) {
-                    toMenu.openMenu(player);
-                } else if (c == 2) {
-                    player.updateInventory();
-                    player.sendMessage("finished switch menu task");
-                    cancel();
-                }
-            }
-        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
-    }
 
     // todo remove the tmp dupe code in this method
     @EventHandler(priority = EventPriority.LOWEST)
     public void onMenuItemClicked(InventoryClickEvent event) {
 
         Inventory inventory = event.getInventory();
-        if ((inventory.getHolder() instanceof Menu) || (inventory.getHolder() instanceof ActionMenu)) {
+        if (inventory.getHolder() instanceof ActionMenu) {
 
             if (event.getAction().name().startsWith("DROP")) {
                 return;
             }
-            if (inventory.getHolder() instanceof Menu) {
-                event.setCancelled(true);
-                Menu menu = (Menu) inventory.getHolder();
-                if ((event.getWhoClicked() instanceof Player)) {
-                    Player player = (Player) event.getWhoClicked();
-                    if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-                        if (menu.exitOnClickOutside())
-                            menu.closeMenu(player);
-                    } else {
-                        int index = event.getRawSlot();
-                        if (index < inventory.getSize()) {
-                            menu.selectMenuItem(player, index);
-                        } else if (menu.exitOnClickOutside())
-                            menu.closeMenu(player);
-                    }
-                }
-
-                return;
-            }
 
             ((ActionMenu) event.getInventory().getHolder()).onInventoryClick(event);
-
-            // ActionMenu menu = (ActionMenu) inventory.getHolder();
-            // if ((event.getWhoClicked() instanceof Player)) {
-            // Player player = (Player) event.getWhoClicked();
-            // if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-            // if (menu.exitOnClickOutside())
-            // menu.closeMenu(player);
-            // } else {
-            // int index = event.getRawSlot();
-            // if (index < inventory.getSize()) {
-            // menu.selectMenuItem(player, index);
-            // } else if (menu.exitOnClickOutside())
-            // menu.closeMenu(player);
-            // }
-            // }
 
         }
     }
@@ -132,8 +75,8 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
 
         if ((event.getPlayer() instanceof Player)) {
             Inventory inventory = event.getInventory();
-            if ((inventory.getHolder() instanceof Menu)) {
-                Menu menu = (Menu) inventory.getHolder();
+            if ((inventory.getHolder() instanceof ActionMenu)) {
+                ActionMenu menu = (ActionMenu) inventory.getHolder();
                 MenuCloseBehaviour menuCloseBehaviour = menu.getMenuCloseBehaviour();
                 if (menuCloseBehaviour != null)
                     menuCloseBehaviour.onClose((Player) event.getPlayer(), menu, menu.bypassMenuCloseBehaviour());
@@ -144,10 +87,10 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLogoutCloseMenu(PlayerQuitEvent event) {
 
-        if ((event.getPlayer().getOpenInventory() == null) || (!(event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof Menu))) {
+        if ((event.getPlayer().getOpenInventory() == null) || (!(event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof ActionMenu))) {
             return;
         }
-        Menu menu = (Menu) event.getPlayer().getOpenInventory().getTopInventory().getHolder();
+        ActionMenu menu = (ActionMenu) event.getPlayer().getOpenInventory().getTopInventory().getHolder();
         menu.setBypassMenuCloseBehaviour(true);
         menu.setMenuCloseBehaviour(null);
         event.getPlayer().closeInventory();
@@ -176,27 +119,4 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
 
     }
 
-    // todo remove this tmp dupe method
-    public static void switchMenu(Player player, Menu fromMenu, ActionMenu toMenu) {
-
-        fromMenu.closeMenu(player);
-
-        new BukkitRunnable() {
-
-            int c = 0;
-
-            public void run() {
-
-                c++;
-                if (c == 1) {
-                    toMenu.openMenu(player);
-                } else if (c == 2) {
-                    player.updateInventory();
-                    player.sendMessage("finished switch menu task");
-                    cancel();
-                }
-            }
-        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
-
-    }
 }

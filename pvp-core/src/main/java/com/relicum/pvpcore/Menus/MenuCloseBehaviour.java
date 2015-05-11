@@ -10,5 +10,5 @@ import org.bukkit.entity.Player;
  */
 public interface MenuCloseBehaviour {
 
-    void onClose(Player paramPlayer, Menu paramMenu, boolean paramBoolean);
+    void onClose(Player paramPlayer, ActionMenu paramMenu, boolean paramBoolean);
 }
