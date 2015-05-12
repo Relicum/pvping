@@ -1,37 +1,37 @@
 package com.relicum.duel.Objects;
 
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Handlers.LobbyArmor;
 import com.relicum.pvpcore.Gamers.IPlayerSettings;
 import com.relicum.pvpcore.Gamers.PlayerGameSettings;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Name: LobbyPlayerConfigs.java Created: 03 May 2015
+ * LobbyLoadOut stores the inventory and settings players will be set to when in the lobby
  *
  * @author Relicum
  * @version 0.0.1
  */
-public class LobbySettings implements IPlayerSettings {
+public class LobbyLoadOut implements IPlayerSettings {
 
     private LobbyArmor armor;
     private PlayerGameSettings settings;
-    private List<PotionEffect> potionEffects = new ArrayList<>();
+    private Collection<PotionEffect> potionEffects = new ArrayList<>();
     private ItemStack[] contents;
     private Map<Integer, ItemStack> items = new HashMap<>();
+    private List<ItemStack> pots = new ArrayList<>();
 
-    public LobbySettings() {
+    public LobbyLoadOut() {
 
     }
 
-    public LobbySettings(LobbyArmor armor, Map<Integer, ItemStack> items, List<PotionEffect> potionEffects, PlayerGameSettings settings) {
+    public LobbyLoadOut(LobbyArmor armor, Map<Integer, ItemStack> items, Collection<PotionEffect> potionEffects, PlayerGameSettings settings) {
         this.armor = armor;
         this.items = items;
         this.potionEffects = potionEffects;
@@ -64,7 +64,13 @@ public class LobbySettings implements IPlayerSettings {
     }
 
     public void addPotionEffect(PotionEffect effect) {
-        this.potionEffects.add(effect);
+
+        ItemStack p = new ItemStack(Material.POTION, 1);
+        PotionMeta meta = (PotionMeta) p.getItemMeta();
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10, 2, false, false), true);
+        p.setItemMeta(meta);
+
+        this.pots.add(p);
     }
 
     public void setPotionEffects(List<PotionEffect> potionEffects) {
@@ -78,6 +84,10 @@ public class LobbySettings implements IPlayerSettings {
 
     public ItemStack[] getArmor(RankArmor rank) {
         return armor.getAmour(rank);
+    }
+
+    public List<ItemStack> getPotions() {
+        return pots;
     }
 
     /**

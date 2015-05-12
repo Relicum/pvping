@@ -65,9 +65,12 @@ public class GameHandler implements Listener {
 
         if (isFull()) {
             pvp.sendMessage("You are in luck we have found a match get ready");
+
         } else {
-            if (addToQueue(pvp))
+            if (addToQueue(pvp)) {
                 pvp.sendMessage("You have been added to the queue");
+                pvp.sendActionMessage("&6&lYou have been added to the queue");
+            }
             else
                 pvp.sendMessage("You are already in the queue");
         }

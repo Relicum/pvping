@@ -3,3 +3,4 @@ version: ${project.version}
 description: ${project.description}
 author: Relicum
 main: com.relicum.pvpcore.Core
+depend: [MassiveCore]

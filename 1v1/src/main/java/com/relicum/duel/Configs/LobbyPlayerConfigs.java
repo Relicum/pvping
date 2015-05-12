@@ -14,8 +14,17 @@ public class LobbyPlayerConfigs {
 
     private PlayerGameSettings settings;
 
-    public LobbyPlayerConfigs() {
+    private LobbyPlayerConfigs() {
 
+    }
+
+    private LobbyPlayerConfigs(boolean init) {
+        if (init)
+            setDefaults();
+    }
+
+    public static LobbyPlayerConfigs create(boolean init) {
+        return new LobbyPlayerConfigs(init);
     }
 
     public void setDefaults() {

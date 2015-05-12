@@ -1,6 +1,7 @@
 package com.relicum.duel.Handlers;
 
-import com.relicum.duel.Objects.RankArmor;
+
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -19,9 +20,13 @@ public class LobbyArmor {
 
     private EnumMap<RankArmor, ItemStack[]> armor = new EnumMap<>(RankArmor.class);
 
+    public LobbyArmor(boolean init) {
+        if (init)
+            initArmor();
+    }
 
     public LobbyArmor() {
-        initArmor();
+
     }
 
     private void initArmor() {

@@ -27,6 +27,9 @@ public class PlayerSettings {
     private String gameMode;
     private int fireTicks;
 
+    private PlayerSettings() {
+    }
+
     private PlayerSettings(Player player) {
 
         exhaustion = player.getExhaustion();

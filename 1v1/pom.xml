@@ -5,7 +5,7 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.0.12-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>1v1</artifactId>
@@ -53,6 +53,10 @@
                             <pattern>com.relicum.commands</pattern>
                             <shadedPattern>com.relicum.duel.Commands</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.relicum.configs.Gson</pattern>
+                            <shadedPattern>com.relicum.duel.Configs.Gson</shadedPattern>
+                        </relocation>
                     </relocations>
                     <shadedClassifierName/>
                     <useBaseVersion>true</useBaseVersion>
@@ -99,9 +103,21 @@
     </profiles>
     <dependencies>
         <dependency>
+            <groupId>com.massivecraft</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>2.7.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.relicum</groupId>
+            <artifactId>spigot-config</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>pvp-core</artifactId>
-            <version>1.0.11-SNAPSHOT</version>
+            <version>1.0.12-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

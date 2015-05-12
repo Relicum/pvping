@@ -1,4 +1,5 @@
 enable: true
+first-load: true
 dedicated: false
 lobby-world: world
 game-world: world

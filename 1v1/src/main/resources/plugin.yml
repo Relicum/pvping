@@ -3,7 +3,7 @@ version: ${project.version}
 main: com.relicum.duel.Duel
 author: Relicum
 description: Duel Plugin
-depends: [PvpCore,TitleApi]
+depend: [MassiveCore,PvpCore,TitleApi]
 
 commands:
   1v1:

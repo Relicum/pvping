@@ -1,31 +1,24 @@
 package com.relicum.duel;
 
+
 import com.relicum.commands.CommandRegister;
-import com.relicum.duel.Commands.Join;
-import com.relicum.duel.Commands.Leave;
-import com.relicum.duel.Commands.ZoneCreator;
-import com.relicum.duel.Commands.ZoneModify;
-import com.relicum.duel.Configs.LobbyLoader;
-import com.relicum.duel.Configs.LobbyPlayerConfigs;
+import com.relicum.duel.Commands.*;
+import com.relicum.duel.Configs.ConfigLoader;
+import com.relicum.duel.Configs.DuelConfigs;
 import com.relicum.duel.Handlers.GameHandler;
-import com.relicum.duel.Handlers.LobbyArmor;
+import com.relicum.duel.Handlers.LobbyHandler;
 import com.relicum.duel.Menus.MenuManager;
-import com.relicum.duel.Objects.LobbySettings;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Arenas.ZoneManager;
 import com.relicum.pvpcore.Game.StatsManager;
-import com.relicum.pvpcore.Kits.LobbyHotBar;
+import com.relicum.pvpcore.Kits.LoadOut;
 import com.relicum.pvpcore.Menus.MenuAPI;
 import com.relicum.titleapi.TitleApi;
 import com.relicum.titleapi.TitleMaker;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +36,7 @@ import java.util.Collections;
 public class Duel extends JavaPlugin implements Listener {
 
     private static Duel instance;
+    private boolean firstLoad = false;
     private GameHandler gameHandler;
     private ZoneManager<Duel> zoneManager;
     private MenuAPI<Duel> menuAPI;
@@ -51,18 +45,51 @@ public class Duel extends JavaPlugin implements Listener {
     private CommandRegister adminCommands;
     private TitleMaker titleMaker;
     private MenuManager menuManager;
-    private LobbyLoader lobbyLoader;
-    private LobbySettings lobbySettings;
+    private LobbyHandler lobbyHandler;
+    private ConfigLoader configLoader;
+    private DuelConfigs configs;
 
 
     public PvpPlayer player;
 
     public void onEnable() {
-
+        ConfigurationSerialization.registerClass(LoadOut.class, "LoadOut");
         instance = this;
 
-        saveConfig();
-        statsManager = new StatsManager(this);
+        if (!checkAndCreate(getDataFolder().toString() + File.separator + "config.json")) {
+            firstLoad = true;
+            if (doFirstLoad())
+                DuelMsg.getInstance().logInfoFormatted("Initialisation of files completed successfully");
+
+            else
+                DuelMsg.getInstance().logSevereFormatted("Exceptions were thrown during initialisation, please check the logs");
+        } else {
+
+            configLoader = new ConfigLoader(getDataFolder().toString() + File.separator, "config");
+            configs = configLoader.load();
+            configs.setCollectionIndex("highlife", 5);
+
+            gameHandler = new GameHandler(this);
+
+            lobbyHandler = new LobbyHandler(this, gameHandler);
+
+            statsManager = new StatsManager(this);
+
+            if (configs.getCollectionSize() > 0)
+                zoneManager = new ZoneManager<>(this, configs.getCollectionNames());
+            else
+                zoneManager = new ZoneManager<>(this, Collections.<String>emptyList());
+
+            menuAPI = new MenuAPI<>(this);
+
+
+            menuManager = new MenuManager(this);
+
+
+        }
+
+
+        getServer().getPluginManager().registerEvents(this, this);
 
         try {
             this.titleMaker = ((TitleApi) getServer().getPluginManager().getPlugin("TitleApi")).getTitleApi(this);
@@ -70,28 +97,7 @@ public class Duel extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
 
-        LobbyPlayerConfigs lc;
-        //lc.setDefaults();
 
-        lobbyLoader = new LobbyLoader(getDataFolder().toString() + File.separator, "lobbysettings");
-        lc = lobbyLoader.load();
-
-        lobbySettings = new LobbySettings();
-        lobbySettings.setSettings(lc.getSettings());
-        lobbySettings.setArmor(new LobbyArmor());
-        lobbySettings.setContents(LobbyHotBar.create().getItems());
-
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.SPEED, 100000, 2, false, false);
-        lobbySettings.addPotionEffect(potionEffect);
-
-
-        menuAPI = new MenuAPI<>(this);
-        if (getConfig().contains("zone.name"))
-            zoneManager = new ZoneManager<>(this, getConfig().getConfigurationSection("zone.name").getValues(false).keySet());
-        else
-            zoneManager = new ZoneManager<>(this, Collections.<String>emptySet());
-        gameHandler = new GameHandler(this);
-        menuManager = new MenuManager(this);
         playerCommands = new CommandRegister(this);
         adminCommands = new CommandRegister(this);
         getCommand("1v1").setExecutor(playerCommands);
@@ -102,15 +108,20 @@ public class Duel extends JavaPlugin implements Listener {
         playerCommands.register(new Join(this));
         adminCommands.register(new ZoneCreator(this));
         adminCommands.register(new ZoneModify(this));
+        adminCommands.register(new BuildLoadOut(this));
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 
+    }
 
+    public boolean isFirstLoad() {
+        return firstLoad;
     }
 
     public void onDisable() {
+        DuelMsg.getInstance().logInfoFormatted("Saving Configuration files");
+        configLoader.save(configs);
 
-        saveConfig();
         statsManager.saveAndClearAll();
         gameHandler.clearAllPlayers();
     }
@@ -126,13 +137,22 @@ public class Duel extends JavaPlugin implements Listener {
 
     }
 
+    public DuelConfigs getConfigs() {
+        return configs;
+    }
+
+    public void saveConfigs() {
+        configLoader.save(configs);
+    }
+
     public MenuManager getMenuManager() {
 
         return menuManager;
     }
 
-    public LobbySettings getLobbySettings() {
-        return lobbySettings;
+
+    public LobbyHandler getLobbyHandler() {
+        return lobbyHandler;
     }
 
     public MenuAPI<Duel> getMenuAPI() {
@@ -161,10 +181,45 @@ public class Duel extends JavaPlugin implements Listener {
         return titleMaker;
     }
 
+    private boolean doFirstLoad() {
+
+        try {
+            this.configs = new DuelConfigs();
+            this.configLoader = new ConfigLoader(getDataFolder().toString() + File.separator, "config");
+            configLoader.save(configs);
+            DuelMsg.getInstance().logInfoFormatted("Successfully created config.json");
+            configs.setFirstLoad(false);
+
+            gameHandler = new GameHandler(this);
+            lobbyHandler = new LobbyHandler(this);
+            lobbyHandler.setGameHandler(gameHandler);
+
+            statsManager = new StatsManager(this);
+
+
+            if (configs.getCollectionSize() > 0)
+                zoneManager = new ZoneManager<>(this, configs.getCollectionNames());
+            else
+                zoneManager = new ZoneManager<>(this, Collections.<String>emptyList());
+
+
+            menuAPI = new MenuAPI<>(this);
+
+
+            menuManager = new MenuManager(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean checkAndCreate(String filePath) {
 
         if (!Files.exists(Paths.get(filePath))) {
             try {
+                Files.createDirectory(Paths.get(getDataFolder().toString() + File.separator));
                 Files.createFile(Paths.get(filePath));
                 return false;
             } catch (IOException e) {
@@ -173,36 +228,6 @@ public class Duel extends JavaPlugin implements Listener {
             }
         }
         return true;
-    }
-
-    public void onJoin(PlayerJoinEvent e) {
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                player = new PvpPlayer(e.getPlayer(), Duel.this);
-
-            }
-        }.runTaskLater(this, 60l);
-
-    }
-
-    public void onQuit(PlayerQuitEvent e) {
-
-        try {
-            if (player != null) {
-                if (player.getUuid().equals(e.getPlayer().getUniqueId())) {
-                    player.destroy();
-                    player = null;
-                }
-
-            }
-        } catch (Exception ignored) {
-            System.out.println("Already null");
-        }
-
     }
 
 }

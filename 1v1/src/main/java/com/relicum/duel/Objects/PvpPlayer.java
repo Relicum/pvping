@@ -1,5 +1,7 @@
 package com.relicum.duel.Objects;
 
+import com.massivecraft.massivecore.MassiveCore;
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
 import com.relicum.locations.SpawnPoint;
@@ -44,6 +46,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private String name = "";
     private InventoryStore store;
     private SpawnPoint backLocation;
+    private String jsonInventory;
+    private String jsonSettings;
+    private PlayerInventory playerInventory;
     private ItemStack[] lobbyArmor;
     private ItemStack[] lobbyBar;
     private List<PotionEffect> lobbyEffects;
@@ -54,7 +59,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private int start = 30;
 
     public void destroy() {
-
+        playerInventory.clear();
+        playerInventory = null;
         clearInventory();
         restorePlayerSettings();
         updateScoreboard(true);
@@ -71,15 +77,19 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public PvpPlayer(final Player paramPlayer, final Duel paramPlugin) {
 
         super(paramPlayer, paramPlugin);
+        this.jsonInventory = MassiveCore.gson.toJson(paramPlayer.getInventory(), PlayerInventory.class);
+        this.playerInventory = paramPlayer.getInventory();
+
+
         this.backLocation = new SpawnPoint(paramPlayer.getLocation());
 
-        lobbyArmor = plugin.getLobbySettings().getArmor(RankArmor.DEV);
+        lobbyArmor = plugin.getLobbyHandler().getLobbyLoadOut().getArmor(RankArmor.DEV);
 
-        lobbyBar = plugin.getLobbySettings().getContents();
+        lobbyBar = plugin.getLobbyHandler().getLobbyLoadOut().getContents();
 
         lobbyEffects = new ArrayList<>();
 
-        lobbyEffects.addAll(plugin.getLobbySettings().getEffects());
+        lobbyEffects.addAll(plugin.getLobbyHandler().getLobbyLoadOut().getEffects());
 
         stats = paramPlugin.getStatsManager().getAPlayersStats(paramPlayer.getUniqueId().toString());
 
@@ -108,6 +118,19 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
             }
         }.runTaskTimer(plugin, 100l, 20l);
+    }
+
+    public PlayerInventory getPlayerInventory() {
+        return playerInventory;
+    }
+
+    public String getJsonInventory() {
+        return jsonInventory;
+    }
+
+
+    public String getJsonSettings() {
+        return jsonSettings;
     }
 
     public final void setName(String name) {
@@ -273,12 +296,19 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         Collection<PotionEffect> tmpEffects = pl.getActivePotionEffects();
 
+
         for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
 
         this.store = new InventoryStore(pl.getInventory(), tmpEffects, PlayerSettings.save(pl));
 
+        this.jsonSettings = MassiveCore.gson.toJson(store.getSettings(), PlayerSettings.class);
+
+        System.out.println("Inventory: " + jsonInventory);
+        System.out.println(" = ");
+        System.out.println(" = ");
+        System.out.println("Settings: " + jsonSettings);
     }
 
     /**
@@ -287,10 +317,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
     @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
     public void clearInventory() {
 
-        PlayerInventory inv = getPlayer().getInventory();
-        getPlayer().closeInventory();
-        inv.setArmorContents(new ItemStack[4]);
-        inv.clear();
+        playerInventory.setArmorContents(new ItemStack[4]);
+        playerInventory.clear();
+        // PlayerInventory inv = getPlayer().getInventory();
+        // getPlayer().closeInventory();
+        // inv.setArmorContents(new ItemStack[4]);
+        //  inv.clear();
 
     }
 
@@ -302,9 +334,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public void applyLobbyInventory() {
 
         Player pl = getPlayer();
-        pl.getInventory().setArmorContents(lobbyArmor);
-        pl.getInventory().setContents(lobbyBar);
-        plugin.getLobbySettings().getSettings().apply(getPlayer());
+        playerInventory.setArmorContents(lobbyArmor);
+        playerInventory.setContents(lobbyBar);
+        // pl.getInventory().setArmorContents(lobbyArmor);
+        //  pl.getInventory().setContents(lobbyBar);
+        plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(getPlayer());
         for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
@@ -406,5 +440,13 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public void sendErrorMessage(String mess) {
 
         DuelMsg.getInstance().sendErrorMessage(getPlayer(), mess);
+    }
+
+    public void sendActionMessage(String mess) {
+        try {
+            plugin.getTitleMaker().sendActionBar(getPlayer(), mess);
+        } catch (ReflectionException e) {
+            e.printStackTrace();
+        }
     }
 }

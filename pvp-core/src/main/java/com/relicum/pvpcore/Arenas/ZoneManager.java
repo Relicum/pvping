@@ -29,7 +29,7 @@ public class ZoneManager<T extends JavaPlugin> {
 
     private String BASE_DIR;
 
-    public ZoneManager(T plugin, Set<String> names) {
+    public ZoneManager(T plugin, List<String> names) {
 
         this.plugin = plugin;
         BASE_DIR = plugin.getDataFolder().toString() + File.separator + "zones" + File.separator;
@@ -47,7 +47,7 @@ public class ZoneManager<T extends JavaPlugin> {
         }
     }
 
-    private void init(Set<String> names) {
+    private void init(List<String> names) {
 
         zoneNames.addAll(names);
 

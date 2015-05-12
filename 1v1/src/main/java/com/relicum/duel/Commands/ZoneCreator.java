@@ -9,8 +9,6 @@ import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,9 +46,9 @@ public class ZoneCreator extends DuelCmd {
 
         zones = new HashMap<>();
 
-        if (plugin.getConfig().contains("zone.name")) {
-            for (Map.Entry<String, Object> entry : plugin.getConfig().getConfigurationSection("zone.name").getValues(false).entrySet()) {
-                zones.put(entry.getKey(), (Integer) entry.getValue());
+        if (plugin.getConfigs().getCollectionSize() > 0) {
+            for (Map.Entry<String, Integer> entry : plugin.getConfigs().getCollectionEntry()) {
+                zones.put(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -58,25 +56,24 @@ public class ZoneCreator extends DuelCmd {
     public void saveNames() {
 
         if (zones.size() > 0) {
-            plugin.getConfig().createSection("zone.name", zones);
-            plugin.saveConfig();
+            for (Map.Entry<String, Integer> entry : zones.entrySet()) {
+                plugin.getConfigs().setCollectionIndex(entry.getKey(), entry.getValue());
+            }
+
+            plugin.saveConfigs();
         }
+    }
+
+    public void saveName(String name) {
+
+        plugin.getConfigs().setCollectionIndex(name, zones.get(name));
+        plugin.saveConfigs();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
         String str = args[0];
-        if ("save".equals(str)) {
-            Player player = (Player) sender;
-
-            ItemStack stack = player.getItemInHand();
-
-            plugin.getConfig().set("join.book", stack);
-            plugin.saveConfig();
-
-            return true;
-        }
 
         if (!OPTIONS.contains(args[0])) {
             sendErrorMessage("Invalid argument, try using tab complete");
@@ -94,7 +91,7 @@ public class ZoneCreator extends DuelCmd {
 
             try {
                 zones.put(args[1], 0);
-                saveNames();
+                saveName(args[1]);
                 plugin.getZoneManager().registerCollection(args[1]);
                 sendMessage("Successfully registered new ZoneCollection &a" + args[1]);
                 return true;
@@ -121,8 +118,8 @@ public class ZoneCreator extends DuelCmd {
             }
 
             zones.put(args[1], zones.get(args[1]) + 1);
-            saveNames();
-            sendMessage("Successfully registered a new zone under collection " + args[1]);
+            saveName(args[1]);
+            sendMessage("Successfully registered a new zone under collection &a" + args[1]);
             return true;
         }
 
