@@ -4,7 +4,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
- * PlayerSettings
+ * PlayerSettings are the players personal settings he had when he joined.
+ * <p>They are removed and saved when they join and are reapplied when they leave.
  *
  * @author Relicum
  * @version 0.0.1
@@ -28,6 +29,7 @@ public class PlayerSettings {
     private int fireTicks;
 
     private PlayerSettings() {
+
     }
 
     private PlayerSettings(Player player) {

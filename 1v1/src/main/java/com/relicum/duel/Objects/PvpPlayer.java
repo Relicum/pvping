@@ -4,6 +4,7 @@ import com.massivecraft.massivecore.MassiveCore;
 import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
+import com.relicum.duel.Tasks.ActionTimer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
@@ -17,18 +18,19 @@ import com.relicum.pvpcore.Tasks.UpdateInventory;
 import com.relicum.titleapi.Exception.ReflectionException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,6 +42,7 @@ import java.util.List;
 @edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
 public class PvpPlayer extends WeakGamer<Duel> {
 
+    Scoreboard board;
     private PlayerState state;
     private boolean saveInv = true;
     private boolean queueing = false;
@@ -48,25 +51,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private SpawnPoint backLocation;
     private String jsonInventory;
     private String jsonSettings;
-    private PlayerInventory playerInventory;
     private ItemStack[] lobbyArmor;
     private ItemStack[] lobbyBar;
     private List<PotionEffect> lobbyEffects;
     private PlayerStats stats;
-    Scoreboard board;
-
     private Objective objective;
-    private int start = 30;
-
-    public void destroy() {
-        playerInventory.clear();
-        playerInventory = null;
-        clearInventory();
-        restorePlayerSettings();
-        updateScoreboard(true);
-        player.clear();
-        System.out.println("PvpPlayer Object destroyed");
-    }
+    private int start = 10;
 
     /**
      * Instantiates a new PvpPlayer.
@@ -74,14 +64,13 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param paramPlayer the param player
      * @param paramPlugin the param plugin
      */
-    public PvpPlayer(final Player paramPlayer, final Duel paramPlugin) {
+    public PvpPlayer(final Player paramPlayer, final Duel paramPlugin, SpawnPoint backLocation) {
 
         super(paramPlayer, paramPlugin);
         this.jsonInventory = MassiveCore.gson.toJson(paramPlayer.getInventory(), PlayerInventory.class);
-        this.playerInventory = paramPlayer.getInventory();
 
 
-        this.backLocation = new SpawnPoint(paramPlayer.getLocation());
+        this.backLocation = backLocation;
 
         lobbyArmor = plugin.getLobbyHandler().getLobbyLoadOut().getArmor(RankArmor.DEV);
 
@@ -94,58 +83,102 @@ public class PvpPlayer extends WeakGamer<Duel> {
         stats = paramPlugin.getStatsManager().getAPlayersStats(paramPlayer.getUniqueId().toString());
 
         setName(paramPlayer.getName());
-        teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
-        try {
-            plugin.getTitleMaker().sendTitlePacket(paramPlayer, "&aWelcome to 1v1", 40, 60, 20);
-        } catch (ReflectionException e) {
-            e.printStackTrace();
-        }
+        // teleport(getPlugin().getServer().getWorld("world").getSpawnLocation());
+
+
         setState(PlayerState.LOBBY);
 
         createScoreboard();
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+        List<String> messages = new ArrayList<>();
+        messages.add(FormatUtil.colorize("&a&lWelcome to 1v1 Zone"));
+        messages.add(FormatUtil.colorize("&f&oBrought To You By"));
+        messages.add(FormatUtil.colorize("&6&lRELICUM"));
+        messages.add(FormatUtil.colorize("&f&lAlong with &a&lU&b&lH&c&lC &6&lZone"));
 
-                board.resetScores(FormatUtil.colorize("&5&lGame Starts: " + start));
-                start--;
-                objective.getScore(FormatUtil.colorize("&5&lGame Starts: " + start)).setScore(15);
-                if (start == 0) {
-                    sendMessage("Countdown ended");
-                    cancel();
-                }
 
-            }
-        }.runTaskTimer(plugin, 100l, 20l);
+        new ActionTimer(Arrays.asList(paramPlayer), 10, Duel.get().getTitleMaker()).runTaskTimer(paramPlugin, 20l, 20l);
+
+
+//        new BukkitRunnable() {
+//            int c = 0;
+//
+//            @Override
+//            public void run() {
+//
+//                if (c == 0) {
+//                    try {
+//
+//                        plugin.getTitleMaker().sendResetPacket(paramPlayer);
+//                        plugin.getTitleMaker().sendTimesPacket(paramPlayer, 0, 70, 0);
+//                        plugin.getTitleMaker().sendTitlePacket(paramPlayer, messages.get(0));
+//                        plugin.getTitleMaker().sendSubTitlePacket(paramPlayer, messages.get(1));
+//
+//                    }
+//                    catch (ReflectionException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                if (c > 0 && c < 4) {
+//                    try {
+//                        plugin.getTitleMaker().sendTitlePacket(paramPlayer, messages.get(0));
+//                        plugin.getTitleMaker().sendSubTitlePacket(paramPlayer, messages.get(c));
+//                    }
+//                    catch (ReflectionException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                c++;
+//                if (c == 4) {
+//                    sendMessage("Titles ended");
+//                    cancel();
+//                }
+//            }
+//        }.runTaskTimer(plugin, 40l, 60l);
+
+
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//
+//
+//                if (start == 10) {
+//                    board.resetScores(FormatUtil.colorize("&5&lGame Starts: " + start));
+//                    start--;
+//                    objective.getScore(FormatUtil.colorize("&5&lGame Starts: 0" + start)).setScore(15);
+//                }
+//                else if (start > 0 && start < 10) {
+//                    board.resetScores(FormatUtil.colorize("&5&lGame Starts: 0" + start));
+//                    start--;
+//                    objective.getScore(FormatUtil.colorize("&5&lGame Starts: 0" + start)).setScore(15);
+//                }
+//                if (start == 0) {
+//                    sendMessage("Countdown ended");
+//                    cancel();
+//                }
+//
+//            }
+//        }.runTaskTimer(plugin, 200l, 20l);
     }
 
-    public PlayerInventory getPlayerInventory() {
-        return playerInventory;
+    public void destroy() {
+
+        clearInventory();
+        restorePlayerSettings();
+        updateScoreboard(true);
+        player.clear();
+        System.out.println("PvpPlayer Object destroyed");
     }
 
     public String getJsonInventory() {
+
         return jsonInventory;
     }
 
 
     public String getJsonSettings() {
+
         return jsonSettings;
-    }
-
-    public final void setName(String name) {
-
-        this.name = name;
-    }
-
-    public final void setState(PlayerState playerState) {
-
-        this.state = playerState;
-
-        if (state.equals(PlayerState.LOBBY))
-            stateLobby();
-        else if (state.equals(PlayerState.QUIT))
-            stateGameEnd();
     }
 
     public PlayerStats getStats() {
@@ -184,7 +217,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
                     plugin.getStatsManager().removeAndSave(p.getUniqueId().toString());
                     store = null;
 
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
                 System.out.println("Tried to reset player settings for a player who quit or logged will part of 1v1");
@@ -210,6 +244,18 @@ public class PvpPlayer extends WeakGamer<Duel> {
         return state;
     }
 
+    public final void setState(PlayerState playerState) {
+
+        this.state = playerState;
+
+        if (state.equals(PlayerState.LOBBY)) {
+            stateLobby();
+        }
+        else if (state.equals(PlayerState.QUIT)) {
+            stateGameEnd();
+        }
+    }
+
     public void stateLobby() {
 
         if (saveInv) {
@@ -219,7 +265,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
             applyLobbyInventory();
             UpdateInventory.now(getPlayer(), plugin);
             saveInv = false;
-        } else {
+        }
+        else {
             updateScoreboard();
             clearInventory();
             applyLobbyInventory();
@@ -294,21 +341,27 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         Player pl = getPlayer();
 
-        Collection<PotionEffect> tmpEffects = pl.getActivePotionEffects();
+
+        ItemStack stack = new ItemStack(Material.POTION, 1);
+
+        List<ItemStack> po = new ArrayList<>();
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
+
+            ItemStack stack1 = stack.clone();
+            PotionMeta meta = (PotionMeta) stack.getItemMeta();
+            meta.addCustomEffect(effect, false);
+            stack1.setItemMeta(meta);
+            po.add(stack1);
+        }
 
 
         for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
 
-        this.store = new InventoryStore(pl.getInventory(), tmpEffects, PlayerSettings.save(pl));
+        this.store = new InventoryStore(pl.getInventory(), po, PlayerSettings.save(pl));
 
         this.jsonSettings = MassiveCore.gson.toJson(store.getSettings(), PlayerSettings.class);
-
-        System.out.println("Inventory: " + jsonInventory);
-        System.out.println(" = ");
-        System.out.println(" = ");
-        System.out.println("Settings: " + jsonSettings);
     }
 
     /**
@@ -317,12 +370,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
     @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
     public void clearInventory() {
 
-        playerInventory.setArmorContents(new ItemStack[4]);
-        playerInventory.clear();
-        // PlayerInventory inv = getPlayer().getInventory();
-        // getPlayer().closeInventory();
-        // inv.setArmorContents(new ItemStack[4]);
-        //  inv.clear();
+        // playerInventory.setArmorContents(new ItemStack[4]);
+        // playerInventory.clear();
+        PlayerInventory inv = getPlayer().getInventory();
+        getPlayer().closeInventory();
+        inv.setArmorContents(new ItemStack[4]);
+        inv.clear();
 
     }
 
@@ -334,16 +387,18 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public void applyLobbyInventory() {
 
         Player pl = getPlayer();
-        playerInventory.setArmorContents(lobbyArmor);
-        playerInventory.setContents(lobbyBar);
-        // pl.getInventory().setArmorContents(lobbyArmor);
-        //  pl.getInventory().setContents(lobbyBar);
-        plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(getPlayer());
+        //playerInventory.setArmorContents(lobbyArmor);
+        //playerInventory.setContents(lobbyBar);
+        pl.getInventory().setArmorContents(lobbyArmor);
+        pl.getInventory().setContents(lobbyBar);
+        plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(pl);
         for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
-        pl.addPotionEffects(lobbyEffects);
 
+        lobbyEffects.forEach(pl::addPotionEffect);
+
+        sendMessage("Lobby effect should be applied");
 
 
     }
@@ -366,6 +421,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     }
 
     public boolean isGod() {
+
         return state.equals(PlayerState.LOBBY) || state.equals(PlayerState.QUEUED);
     }
 
@@ -398,6 +454,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public String getName() {
 
         return name;
+    }
+
+    public final void setName(String name) {
+
+        this.name = name;
     }
 
     /**
@@ -443,9 +504,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
     }
 
     public void sendActionMessage(String mess) {
+
         try {
             plugin.getTitleMaker().sendActionBar(getPlayer(), mess);
-        } catch (ReflectionException e) {
+        }
+        catch (ReflectionException e) {
             e.printStackTrace();
         }
     }

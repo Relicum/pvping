@@ -20,7 +20,9 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-@Command(aliases = {"modify"}, desc = "Modify and edit Zone settings", perm = "duel.admin.modify", usage = "/noxarena modify", isSub = true, parent = "noxarena", useTab = true, min = 1)
+@Command(aliases = {"modify"}, desc = "Modify and edit Zone settings", perm = "duel.admin.modify", usage = "/noxarena modify", isSub = true, parent =
+                                                                                                                                                     "noxarena",
+                useTab = true, min = 1)
 public class ZoneModify extends DuelCmd {
 
     private List<String> OPTIONS = ImmutableList.of("openmenu", "zone", "set");
@@ -46,16 +48,21 @@ public class ZoneModify extends DuelCmd {
     @Override
     public List<String> tabComp(int i, String[] args) {
 
-        if (i == 2)
+        if (i == 2) {
             return OPTIONS;
-        if (i == 3)
+        }
+        if (i == 3) {
             return plugin.getZoneManager().getCollectionNames();
-        if (i == 4)
+        }
+        if (i == 4) {
             return plugin.getZoneManager().getZoneNames(args[2]);
-        if (i == 5)
+        }
+        if (i == 5) {
             return OPTIONS5;
-        if (i == 6)
+        }
+        if (i == 6) {
             return OPTIONS6;
+        }
 
         return Collections.emptyList();
     }
@@ -75,7 +82,8 @@ public class ZoneModify extends DuelCmd {
                 sendMessage("Trying to open Zone Main Menu");
                 plugin.getMenuManager().createZoneEdit().openMenu((Player) sender);
                 return true;
-            } else if (args.length == 2) {
+            }
+            else if (args.length == 2) {
                 if (!plugin.getZoneManager().containsCollection(args[1])) {
                     sendErrorMessage("Error: invalid collection name " + args[1]);
                     return true;
@@ -83,7 +91,8 @@ public class ZoneModify extends DuelCmd {
                 sendMessage("Opening Zone Select Menu for " + args[1]);
                 plugin.getMenuManager().createSelectMenu(args[1]).openMenu((Player) sender);
                 return true;
-            } else if (args.length == 3) {
+            }
+            else if (args.length == 3) {
                 if (!plugin.getZoneManager().containsCollection(args[1])) {
                     sendErrorMessage("Error: invalid collection name " + args[1]);
                     return true;
@@ -156,12 +165,15 @@ public class ZoneModify extends DuelCmd {
 
                     Spawns1v1 spawns1v1 = Spawns1v1.fromName(args[4]);
                     Player player = (Player) sender;
-                    if (spawns1v1 == Spawns1v1.PLAYER_ONE || spawns1v1 == Spawns1v1.PLAYER_TWO)
+                    if (spawns1v1 == Spawns1v1.PLAYER_ONE || spawns1v1 == Spawns1v1.PLAYER_TWO) {
                         pvPZone.addSpawn(spawns1v1.getName(), new SpawnPoint(player.getLocation()));
-                    else if (spawns1v1 == Spawns1v1.SPECTATOR)
+                    }
+                    else if (spawns1v1 == Spawns1v1.SPECTATOR) {
                         pvPZone.setSpecSpawn(new SpawnPoint(player.getLocation()));
-                    else if (spawns1v1 == Spawns1v1.END)
+                    }
+                    else if (spawns1v1 == Spawns1v1.END) {
                         pvPZone.setEndSpawn(new SpawnPoint(player.getLocation()));
+                    }
                     else {
                         sendErrorMessage("Error unknown spawn type");
                         return true;
@@ -170,7 +182,8 @@ public class ZoneModify extends DuelCmd {
                     plugin.getZoneManager().saveZone(pvPZone);
 
                     sendMessage("Spawn successfully created for "
-                            + args[4] + " for collection " + args[1] + " zone " + args[2]);
+                                        + args[4] + " for collection " + args[1] + " zone " + args[2]
+                    );
                     return true;
                 }
 

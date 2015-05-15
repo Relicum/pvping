@@ -71,7 +71,8 @@ public enum ClickAction {
      */
     public static boolean isType(ActionHandler paramHandler, ClickAction paramACTION) {
 
-        return paramACTION.getActionClass().isInstance(paramHandler);
+        return paramACTION.getActionClass()
+                       .isInstance(paramHandler);
     }
 
     /**
@@ -85,8 +86,11 @@ public enum ClickAction {
     public static ClickAction getType(ActionHandler paramHandler) {
 
         for (Map.Entry<Class, ClickAction> entry : actions.entrySet()) {
-            if (entry.getValue().getActionClass().isInstance(paramHandler))
+            if (entry.getValue()
+                        .getActionClass()
+                        .isInstance(paramHandler)) {
                 return entry.getValue();
+            }
         }
 
         return null;

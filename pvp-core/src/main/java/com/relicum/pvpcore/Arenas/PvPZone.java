@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.relicum.pvpcore.Enums.Symbols.CROSS;
+import static com.relicum.pvpcore.Enums.Symbols.TICK;
+
 /**
  * PvPZone represents a simple 1v1 PVP battle between 2 players.
  *
@@ -97,6 +100,15 @@ public class PvPZone implements IZone {
      * {@inheritDoc}
      */
     @Override
+    public void setState(ArenaState state) {
+
+        this.state = state;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SpawnPoint getSpawn(String key) {
 
         Validate.notNull(key);
@@ -167,15 +179,6 @@ public class PvPZone implements IZone {
         Validate.notNull(key);
 
         return spawns.remove(key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setState(ArenaState state) {
-
-        this.state = state;
     }
 
     /**
@@ -311,41 +314,65 @@ public class PvPZone implements IZone {
         t.add("&6PVPZone ID:&b " + id);
         t.add("&6Zone Type:&b " + arenaType.getType());
         t.add("&6Zone State: &b " + state.name());
-        if (isEditing())
+
+        if (isEditing()) {
+
             t.add("&6Edit Mode: &4 ON");
-        else
+        }
+
+        else {
             t.add("&6Edit Mode: &aOFF");
+        }
+
         t.add(" ");
         t.add("&aMin Players &c" + minPlayers);
         t.add("&aMax Players &c" + maxPlayers);
         t.add(" ");
         t.add("&6SpawnPoints Set");
         t.add(" ");
+
         for (Spawns1v1 sp : Spawns1v1.values()) {
 
             if (sp.equals(Spawns1v1.END)) {
+
                 if (this.endSpawnSet()) {
-                    t.add("&6End Spawn: &a&l " + TICK);
-                } else
-                    t.add("&6End Spawn: &4&l " + CROSS);
-            } else if (sp.equals(Spawns1v1.SPECTATOR)) {
+
+                    t.add("&6End Spawn: &a&l " + TICK.asString());
+                }
+                else {
+
+                    t.add("&6End Spawn: &4&l " + CROSS.asString());
+                }
+            }
+
+            else if (sp.equals(Spawns1v1.SPECTATOR)) {
+
                 if (this.spectatorSet()) {
-                    t.add("&6Spectator Spawn: &a&l " + TICK);
-                } else
-                    t.add("&6Spectator Spawn: &4&l " + CROSS);
-            } else {
+
+                    t.add("&6Spectator Spawn: &a&l " + TICK.asString());
+                }
+                else {
+
+                    t.add("&6Spectator Spawn: &4&l " + CROSS.asString());
+                }
+            }
+
+            else {
+
                 if (containsSpawn(sp.getName())) {
 
-                    t.add("&6" + sp.getTitle() + ": &a&l " + TICK);
-                } else {
-                    t.add("&6" + sp.getTitle() + ": &4&l " + CROSS);
+                    t.add("&6" + sp.getTitle() + ": &a&l " + TICK.asString());
+                }
+                else {
+
+                    t.add("&6" + sp.getTitle() + ": &4&l " + CROSS.asString());
                 }
             }
         }
+
         return t;
 
     }
 
-    private final transient String TICK = "✔";
-    private final transient String CROSS = "✘";
+
 }

@@ -53,14 +53,14 @@ public class ActionMenu implements InventoryHolder {
         this.parentMenu = parentMenu;
     }
 
-    public void setMenuCloseBehaviour(MenuCloseBehaviour menuCloseBehaviour) {
-
-        this.menuCloseBehaviour = menuCloseBehaviour;
-    }
-
     public MenuCloseBehaviour getMenuCloseBehaviour() {
 
         return this.menuCloseBehaviour;
+    }
+
+    public void setMenuCloseBehaviour(MenuCloseBehaviour menuCloseBehaviour) {
+
+        this.menuCloseBehaviour = menuCloseBehaviour;
     }
 
     public void setBypassMenuCloseBehaviour(boolean bypassMenuCloseBehaviour) {
@@ -130,6 +130,7 @@ public class ActionMenu implements InventoryHolder {
     }
 
     public void onInventoryClick(InventoryClickEvent event) {
+
         Player player = (Player) event.getWhoClicked();
 
         if (event.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && exitOnClickOutside()) {
@@ -205,14 +206,14 @@ public class ActionMenu implements InventoryHolder {
             if (index < getSize()) {
                 event.setCancelled(true);
                 return;
-            } else {
+            }
+            else {
                 event.setCancelled(true);
                 closeMenu(player);
                 return;
             }
-
-
-        } else {
+        }
+        else {
 
             item = items.get(index);
         }
@@ -318,9 +319,11 @@ public class ActionMenu implements InventoryHolder {
 
     public void updateMenu() {
 
-        getInventory().getViewers().stream().filter(entity -> (entity instanceof Player)).forEach(entity -> {
-            Player player = (Player) entity;
-            player.updateInventory();
-        });
+        getInventory()
+                .getViewers()
+                .stream()
+                .filter(entity -> (entity instanceof Player))
+                .map(entity -> (Player) entity)
+                .forEach(Player::updateInventory);
     }
 }

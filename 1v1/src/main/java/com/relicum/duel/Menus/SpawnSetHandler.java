@@ -49,30 +49,35 @@ public class SpawnSetHandler implements ActionHandler {
                         closeAndReOpen(player, am);
                         player.teleport(zone.getEndSpawn().toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-                    } else {
+                    }
+                    else {
 
                         player.sendMessage(ChatColor.RED + "Unable to teleport, " + sp.getTitle() + " not set");
 
                     }
-                } else if (sp == Spawns1v1.SPECTATOR) {
+                }
+                else if (sp == Spawns1v1.SPECTATOR) {
                     if (zone.spectatorSet()) {
 
                         closeAndReOpen(player, am);
                         player.teleport(zone.getSpecSpawn().toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-                    } else {
+                    }
+                    else {
 
                         player.sendMessage(ChatColor.RED + "Unable to teleport, " + sp.getTitle() + " not set");
 
                     }
-                } else {
+                }
+                else {
 
                     if (zone.containsSpawn(sp.getName())) {
 
                         closeAndReOpen(player, am);
                         player.teleport(zone.getSpawn(sp.getName()).toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-                    } else {
+                    }
+                    else {
 
                         player.sendMessage(ChatColor.RED + "Unable to teleport, " + sp.getTitle() + " not set");
 
@@ -90,11 +95,14 @@ public class SpawnSetHandler implements ActionHandler {
             if (sp == (Spawns1v1.PLAYER_ONE)) {
 
                 am.getZone().addSpawn(Spawns1v1.PLAYER_ONE.getName(), new SpawnPoint(player.getLocation()));
-            } else if (sp == Spawns1v1.PLAYER_TWO) {
+            }
+            else if (sp == Spawns1v1.PLAYER_TWO) {
                 am.getZone().addSpawn(Spawns1v1.PLAYER_TWO.getName(), new SpawnPoint(player.getLocation()));
-            } else if (sp == Spawns1v1.SPECTATOR) {
+            }
+            else if (sp == Spawns1v1.SPECTATOR) {
                 zone.setSpecSpawn(new SpawnPoint(player.getLocation()));
-            } else if (sp == Spawns1v1.END) {
+            }
+            else if (sp == Spawns1v1.END) {
                 zone.setEndSpawn(new SpawnPoint(player.getLocation()));
             }
         }
@@ -110,7 +118,8 @@ public class SpawnSetHandler implements ActionHandler {
             item.setState(true);
 
             player.sendMessage("You have successfully set " + item.getText());
-        } else {
+        }
+        else {
             player.sendMessage("You have successfully updated " + item.getText());
         }
 

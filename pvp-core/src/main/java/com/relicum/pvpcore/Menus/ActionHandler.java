@@ -14,10 +14,12 @@ public interface ActionHandler {
     ActionHandler getExecutor();
 
     default ActionResponse perform(Player player, AbstractItem icon) {
+
         return new ActionResponse(icon);
     }
 
     default ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+
         return new ActionResponse(icon);
     }
 }

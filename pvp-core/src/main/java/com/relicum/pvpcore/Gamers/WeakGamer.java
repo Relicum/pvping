@@ -47,7 +47,8 @@ public abstract class WeakGamer<T extends JavaPlugin> {
     protected void setPlayer(Player paramPlayer) {
 
         this.uuid = paramPlayer.getUniqueId();
-        this.stringUUID = paramPlayer.getUniqueId().toString();
+        this.stringUUID = paramPlayer.getUniqueId()
+                                  .toString();
         this.player = new WeakReference<>(paramPlayer);
     }
 
@@ -62,10 +63,12 @@ public abstract class WeakGamer<T extends JavaPlugin> {
      */
     public Player getPlayer() {
 
-        if (player.get() == null)
+        if (player.get() == null) {
             return lookupPlayer();
-        else
+        }
+        else {
             return player.get();
+        }
 
     }
 
@@ -77,18 +80,22 @@ public abstract class WeakGamer<T extends JavaPlugin> {
      */
     protected Player lookupPlayer() {
 
-        if (uuid == null)
+        if (uuid == null) {
             return null;
+        }
 
         Player pl = null;
 
         try {
-            pl = getPlugin().getServer().getPlayer(uuid);
-        } catch (Exception ignored) {
+            pl = getPlugin().getServer()
+                         .getPlayer(uuid);
+        }
+        catch (Exception ignored) {
         }
 
-        if (pl == null)
+        if (pl == null) {
             return null;
+        }
 
         else {
             setPlayer(pl);
@@ -135,6 +142,7 @@ public abstract class WeakGamer<T extends JavaPlugin> {
      * @return the players uuid as a string.
      */
     public String getStringUUID() {
+
         return stringUUID;
     }
 }

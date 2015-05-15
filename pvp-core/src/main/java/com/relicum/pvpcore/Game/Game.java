@@ -51,8 +51,9 @@ public class Game<T extends JavaPlugin> {
 
     public void addPlayer(WeakGamer weakGamer) {
 
-        if (players.containsKey(weakGamer.getUuid()))
+        if (players.containsKey(weakGamer.getUuid())) {
             throw new IllegalArgumentException("The player is already in this game");
+        }
 
         players.put(weakGamer.getUuid(), weakGamer);
 

@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.12-SNAPSHOT</version>
+        <version>1.0.13-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pvp-core</artifactId>
@@ -114,12 +114,6 @@
         <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>Locations</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.relicum</groupId>
-            <artifactId>spigot-config</artifactId>
             <version>1.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

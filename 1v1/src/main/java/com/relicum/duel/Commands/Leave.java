@@ -60,7 +60,8 @@ public class Leave extends DuelCmd {
             sendErrorMessage("Error: removing you from 1v1");
             return true;
 
-        } else {
+        }
+        else {
 
             sendMessage("You have left the Noxious 1V1's");
 

@@ -1,5 +1,6 @@
 package com.relicum.duel.Handlers;
 
+import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
@@ -27,6 +28,7 @@ public class GameHandler implements Listener {
     private Queue<String> playerQueue = new LinkedList<>();
     private Map<String, PvpPlayer> players = new HashMap<>();
     private Duel plugin;
+    private DuelMsg msg;
     private final SpawnPoint worldSpawn;
 
     public GameHandler(Duel plugin) {
@@ -48,31 +50,40 @@ public class GameHandler implements Listener {
 
     }
 
+    public DuelMsg getMsg() {
+
+        return msg;
+    }
+
     /**
      * Creates a {@link PvpPlayer} for the player and adds them to the central
      * store as well as the Queue if needed.
      *
      * @param player the player
      */
-    public boolean add(Player player) {
+    public boolean add(Player player, SpawnPoint point) {
 
-        if (isKnown(player.getUniqueId().toString()))
+        if (isKnown(player.getUniqueId().toString())) {
             return false;
+        }
 
-        PvpPlayer pvp = new PvpPlayer(player, getPlugin());
+
+        PvpPlayer pvp = new PvpPlayer(player, getPlugin(), point);
 
         players.put(uuidToString(player.getUniqueId()), pvp);
 
         if (isFull()) {
             pvp.sendMessage("You are in luck we have found a match get ready");
 
-        } else {
+        }
+        else {
             if (addToQueue(pvp)) {
                 pvp.sendMessage("You have been added to the queue");
                 pvp.sendActionMessage("&6&lYou have been added to the queue");
             }
-            else
+            else {
                 pvp.sendMessage("You are already in the queue");
+            }
         }
 
         return true;
@@ -97,6 +108,7 @@ public class GameHandler implements Listener {
         return null;
 
     }
+
 
     /**
      * Remove and destroy the {@link Player} {@link PvpPlayer} object.
@@ -130,7 +142,8 @@ public class GameHandler implements Listener {
                 pvpPlayer.clearRef();
                 System.out.println("Player: " + player.getName() + " with UUID: " + player.getUniqueId().toString() + " has been removed from player store");
                 return true;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -185,8 +198,10 @@ public class GameHandler implements Listener {
 
 
     public boolean addToQueue(PvpPlayer pvpPlayer) {
-        if (isQueuing(pvpPlayer.getUuid().toString()))
+
+        if (isQueuing(pvpPlayer.getUuid().toString())) {
             return false;
+        }
         else {
             playerQueue.add(pvpPlayer.getUuid().toString());
             pvpPlayer.setQueueing(true);
@@ -250,27 +265,32 @@ public class GameHandler implements Listener {
     }
 
     public Location getWorldSpawn() {
+
         return worldSpawn.toLocation();
     }
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
+
         if (event.getEntityType().equals(EntityType.PLAYER)) {
             if (players.containsKey(event.getEntity().getUniqueId().toString())) {
 
-                if (players.get(event.getEntity().getUniqueId().toString()).isGod())
+                if (players.get(event.getEntity().getUniqueId().toString()).isGod()) {
                     event.setCancelled(true);
+                }
             }
         }
     }
 
     @EventHandler
     public void onFoodDrop(FoodLevelChangeEvent event) {
+
         if (event.getEntityType().equals(EntityType.PLAYER)) {
             if (players.containsKey(event.getEntity().getUniqueId().toString())) {
 
-                if (players.get(event.getEntity().getUniqueId().toString()).isGod())
+                if (players.get(event.getEntity().getUniqueId().toString()).isGod()) {
                     event.setCancelled(true);
+                }
             }
         }
 
@@ -278,10 +298,12 @@ public class GameHandler implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+
         if (isKnown(event.getPlayer().getUniqueId().toString())) {
             try {
                 removeAndDestroy(event.getPlayer(), EndReason.LOGGED);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }

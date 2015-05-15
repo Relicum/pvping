@@ -46,6 +46,7 @@ public class ActionItem extends AbstractItem {
     public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
 
         super(paramItem, paramSlot, paramAction, actionHandler);
+
         this.setActionHandler(actionHandler);
 
     }

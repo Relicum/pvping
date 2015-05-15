@@ -5,13 +5,43 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.12-SNAPSHOT</version>
+        <version>1.0.13-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>1v1</artifactId>
     <name>1V1</name>
+    <description>1v1 Dueling Minecraft Plugin</description>
     <build>
+        <defaultGoal>clean install</defaultGoal>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                    <include>*.xml</include>
+                    <include>*.json</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <compilerArguments>
+                        <O>-Xlint:all</O>
+                        <O>-Xlint:-path</O>
+                    </compilerArguments>
+                    <encoding>UTF-8</encoding>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -52,10 +82,6 @@
                         <relocation>
                             <pattern>com.relicum.commands</pattern>
                             <shadedPattern>com.relicum.duel.Commands</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.relicum.configs.Gson</pattern>
-                            <shadedPattern>com.relicum.duel.Configs.Gson</shadedPattern>
                         </relocation>
                     </relocations>
                     <shadedClassifierName/>
@@ -103,21 +129,9 @@
     </profiles>
     <dependencies>
         <dependency>
-            <groupId>com.massivecraft</groupId>
-            <artifactId>MassiveCore</artifactId>
-            <version>2.7.5-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.relicum</groupId>
-            <artifactId>spigot-config</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>pvp-core</artifactId>
-            <version>1.0.12-SNAPSHOT</version>
+            <version>1.0.13-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -130,7 +144,7 @@
             <groupId>com.relicum</groupId>
             <artifactId>utilities</artifactId>
             <version>1.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.relicum</groupId>
@@ -139,4 +153,10 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <properties>
+        <package.dir>${project.build.directory}</package.dir>
+        <package.name>${project.build.finalName}</package.name>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

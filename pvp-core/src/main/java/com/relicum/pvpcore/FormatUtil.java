@@ -48,14 +48,18 @@ public class FormatUtil {
 
         StrBuilder sb = new StrBuilder();
 
-        String[] sl = point.toString().split(",");
+        String[] sl = point.toString()
+                              .split(",");
         String[] names = new String[]{"&aWorld: ", "&aX:     ", "&aY:     ", "&aZ:     ", "&aYaw:   ", "&aPitch: "};
         List<String> l = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
 
             l.add(names[i] + "&b" + sl[i]);
             l.add(" ");
-            sb.append(names[i]).append("&b").append(sl[i]).appendNewLine();
+            sb.append(names[i])
+                    .append("&b")
+                    .append(sl[i])
+                    .appendNewLine();
         }
 
         return l;
@@ -65,7 +69,8 @@ public class FormatUtil {
 
         StringBuilder sb = new StringBuilder();
         for (Object obj : objects) {
-            sb.append(obj).append(implode);
+            sb.append(obj)
+                    .append(implode);
         }
         if (objects.length > 0) {
             sb.setLength(sb.length() - implode.length());
@@ -77,7 +82,8 @@ public class FormatUtil {
 
         StringBuilder sb = new StringBuilder();
         for (String str : objects) {
-            sb.append(str).append(implode);
+            sb.append(str)
+                    .append(implode);
         }
         if (objects.length > 0) {
             sb.setLength(sb.length() - implode.length());
@@ -96,7 +102,8 @@ public class FormatUtil {
             }
             if (format != null) {
                 ret.append(String.format(format, new Object[]{str}));
-            } else {
+            }
+            else {
                 ret.append(str);
             }
         }
@@ -118,7 +125,8 @@ public class FormatUtil {
         return implode(coll, glue, null);
     }
 
-    public static String implodeCommaAndDot(Collection<?> objects, String format, String comma, String and, String dot) {
+    public static String implodeCommaAndDot(Collection<?> objects, String format, String comma,
+                                                   String and, String dot) {
 
         if (objects.isEmpty()) {
             return "";
@@ -127,8 +135,10 @@ public class FormatUtil {
             return implode(objects, comma, format);
         }
         List ourObjects = new ArrayList<>(objects);
-        String lastItem = ourObjects.get(ourObjects.size() - 1).toString();
-        String nextToLastItem = ourObjects.get(ourObjects.size() - 2).toString();
+        String lastItem = ourObjects.get(ourObjects.size() - 1)
+                                  .toString();
+        String nextToLastItem = ourObjects.get(ourObjects.size() - 2)
+                                        .toString();
         if (format != null) {
             lastItem = String.format(format, lastItem);
             nextToLastItem = String.format(format, nextToLastItem);
@@ -139,7 +149,8 @@ public class FormatUtil {
         return String.valueOf(implode(ourObjects, comma, format)) + dot;
     }
 
-    public static String implodeCommaAndDot(Collection<?> objects, String comma, String and, String dot) {
+    public static String implodeCommaAndDot(Collection<?> objects, String comma, String and,
+                                                   String dot) {
 
         return implodeCommaAndDot(objects, null, comma, and, dot);
     }
@@ -151,12 +162,14 @@ public class FormatUtil {
 
     public static String implodeCommaAndDot(Collection<?> objects, String color) {
 
-        return implodeCommaAndDot(objects, String.valueOf(color) + ", ", String.valueOf(color) + " and ", String.valueOf(color) + ".");
+        return implodeCommaAndDot(objects, String.valueOf(color) + ", ", String.valueOf(color) +
+                                                                                 " and ", String.valueOf(color) + ".");
     }
 
     public static String implodeCommaAnd(Collection<?> objects, String color) {
 
-        return implodeCommaAndDot(objects, String.valueOf(color) + ", ", String.valueOf(color) + " and ", "");
+        return implodeCommaAndDot(objects, String.valueOf(color) + ", ", String.valueOf(color) +
+                                                                                 " and ", "");
     }
 
     public static String implodeCommaAndDot(Collection<?> objects) {
@@ -194,7 +207,10 @@ public class FormatUtil {
     public static String getArticle(String string) {
 
         string = string.toLowerCase();
-        if ((string.startsWith("a")) || (string.startsWith("e")) || (string.startsWith("i")) || (string.startsWith("o")) || (string.startsWith("u"))) {
+        if ((string.startsWith("a")) || (string.startsWith("e")) || (string.startsWith("i")) ||
+                    (string.startsWith
+                                    ("o")
+                    ) || (string.startsWith("u"))) {
             return "an";
         }
         return "a";

@@ -21,7 +21,9 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
 
         this.plugin = plugin;
         INSTANCE = this;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getServer()
+                .getPluginManager()
+                .registerEvents(this, plugin);
     }
 
     public static MenuAPI get() {
@@ -46,11 +48,15 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
 
     public void removeMenu(ActionMenu menu) {
 
-        for (HumanEntity viewer : menu.getInventory().getViewers())
+        for (HumanEntity viewer : menu.getInventory()
+                                          .getViewers()) {
             if ((viewer instanceof Player)) {
                 menu.closeMenu((Player) viewer);
-            } else
+            }
+            else {
                 viewer.closeInventory();
+            }
+        }
     }
 
 
@@ -61,11 +67,14 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
         Inventory inventory = event.getInventory();
         if (inventory.getHolder() instanceof ActionMenu) {
 
-            if (event.getAction().name().startsWith("DROP")) {
+            if (event.getAction()
+                        .name()
+                        .startsWith("DROP")) {
                 return;
             }
 
-            ((ActionMenu) event.getInventory().getHolder()).onInventoryClick(event);
+            ((ActionMenu) event.getInventory()
+                                  .getHolder()).onInventoryClick(event);
 
         }
     }
@@ -78,8 +87,10 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
             if ((inventory.getHolder() instanceof ActionMenu)) {
                 ActionMenu menu = (ActionMenu) inventory.getHolder();
                 MenuCloseBehaviour menuCloseBehaviour = menu.getMenuCloseBehaviour();
-                if (menuCloseBehaviour != null)
-                    menuCloseBehaviour.onClose((Player) event.getPlayer(), menu, menu.bypassMenuCloseBehaviour());
+                if (menuCloseBehaviour != null) {
+                    menuCloseBehaviour
+                            .onClose((Player) event.getPlayer(), menu, menu.bypassMenuCloseBehaviour());
+                }
             }
         }
     }
@@ -87,13 +98,21 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLogoutCloseMenu(PlayerQuitEvent event) {
 
-        if ((event.getPlayer().getOpenInventory() == null) || (!(event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof ActionMenu))) {
+        if ((event.getPlayer()
+                     .getOpenInventory() == null) || (!(event.getPlayer()
+                                                                .getOpenInventory()
+                                                                .getTopInventory()
+                                                                .getHolder() instanceof ActionMenu))) {
             return;
         }
-        ActionMenu menu = (ActionMenu) event.getPlayer().getOpenInventory().getTopInventory().getHolder();
+        ActionMenu menu = (ActionMenu) event.getPlayer()
+                                               .getOpenInventory()
+                                               .getTopInventory()
+                                               .getHolder();
         menu.setBypassMenuCloseBehaviour(true);
         menu.setMenuCloseBehaviour(null);
-        event.getPlayer().closeInventory();
+        event.getPlayer()
+                .closeInventory();
     }
 
     public static void switchMenu(Player player, ActionMenu fromMenu, ActionMenu toMenu) {
@@ -109,13 +128,15 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
                 c++;
                 if (c == 1) {
                     toMenu.openMenu(player);
-                } else if (c == 2) {
+                }
+                else if (c == 2) {
                     player.updateInventory();
                     player.sendMessage("finished switch menu task");
                     cancel();
                 }
             }
-        }.runTaskTimer(MenuAPI.get().getPlugin(), 1, 1);
+        }.runTaskTimer(MenuAPI.get()
+                               .getPlugin(), 1, 1);
 
     }
 

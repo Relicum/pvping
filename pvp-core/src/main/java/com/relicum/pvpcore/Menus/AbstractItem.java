@@ -30,6 +30,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     protected ClickAction action;
 
     public AbstractItem(ItemStack item) {
+
         this.item = item;
     }
 
@@ -45,10 +46,12 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         slot = paramSlot;
 
         ItemMeta meta = item.getItemMeta();
-        if (meta.hasDisplayName())
+        if (meta.hasDisplayName()) {
             setText(paramItem.getItemMeta().getDisplayName());
-        if (meta.hasLore())
+        }
+        if (meta.hasLore()) {
             setDescription(paramItem.getItemMeta().getLore());
+        }
 
     }
 
@@ -60,17 +63,20 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * @param paramAction the action to perform when the icon is clicked
      *                    {@link ClickAction}
      */
-    public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
+    public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction,
+                               ActionHandler actionHandler) {
 
         item = paramItem;
         slot = paramSlot;
         action = paramAction;
         this.actionHandler = actionHandler;
         ItemMeta meta = item.getItemMeta();
-        if (meta.hasDisplayName())
+        if (meta.hasDisplayName()) {
             setText(paramItem.getItemMeta().getDisplayName());
-        if (meta.hasLore())
+        }
+        if (meta.hasLore()) {
             setDescription(paramItem.getItemMeta().getLore());
+        }
     }
 
     /**
@@ -89,8 +95,9 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         action = paramAction;
         displayName = paramDisplayName;
         ItemMeta meta = item.getItemMeta();
-        if (meta.hasLore())
+        if (meta.hasLore()) {
             setDescription(paramItem.getItemMeta().getLore());
+        }
     }
 
     /**
@@ -117,6 +124,11 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         return actionHandler;
     }
 
+    public void setActionHandler(ActionHandler paramActionHandler) {
+
+        actionHandler = paramActionHandler;
+    }
+
     public ActionMenu getMenu() {
 
         return menu;
@@ -127,11 +139,6 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         this.menu = menu;
     }
 
-    public void setActionHandler(ActionHandler paramActionHandler) {
-
-        actionHandler = paramActionHandler;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -139,6 +146,15 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     public boolean hasAction() {
 
         return !action.equals(ClickAction.NO_ACTION);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ClickAction getAction() {
+
+        return action;
     }
 
     /**
@@ -155,18 +171,18 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public ClickAction getAction() {
+    public Class getActionHandlerClass() {
 
-        return action;
+        return action.getActionClass();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Class getActionHandlerClass() {
+    public String getText() {
 
-        return action.getActionClass();
+        return displayName;
     }
 
     /**
@@ -183,9 +199,9 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public String getText() {
+    public List<String> getDescription() {
 
-        return displayName;
+        return lores;
     }
 
     /**
@@ -202,9 +218,9 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public List<String> getDescription() {
+    public ItemStack getIcon() {
 
-        return lores;
+        return item;
     }
 
     /**
@@ -221,9 +237,9 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public ItemStack getIcon() {
+    public int getIndex() {
 
-        return item;
+        return slot;
     }
 
     /**
@@ -241,18 +257,18 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public int getIndex() {
+    public boolean hasPermission(Player player) {
 
-        return slot;
+        return player.hasPermission(getPermission());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean hasPermission(Player player) {
+    public String getPermission() {
 
-        return player.hasPermission(getPermission());
+        return permission;
     }
 
     /**
@@ -263,15 +279,6 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
 
         Validate.notNull(name);
         this.permission = name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPermission() {
-
-        return permission;
     }
 
     /**

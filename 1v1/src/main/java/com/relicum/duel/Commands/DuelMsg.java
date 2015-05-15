@@ -40,6 +40,7 @@ public final class DuelMsg implements Msg {
 
     @Override
     public String getLogPrefix() {
+
         return "[\u001b[1m\u001b[32mDuel\u001B[0m] \u001b[0m";
     }
 

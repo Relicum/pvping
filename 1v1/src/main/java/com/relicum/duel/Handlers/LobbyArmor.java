@@ -21,8 +21,10 @@ public class LobbyArmor {
     private EnumMap<RankArmor, ItemStack[]> armor = new EnumMap<>(RankArmor.class);
 
     public LobbyArmor(boolean init) {
-        if (init)
+
+        if (init) {
             initArmor();
+        }
     }
 
     public LobbyArmor() {

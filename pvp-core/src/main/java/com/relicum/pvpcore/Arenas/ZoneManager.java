@@ -36,7 +36,8 @@ public class ZoneManager<T extends JavaPlugin> {
 
         try {
             FileUtils.createDirectory(BASE_DIR);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -53,7 +54,8 @@ public class ZoneManager<T extends JavaPlugin> {
 
         for (String name : zoneNames) {
             zonesMap.putIfAbsent(name, new ZoneCollection(name));
-            plugin.getLogger().info("New ZoneCollection Initialized for " + name);
+            plugin.getLogger()
+                    .info("New ZoneCollection Initialized for " + name);
             List<Path> paths;
             try {
                 paths = FileUtils.getAllFilesInDirectory(BASE_DIR + name + File.separator, "json");
@@ -69,7 +71,8 @@ public class ZoneManager<T extends JavaPlugin> {
 
                 }
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -89,8 +92,9 @@ public class ZoneManager<T extends JavaPlugin> {
         }
 
         if (zoneNames.add(name)) {
-            if (!createDirectory(BASE_DIR + name + File.separator))
+            if (!createDirectory(BASE_DIR + name + File.separator)) {
                 return false;
+            }
 
             zonesMap.put(name, new ZoneCollection(name));
             plugin.getLogger().info("New ZoneCollection " + name + " successfully registered");
@@ -106,11 +110,13 @@ public class ZoneManager<T extends JavaPlugin> {
 
     public boolean registerZone(String coll, PvPZone zone) throws InvalidZoneException {
 
-        if (!zoneNames.contains(coll))
+        if (!zoneNames.contains(coll)) {
             throw new InvalidZoneException("Unable to locate ZoneCollection with the name: " + coll);
+        }
 
-        if (containsZone(coll, zone.getNameId()))
+        if (containsZone(coll, zone.getNameId())) {
             throw new InvalidZoneException("The zone " + coll + " already exists with uuid: " + zone.getNameId());
+        }
 
         zoneLoader.setPath(Paths.get(BASE_DIR + coll + File.separator + zone.getNameId() + ".json"));
         zoneLoader.save(zone);
@@ -171,8 +177,9 @@ public class ZoneManager<T extends JavaPlugin> {
      */
     public int getCollectionSize(String name) {
 
-        if (!containsCollection(name))
+        if (!containsCollection(name)) {
             return -1;
+        }
 
         return zonesMap.get(name).getTotalZones();
     }
@@ -216,14 +223,19 @@ public class ZoneManager<T extends JavaPlugin> {
      */
     public List<String> getZoneNames(String coll) {
 
-        return getAllInCollection(coll).getZones().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        return getAllInCollection(coll)
+                       .getZones()
+                       .stream()
+                       .map(Map.Entry::getKey)
+                       .collect(Collectors.toList());
     }
 
     public boolean createDirectory(String path) {
 
         try {
             return FileUtils.createDirectory(path);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return false;
         }

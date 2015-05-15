@@ -48,8 +48,9 @@ public class PlayerStats implements ConfigurationSerializable {
 
         this.wins += 1;
         this.streak += 1;
-        if (streak > highestStreak)
+        if (streak > highestStreak) {
             highestStreak = streak;
+        }
     }
 
     /**
@@ -58,8 +59,9 @@ public class PlayerStats implements ConfigurationSerializable {
     public void incrementLoss() {
 
         this.losses += 1;
-        if (streak > highestStreak)
+        if (streak > highestStreak) {
             highestStreak = streak;
+        }
 
         this.streak = 0;
     }
@@ -233,10 +235,13 @@ public class PlayerStats implements ConfigurationSerializable {
 
     public static PlayerStats deserialize(Map<String, Object> map) {
 
-        Object objUUID = map.get("uuid"), objPlay = map.get("played"), objWins = map.get("wins"), objLosses = map.get("losses"), objDraws = map.get("draws"), objKills = map
-                .get("kills"), objDeaths = map.get("deaths"), objStreak = map.get("streak"), objHight = map.get("highestStreak");
+        Object objUUID = map.get("uuid"), objPlay = map.get("played"), objWins = map.get("wins"),
+                objLosses = map.get("losses"), objDraws = map.get("draws"), objKills = map
+                                                                                               .get("kills"), objDeaths = map.get("deaths"), objStreak = map.get("streak"), objHight = map.get("highestStreak");
 
-        return new PlayerStats((String) objUUID, (Integer) objWins, (Integer) objLosses, (Integer) objDraws, (Integer) objKills, (Integer) objDeaths,
-                (Integer) objStreak, (Integer) objHight, (Integer) objPlay);
+        return new PlayerStats((String) objUUID, (Integer) objWins, (Integer) objLosses,
+                               (Integer) objDraws,
+                               (Integer) objKills, (Integer) objDeaths,
+                               (Integer) objStreak, (Integer) objHight, (Integer) objPlay);
     }
 }

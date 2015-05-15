@@ -7,7 +7,8 @@ package com.relicum.pvpcore.Menus;
  */
 public enum Spawns1v1 {
 
-    PLAYER_ONE("spawn1", "Spawn 1"), PLAYER_TWO("spawn2", "Spawn 2"), SPECTATOR("spectator", "Spectator Spawn"), END("end", "End Game Spawn");
+    PLAYER_ONE("spawn1", "Spawn 1"), PLAYER_TWO("spawn2", "Spawn 2"), SPECTATOR("spectator",
+                                                                                "Spectator Spawn"), END("end", "End Game Spawn");
 
     private final String theName;
     private final String title;

@@ -56,11 +56,13 @@ public class MenuManager {
         int c = 0;
         for (String cname : cnames) {
             ItemStack stack = new ItemBuilder(Material.PAPER, 1).setDisplayName("&6&l" + cname)
-                    .setItemLores(Arrays.asList(" ",
-                            "&aRight click to open this",
-                            "&aZoneCollection to view and edit " + "zones",
-                            " " + "",
-                            "&aNumber of Zones: &6" + plugin.getZoneManager().getCollectionSize(cname))).build();
+                                      .setItemLores(Arrays.asList(" ",
+                                                                  "&aRight click to open this",
+                                                                  "&aZoneCollection to view and edit " + "zones",
+                                                                  " " + "",
+                                                                  "&aNumber of Zones: &6" + plugin.getZoneManager().getCollectionSize(cname)
+                                                    )
+                                      ).build();
 
             // ItemStack stack = new ItemStack(Material.PAPER, 1);
             // ItemMeta meta = stack.getItemMeta();
@@ -130,7 +132,8 @@ public class MenuManager {
         if (zoneEditMenu == null) {
             zoneEditMenu = new ZoneEditMenu(zone, 3);
             zoneEditMenu.setEditing(true);
-        } else {
+        }
+        else {
             zoneEditMenu.setZone(zone);
             zoneEditMenu.setEditing(true);
         }
@@ -139,6 +142,7 @@ public class MenuManager {
     }
 
     public ActionMenu getStateMenu(ArenaState current, String coll, String zone, ActionMenu parent) {
+
         ActionMenu sta = new ActionMenu(FormatUtil.colorize("&6&l" + zone + " state menu"), Slot.ONE.ordinal(), parent);
 
         for (ArenaState state : ArenaState.values()) {
@@ -152,16 +156,21 @@ public class MenuManager {
 
     public int fit(int slots) {
 
-        if (slots < 10)
+        if (slots < 10) {
             return 9;
-        if (slots < 19)
+        }
+        if (slots < 19) {
             return 18;
-        if (slots < 28)
+        }
+        if (slots < 28) {
             return 27;
-        if (slots < 37)
+        }
+        if (slots < 37) {
             return 36;
-        if (slots < 46)
+        }
+        if (slots < 46) {
             return 45;
+        }
 
         return 54;
 

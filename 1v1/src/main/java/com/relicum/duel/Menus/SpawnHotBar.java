@@ -91,47 +91,58 @@ public class SpawnHotBar implements InventoryRow, Listener {
 
     public void setSpawn1() {
 
-        if (zone.containsSpawn(Spawns1v1.PLAYER_ONE.getName()))
+        if (zone.containsSpawn(Spawns1v1.PLAYER_ONE.getName())) {
             addItem(Slot.ZERO, getSetItem(Spawns1v1.PLAYER_ONE));
-        else
+        }
+        else {
             addItem(Slot.ZERO, getUnSetItem(Spawns1v1.PLAYER_ONE));
+        }
     }
 
     public void setSpawn2() {
 
-        if (zone.containsSpawn(Spawns1v1.PLAYER_TWO.getName()))
+        if (zone.containsSpawn(Spawns1v1.PLAYER_TWO.getName())) {
             addItem(Slot.ONE, getSetItem(Spawns1v1.PLAYER_TWO));
-        else
+        }
+        else {
             addItem(Slot.ONE, getUnSetItem(Spawns1v1.PLAYER_TWO));
+        }
     }
 
     public void setSpectator() {
 
-        if (zone.spectatorSet())
+        if (zone.spectatorSet()) {
             addItem(Slot.TWO, getSetItem(Spawns1v1.SPECTATOR));
-        else
+        }
+        else {
             addItem(Slot.TWO, getUnSetItem(Spawns1v1.SPECTATOR));
+        }
     }
 
     public void setEnd() {
 
-        if (zone.endSpawnSet())
+        if (zone.endSpawnSet()) {
             addItem(Slot.THREE, getSetItem(Spawns1v1.END));
-        else
+        }
+        else {
             addItem(Slot.THREE, getUnSetItem(Spawns1v1.END));
+        }
     }
 
     public void setSaveItem() {
 
         addItem(Slot.SEVEN,
-                new ItemBuilder(Material.REDSTONE_BLOCK).setDisplayName("&5&lSave Spawns Settings").setItemLores(Arrays.asList(" ", "&aRight Click to Save"))
-                        .build());
+                new ItemBuilder(Material.REDSTONE_BLOCK).setDisplayName("&5&lSave Spawns Settings").setItemLores(Arrays.asList(" ", "&aRight Click to " +
+                                                                                                                                            "Save"))
+                        .build()
+        );
     }
 
     public void setCloseItem() {
 
         addItem(Slot.EIGHT, new ItemBuilder(Material.GLASS).setDisplayName("&5&lClose Spawn Bar").setItemLores(Arrays.asList(" ", "&aRight Click to Close"))
-                .build());
+                                    .build()
+        );
     }
 
     public void save() {
@@ -156,28 +167,40 @@ public class SpawnHotBar implements InventoryRow, Listener {
         SpawnPoint p;
         if (spawn.equals(Spawns1v1.END)) {
             p = zone.getEndSpawn();
-        } else if (spawn.equals(Spawns1v1.SPECTATOR))
+        }
+        else if (spawn.equals(Spawns1v1.SPECTATOR)) {
             p = zone.getSpecSpawn();
-        else
+        }
+        else {
             p = zone.getSpawn(spawn.getName());
+        }
         return new ItemBuilder(Material.INK_SACK)
-                .setDisplayName("&6&l" + spawn.getTitle())
-                .setDurability((short) 10)
-                .setItemLores(
-                        Arrays.asList(" ", "&aSpawn Set", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(), " ",
-                                "&eWorld: &c" + p.getWorld(), "&eX:    " + "  &c" + p.getX(), "&eY:      &c" + p.getY(), "&eZ:      &c" + p.getZ(),
-                                "&eYaw:   &c" + p.getYaw(), "&ePitch:  &c" + p.getPitch(), " ", "&bSneak and Right Click", "&bto teleport to this", "&blocation")).build();
+                       .setDisplayName("&6&l" + spawn.getTitle())
+                       .setDurability((short) 10)
+                       .setItemLores(
+                                            Arrays.asList(" ", "&aSpawn Set", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(), " ",
+                                                          "&eWorld: &c" + p.getWorld(), "&eX:    " + "  &c" + p.getX(), "&eY:      &c" + p.getY(), "&eZ:      &c" +
+                                                                                                                                                           p.getZ(),
+                                                          "&eYaw:   &c" + p.getYaw(), "&ePitch:  &c" + p.getPitch(), " ", "&bSneak and Right Click", "&bto teleport" +
+                                                                                                                                                             " to " +
+                                                                                                                                                             "this",
+                                                          "&blocation"
+                                            )
+                       ).build();
 
     }
 
     public ItemStack getUnSetItem(Spawns1v1 spawn) {
 
         return new ItemBuilder(Material.INK_SACK)
-                .setDisplayName("&4&l" + spawn.getTitle())
-                .setDurability((short) 8)
-                .setItemLores(
-                        Arrays.asList(" ", "&aSpawn Not Set ", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(), " ",
-                                "&bRight Click to set")).build();
+                       .setDisplayName("&4&l" + spawn.getTitle())
+                       .setDurability((short) 8)
+                       .setItemLores(
+                                            Arrays.asList(" ", "&aSpawn Not Set ", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(),
+                                                          " ",
+                                                          "&bRight Click to set"
+                                            )
+                       ).build();
     }
 
     /**
@@ -239,8 +262,9 @@ public class SpawnHotBar implements InventoryRow, Listener {
             return;
         }
 
-        if (event.getItem() == null)
+        if (event.getItem() == null) {
             return;
+        }
         if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
             if (event.getPlayer().getUniqueId().equals(player.getUniqueId())) {
                 event.setCancelled(true);
@@ -249,61 +273,71 @@ public class SpawnHotBar implements InventoryRow, Listener {
                 if (sl > -1 && sl < 9) {
                     if (sl == 8) {
                         closeIt();
-                    } else {
+                    }
+                    else {
 
                         if (sl == 0) {
                             if (shifting && event.getItem().getDurability() == (short) 10) {
 
                                 teleport(Spawns1v1.PLAYER_ONE);
 
-                            } else if (!shifting) {
+                            }
+                            else if (!shifting) {
                                 zone.addSpawn(Spawns1v1.PLAYER_ONE.getName(), new SpawnPoint(event.getPlayer().getLocation()));
                                 setSpawn1();
                                 event.getPlayer().getInventory().setItem(0, getItem(Slot.ZERO));
                                 event.getPlayer().updateInventory();
                                 event.getPlayer().sendMessage(ChatColor.GOLD + "Spawn set for Spawn1");
                             }
-                        } else if (sl == 1) {
+                        }
+                        else if (sl == 1) {
                             if (shifting && event.getItem().getDurability() == (short) 10) {
 
                                 teleport(Spawns1v1.PLAYER_TWO);
 
-                            } else if (!shifting) {
+                            }
+                            else if (!shifting) {
                                 zone.addSpawn(Spawns1v1.PLAYER_TWO.getName(), new SpawnPoint(event.getPlayer().getLocation()));
                                 setSpawn2();
                                 event.getPlayer().getInventory().setItem(1, getItem(Slot.ONE));
                                 event.getPlayer().updateInventory();
                                 event.getPlayer().sendMessage(ChatColor.GOLD + "Spawn set for Spawn2");
                             }
-                        } else if (sl == 2) {
+                        }
+                        else if (sl == 2) {
                             if (shifting && event.getItem().getDurability() == (short) 10) {
 
                                 teleport(Spawns1v1.SPECTATOR);
 
-                            } else if (!shifting) {
+                            }
+                            else if (!shifting) {
                                 zone.setSpecSpawn(new SpawnPoint(event.getPlayer().getLocation()));
                                 setSpectator();
                                 event.getPlayer().getInventory().setItem(2, getItem(Slot.TWO));
                                 event.getPlayer().updateInventory();
                                 event.getPlayer().sendMessage(ChatColor.GOLD + "Spawn set for Spectators");
                             }
-                        } else if (sl == 3) {
+                        }
+                        else if (sl == 3) {
                             if (shifting && event.getItem().getDurability() == (short) 10) {
 
                                 teleport(Spawns1v1.END);
 
-                            } else if (!shifting) {
+                            }
+                            else if (!shifting) {
                                 zone.setEndSpawn(new SpawnPoint(event.getPlayer().getLocation()));
                                 setEnd();
                                 event.getPlayer().getInventory().setItem(3, getItem(Slot.THREE));
                                 event.getPlayer().updateInventory();
                                 event.getPlayer().sendMessage(ChatColor.GOLD + "Spawn set for end game");
                             }
-                        } else if (sl == 7) {
+                        }
+                        else if (sl == 7) {
                             event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Saving Zone.....");
                             save();
                             closeIt();
-                        } else {
+                        }
+                        else {
                             event.getPlayer().sendMessage(ChatColor.GREEN + "Slot was in the hotbar " + sl);
                             event.getPlayer().sendMessage(ChatColor.GREEN + "You used a " + event.getItem().getType().name());
                         }
@@ -324,11 +358,13 @@ public class SpawnHotBar implements InventoryRow, Listener {
 
             player.teleport(zone.getEndSpawn().toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-        } else if (spawn == Spawns1v1.SPECTATOR) {
+        }
+        else if (spawn == Spawns1v1.SPECTATOR) {
 
             player.teleport(zone.getSpecSpawn().toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-        } else {
+        }
+        else {
 
             player.teleport(zone.getSpawn(spawn.getName()).toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
@@ -340,16 +376,18 @@ public class SpawnHotBar implements InventoryRow, Listener {
     public void noDrop(PlayerDropItemEvent event) {
 
         if (event.getPlayer().getUniqueId().equals(player.getUniqueId())) {
-            if (!isDropable())
+            if (!isDropable()) {
                 event.setCancelled(true);
+            }
         }
     }
 
     @EventHandler
     public void noPick(PlayerPickupItemEvent event) {
 
-        if (event.getPlayer().getUniqueId().equals(player.getUniqueId()))
+        if (event.getPlayer().getUniqueId().equals(player.getUniqueId())) {
             event.setCancelled(true);
+        }
     }
 
     public void closeIt() {

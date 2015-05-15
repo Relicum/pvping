@@ -80,13 +80,18 @@ public class ZoneCollection {
 
     public int getZonesInState(ArenaState state) {
 
-        return (int) zones.values().stream().filter(p -> p.getState().equals(state)).count();
+        return (int) zones.values()
+                             .stream()
+                             .filter(p -> p.getState()
+                                                  .equals(state))
+                             .count();
     }
 
     public PvPZone getNextAvailableZone() throws Exception {
 
         for (PvPZone zone : zones.values()) {
-            if (zone.getState().equals(ArenaState.WAITING)) {
+            if (zone.getState()
+                        .equals(ArenaState.WAITING)) {
                 zone.setState(ArenaState.WAITING);
                 return zone;
             }

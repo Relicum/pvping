@@ -19,27 +19,33 @@ public class LobbyPlayerConfigs {
     }
 
     private LobbyPlayerConfigs(boolean init) {
-        if (init)
+
+        if (init) {
             setDefaults();
+        }
     }
 
     public static LobbyPlayerConfigs create(boolean init) {
+
         return new LobbyPlayerConfigs(init);
     }
 
     public void setDefaults() {
+
         this.settings = PlayerGameSettingsBuilder.builder().build();
     }
 
     public PlayerGameSettings getSettings() {
+
         return settings;
     }
 
 
     @Override
     public String toString() {
+
         return Objects.toStringHelper(this)
-                .add("settings", settings)
-                .toString();
+                       .add("settings", settings)
+                       .toString();
     }
 }

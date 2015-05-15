@@ -47,7 +47,8 @@ public enum ArmorItems {
     public static boolean find(String item) {
 
         for (ArmorItems v : values()) {
-            if (v.name().equalsIgnoreCase(item)) {
+            if (v.name()
+                        .equalsIgnoreCase(item)) {
                 return true;
             }
         }

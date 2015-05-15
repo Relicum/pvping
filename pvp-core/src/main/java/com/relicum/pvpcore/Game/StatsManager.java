@@ -18,9 +18,9 @@ import java.util.Map;
  */
 public class StatsManager {
 
+    private final String DIR_PATH;
     private Plugin plugin;
     private Map<String, PlayerStats> playerStatsMap = new HashMap<>();
-    private final String DIR_PATH;
     private StatsLoader loader;
 
     public StatsManager(Plugin paramPlugin) {
@@ -29,9 +29,7 @@ public class StatsManager {
         this.DIR_PATH = plugin.getDataFolder().toString() + File.separator + "stats" + File.separator;
 
         if (checkDir()) {
-
             plugin.getLogger().info("Duel stats directory successfully located");
-
         }
 
         loader = new StatsLoader(DIR_PATH);
@@ -54,9 +52,10 @@ public class StatsManager {
             loader.save(ps);
             playerStatsMap.put(uuid, ps);
 
-        } else
-
+        }
+        else {
             playerStatsMap.put(uuid, loader.load());
+        }
 
     }
 
@@ -80,13 +79,12 @@ public class StatsManager {
      */
     public PlayerStats getAPlayersStats(String uuid) {
 
-        if (hasStatsLoaded(uuid))
-
+        if (hasStatsLoaded(uuid)) {
             return playerStatsMap.get(uuid);
-
-        else
-
+        }
+        else {
             return null;
+        }
 
     }
 
@@ -145,7 +143,8 @@ public class StatsManager {
                 Files.createFile(Paths.get(DIR_PATH + fileName + ".json"));
                 return false;
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
 
                 e.printStackTrace();
                 return false;
@@ -170,7 +169,8 @@ public class StatsManager {
                 Files.createDirectory(Paths.get(DIR_PATH));
                 return true;
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
 
                 e.printStackTrace();
                 return false;
@@ -195,7 +195,6 @@ public class StatsManager {
         for (PlayerStats playerStats : playerStatsMap.values()) {
 
             save(playerStats.getUuid());
-
         }
 
         playerStatsMap.clear();

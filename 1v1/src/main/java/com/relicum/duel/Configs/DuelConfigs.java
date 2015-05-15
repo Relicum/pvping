@@ -1,5 +1,6 @@
 package com.relicum.duel.Configs;
 
+import com.relicum.locations.SpawnPoint;
 import org.apache.commons.lang.Validate;
 
 import java.util.HashMap;
@@ -21,6 +22,8 @@ public class DuelConfigs {
     private boolean dedicated = false;
     private String lobbyWorld = "world";
     private String gameWorld = "world";
+    private boolean adminMode = true;
+    private boolean lobbyEnabled = false;
     private boolean wagerGames = false;
     private boolean rankedMatches = false;
     private boolean autoJoin = false;
@@ -29,16 +32,23 @@ public class DuelConfigs {
     private boolean blockGlobalChat = true;
     private boolean allowLobbyChat = true;
     private boolean restrictIngameChat = true;
+    private SpawnPoint lobbySpawn;
     private Map<String, Integer> coll = new HashMap<>();
 
     public DuelConfigs() {
 
     }
 
+    public DuelConfigs(SpawnPoint point) {
+        this.lobbySpawn = point;
+    }
+
 
     public Set<Map.Entry<String, Integer>> getCollectionEntry() {
+
         return coll.entrySet();
     }
+
 
     /**
      * Sets collection index.
@@ -47,6 +57,7 @@ public class DuelConfigs {
      * @param index the index
      */
     public void setCollectionIndex(String name, int index) {
+
         coll.put(name, index);
     }
 
@@ -57,6 +68,7 @@ public class DuelConfigs {
      * @return the next increment
      */
     public int getNextIncrement(String name) {
+
         int num = coll.get(name);
         num++;
         coll.put(name, num);
@@ -70,6 +82,7 @@ public class DuelConfigs {
      * @param name the name
      */
     public void removeCollection(String name) {
+
         coll.remove(name);
     }
 
@@ -79,6 +92,7 @@ public class DuelConfigs {
      * @param name the name
      */
     public void addNewCollection(String name) {
+
         coll.put(name, 0);
     }
 
@@ -89,11 +103,13 @@ public class DuelConfigs {
      * @return the boolean
      */
     public boolean collectionExists(String name) {
+
         Validate.notNull(name);
         return coll.containsKey(name);
     }
 
     public int getCollectionSize() {
+
         return coll.size();
     }
 
@@ -104,6 +120,7 @@ public class DuelConfigs {
      * @return the collection names
      */
     public List<String> getCollectionNames() {
+
         return coll.keySet().stream().collect(Collectors.toList());
     }
 
@@ -113,6 +130,7 @@ public class DuelConfigs {
      * @return Value of rankedMatches.
      */
     public boolean isRankedMatches() {
+
         return rankedMatches;
     }
 
@@ -122,6 +140,7 @@ public class DuelConfigs {
      * @return Value of autoJoin.
      */
     public boolean isAutoJoin() {
+
         return autoJoin;
     }
 
@@ -131,6 +150,7 @@ public class DuelConfigs {
      * @param wagerGames New value of wagerGames.
      */
     public void setWagerGames(boolean wagerGames) {
+
         this.wagerGames = wagerGames;
     }
 
@@ -140,6 +160,7 @@ public class DuelConfigs {
      * @param autoJoin New value of autoJoin.
      */
     public void setAutoJoin(boolean autoJoin) {
+
         this.autoJoin = autoJoin;
     }
 
@@ -149,6 +170,7 @@ public class DuelConfigs {
      * @param isBlockCmdsInGame New value of isBlockCmdsInGame.
      */
     public void setIsBlockCmdsInGame(boolean isBlockCmdsInGame) {
+
         this.isBlockCmdsInGame = isBlockCmdsInGame;
     }
 
@@ -158,6 +180,7 @@ public class DuelConfigs {
      * @param firstLoad New value of firstLoad.
      */
     public void setFirstLoad(boolean firstLoad) {
+
         this.firstLoad = firstLoad;
     }
 
@@ -167,6 +190,7 @@ public class DuelConfigs {
      * @return Value of gameWorld.
      */
     public String getGameWorld() {
+
         return gameWorld;
     }
 
@@ -176,6 +200,7 @@ public class DuelConfigs {
      * @param blockGlobalChat New value of blockGlobalChat.
      */
     public void setBlockGlobalChat(boolean blockGlobalChat) {
+
         this.blockGlobalChat = blockGlobalChat;
     }
 
@@ -185,6 +210,7 @@ public class DuelConfigs {
      * @return Value of enable.
      */
     public boolean isEnable() {
+
         return enable;
     }
 
@@ -194,6 +220,7 @@ public class DuelConfigs {
      * @param dedicated New value of dedicated.
      */
     public void setDedicated(boolean dedicated) {
+
         this.dedicated = dedicated;
     }
 
@@ -203,6 +230,7 @@ public class DuelConfigs {
      * @param lobbyWorld New value of lobbyWorld.
      */
     public void setLobbyWorld(String lobbyWorld) {
+
         this.lobbyWorld = lobbyWorld;
     }
 
@@ -212,6 +240,7 @@ public class DuelConfigs {
      * @param allowLobbyChat New value of allowLobbyChat.
      */
     public void setAllowLobbyChat(boolean allowLobbyChat) {
+
         this.allowLobbyChat = allowLobbyChat;
     }
 
@@ -221,6 +250,7 @@ public class DuelConfigs {
      * @return Value of firstLoad.
      */
     public boolean isFirstLoad() {
+
         return firstLoad;
     }
 
@@ -230,6 +260,7 @@ public class DuelConfigs {
      * @param gameWorld New value of gameWorld.
      */
     public void setGameWorld(String gameWorld) {
+
         this.gameWorld = gameWorld;
     }
 
@@ -239,6 +270,7 @@ public class DuelConfigs {
      * @param blockCmdsInLobby New value of blockCmdsInLobby.
      */
     public void setBlockCmdsInLobby(boolean blockCmdsInLobby) {
+
         this.blockCmdsInLobby = blockCmdsInLobby;
     }
 
@@ -248,6 +280,7 @@ public class DuelConfigs {
      * @return Value of blockGlobalChat.
      */
     public boolean isBlockGlobalChat() {
+
         return blockGlobalChat;
     }
 
@@ -257,6 +290,7 @@ public class DuelConfigs {
      * @return Value of allowLobbyChat.
      */
     public boolean isAllowLobbyChat() {
+
         return allowLobbyChat;
     }
 
@@ -266,6 +300,7 @@ public class DuelConfigs {
      * @param enable New value of enable.
      */
     public void setEnable(boolean enable) {
+
         this.enable = enable;
     }
 
@@ -275,6 +310,7 @@ public class DuelConfigs {
      * @return Value of lobbyWorld.
      */
     public String getLobbyWorld() {
+
         return lobbyWorld;
     }
 
@@ -284,6 +320,7 @@ public class DuelConfigs {
      * @return Value of restrictIngameChat.
      */
     public boolean isRestrictIngameChat() {
+
         return restrictIngameChat;
     }
 
@@ -293,6 +330,7 @@ public class DuelConfigs {
      * @return Value of dedicated.
      */
     public boolean isDedicated() {
+
         return dedicated;
     }
 
@@ -302,6 +340,7 @@ public class DuelConfigs {
      * @param restrictIngameChat New value of restrictIngameChat.
      */
     public void setRestrictIngameChat(boolean restrictIngameChat) {
+
         this.restrictIngameChat = restrictIngameChat;
     }
 
@@ -311,6 +350,7 @@ public class DuelConfigs {
      * @return Value of blockCmdsInLobby.
      */
     public boolean isBlockCmdsInLobby() {
+
         return blockCmdsInLobby;
     }
 
@@ -320,6 +360,7 @@ public class DuelConfigs {
      * @return Value of isBlockCmdsInGame.
      */
     public boolean isIsBlockCmdsInGame() {
+
         return isBlockCmdsInGame;
     }
 
@@ -329,6 +370,7 @@ public class DuelConfigs {
      * @param rankedMatches New value of rankedMatches.
      */
     public void setRankedMatches(boolean rankedMatches) {
+
         this.rankedMatches = rankedMatches;
     }
 
@@ -338,6 +380,67 @@ public class DuelConfigs {
      * @return Value of wagerGames.
      */
     public boolean isWagerGames() {
+
         return wagerGames;
+    }
+
+    /**
+     * Sets new lobbySpawn.
+     *
+     * @param lobbySpawn New value of lobbySpawn.
+     */
+    public void setLobbySpawn(SpawnPoint lobbySpawn) {
+
+        this.lobbySpawn = lobbySpawn;
+    }
+
+    /**
+     * Gets lobbySpawn.
+     *
+     * @return Value of lobbySpawn.
+     */
+    public SpawnPoint getLobbySpawn() {
+
+        return lobbySpawn;
+    }
+
+    /**
+     * Sets new adminMode.
+     *
+     * @param adminMode New value of adminMode.
+     */
+    public void setAdminMode(boolean adminMode) {
+
+        this.adminMode = adminMode;
+    }
+
+    /**
+     * Gets adminMode.
+     *
+     * @return Value of adminMode.
+     */
+    public boolean isAdminMode() {
+
+        return adminMode;
+    }
+
+    /**
+     * Sets new lobbyEnabled.
+     *
+     * @param lobbyEnabled New value of lobbyEnabled.
+     */
+    public void setLobbyEnabled(boolean lobbyEnabled) {
+
+        this.lobbyEnabled = lobbyEnabled;
+    }
+
+    /**
+     * Gets lobbyEnabled.
+     *
+     * @return Value of lobbyEnabled.
+     */
+    public boolean isLobbyEnabled() {
+
+        return lobbyEnabled;
     }
 }

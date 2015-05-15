@@ -77,40 +77,56 @@ public class Armor implements ConfigurationSerializable {
 
     }
 
+    public static Armor deserialize(Map<String, Object> map) {
+
+        Object objName = map.get("name"), objHel = map.get("helmet"), objChes = map.get("chest"),
+                objLeg = map.get("leggings"), objBoot = map.get("boots");
+
+        return new Armor((String) objName, (ItemStack) objHel, (ItemStack) objChes, (ItemStack) objLeg, (ItemStack) objBoot);
+    }
+
     public void setHelmet(ItemStack helmet) {
 
         Material mat = helmet.getType();
-        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("HELMET"))
+        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("HELMET")) {
             armor.put(ArmorType.HELMET, helmet);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Must be an instance of a Helmet");
+        }
     }
 
     public void setChestPlate(ItemStack chestPlate) {
 
         Material mat = chestPlate.getType();
-        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("CHESTPLATE"))
+        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("CHESTPLATE")) {
             armor.put(ArmorType.CHEST_PLATE, chestPlate);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Must be an instance of a Chestplate");
+        }
     }
 
     public void setLeggings(ItemStack leggings) {
 
         Material mat = leggings.getType();
-        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("LEGGINGS"))
+        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("LEGGINGS")) {
             armor.put(ArmorType.LEGGINGS, leggings);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Must be an instance of a Leggings");
+        }
     }
 
     public void setBoots(ItemStack boots) {
 
         Material mat = boots.getType();
-        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("BOOTS"))
+        if (ArmorItems.find(mat.name()) && ArmorItems.valueOf(mat.name()).getItem().equals("BOOTS")) {
             armor.put(ArmorType.BOOTS, boots);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Must be an instance of a Boots");
+        }
     }
 
     public ItemStack getArmorPart(ArmorType part) {
@@ -141,13 +157,6 @@ public class Armor implements ConfigurationSerializable {
         return name;
     }
 
-    public static Armor deserialize(Map<String, Object> map) {
-
-        Object objName = map.get("name"), objHel = map.get("helmet"), objChes = map.get("chest"), objLeg = map.get("leggings"), objBoot = map.get("boots");
-
-        return new Armor((String) objName, (ItemStack) objHel, (ItemStack) objChes, (ItemStack) objLeg, (ItemStack) objBoot);
-    }
-
     @Override
     public Map<String, Object> serialize() {
 
@@ -164,6 +173,9 @@ public class Armor implements ConfigurationSerializable {
     @Override
     public String toString() {
 
-        return new org.apache.commons.lang.builder.ToStringBuilder(this).append("armor", armor).append("name", name).toString();
+        return new org.apache.commons.lang.builder.ToStringBuilder(this)
+                       .append("armor", armor)
+                       .append("name", name)
+                       .toString();
     }
 }

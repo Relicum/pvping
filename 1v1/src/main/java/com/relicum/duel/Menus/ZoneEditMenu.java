@@ -4,10 +4,19 @@ import com.relicum.duel.Duel;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Enums.ArenaState;
+import com.relicum.pvpcore.Enums.Symbols;
 import com.relicum.pvpcore.FormatUtil;
-import com.relicum.pvpcore.Menus.*;
+import com.relicum.pvpcore.Menus.AbstractItem;
+import com.relicum.pvpcore.Menus.ActionHandler;
+import com.relicum.pvpcore.Menus.ActionItem;
+import com.relicum.pvpcore.Menus.ActionMenu;
+import com.relicum.pvpcore.Menus.ActionResponse;
+import com.relicum.pvpcore.Menus.ClickAction;
 import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
+import com.relicum.pvpcore.Menus.Slot;
+import com.relicum.pvpcore.Menus.Spawns1v1;
 import com.relicum.utilities.Items.ItemBuilder;
+import com.relicum.utilities.Items.MLore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Name: ZoneEditMenu.java Created: 04 May 2015
@@ -115,55 +125,59 @@ public class ZoneEditMenu extends ActionMenu {
 
     public void updateIcons() {
 
-        AbstractItem lever = new ActionItem(new ItemBuilder(Material.LEVER).setDisplayName("&6&lSpawn Bar")
-                .setItemLores(Arrays.asList(" ",
-                        "&aClick to open spawn hotbar",
-                        "&awhich allows you to set",
-                        "&aall spawns at once.")).build(), Slot.ZERO.ordinal(), ClickAction.HOTBAR,
-                new ActionHandler() {
+        AbstractItem lever;
+        lever = new ActionItem(new ItemBuilder(Material.LEVER)
+                                       .setDisplayName("&6&lSpawn Bar")
+                                       .setItemLores(Arrays.asList(" ", "&aClick to open spawn hotbar", "&awhich allows you to set", "&aall spawns at once."))
+                                       .build(), Slot.ZERO.ordinal(), ClickAction.HOTBAR, new ActionHandler() {
 
-                    @Override
-                    public ActionHandler getExecutor() {
-
-                        return this;
-                    }
-
-                    @Override
-                    public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
-                        event.setCancelled(true);
-                        icon.getMenu().closeMenu(player);
-                        new BukkitRunnable() {
-
-                            @Override
-                            public void run() {
-
-                                SpawnHotBar bar = new SpawnHotBar(zone, player, Duel.get());
-                                bar.saveInventory();
-                                player.getInventory().setContents(bar.getItems());
-                                player.sendMessage(ChatColor.DARK_AQUA + "Opening Spawn Edit Hotbar");
-                                player.updateInventory();
-
-                            }
-                        }.runTask(Duel.get());
-
-                        ActionResponse response = new ActionResponse(icon);
-                        response.setPlayer(player);
-                        response.setDoNothing(true);
-
-                        return response;
-                    }
-                });
-
-        AbstractItem cm = new ActionItem(new ItemBuilder(Material.GLASS)
-                .setDisplayName("&4Close Menu")
-                .setItemLores(Arrays.asList(" ", "&bLeft Click to close")).build(), 1, ClickAction.CLOSE_MENU, new ActionHandler() {
             @Override
             public ActionHandler getExecutor() {
+
                 return this;
             }
 
             @Override
             public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+
+                event.setCancelled(true);
+                icon.getMenu().closeMenu(player);
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+
+                        SpawnHotBar bar = new SpawnHotBar(zone, player, Duel.get());
+                        bar.saveInventory();
+                        player.getInventory().setContents(bar.getItems());
+                        player.sendMessage(ChatColor.DARK_AQUA + "Opening Spawn Edit Hotbar");
+                        player.updateInventory();
+
+                    }
+                }.runTask(Duel.get());
+
+                ActionResponse response = new ActionResponse(icon);
+                response.setPlayer(player);
+                response.setDoNothing(true);
+
+                return response;
+            }
+        }
+        );
+
+        AbstractItem cm = new ActionItem(new ItemBuilder(Material.GLASS)
+                                                 .setDisplayName("&4Close Menu")
+                                                 .setItemLores(Arrays.asList(" ", "&bLeft Click to close"))
+                                                 .build(), 1, ClickAction.CLOSE_MENU, new ActionHandler() {
+            @Override
+            public ActionHandler getExecutor() {
+
+                return this;
+            }
+
+            @Override
+            public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+
                 event.setCancelled(true);
                 player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
                 ActionResponse response = new ActionResponse(icon, player);
@@ -171,21 +185,26 @@ public class ZoneEditMenu extends ActionMenu {
                 return response;
 
             }
-        });
+        }
+        );
 
         AbstractItem chg = new ActionItem(new ItemBuilder(Material.SIGN).setDisplayName("&6&lEnable Zone")
-                .setItemLores(Arrays.asList(" ", "&aClick to toggle the", "&azone state to &6enable"))
-                .build(), Slot.SIX.ordinal(), ClickAction.SWITCH_MENU, new CloseMenuHandler());
+                                                  .setItemLores(Arrays.asList(" ", "&aClick to toggle the", "&azone state to &6enable"))
+                                                  .build(), Slot.SIX.ordinal(), ClickAction.SWITCH_MENU, new CloseMenuHandler()
+        );
 
-        AbstractItem sv = new ActionItem(new ItemBuilder(Material.REDSTONE_BLOCK).setDisplayName("&5&lSave Spawns Settings").setItemLores(Arrays.asList(" ", "&aRight Click to Save"))
-                .build(), ((rows * 9) - 2), ClickAction.SAVE, new ActionHandler() {
+        AbstractItem sv = new ActionItem(new ItemBuilder(Material.REDSTONE_BLOCK).setDisplayName("&5&lSave Spawns Settings")
+                                                 .setItemLores(Arrays.asList(" ", "&aRight Click to Save"))
+                                                 .build(), ((rows * 9) - 2), ClickAction.SAVE, new ActionHandler() {
             @Override
             public ActionHandler getExecutor() {
+
                 return this;
             }
 
             @Override
             public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+
                 event.setCancelled(true);
                 Duel.get().getZoneManager().saveZone(zone);
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 10.0f, 1.0f);
@@ -195,15 +214,25 @@ public class ZoneEditMenu extends ActionMenu {
                 response.setDoNothing(true);
                 return response;
             }
-        });
+        }
+        );
+
+        MLore mLore = new MLore(" \n");
+        List<String> res = mLore.then("&aClick to toggle edit").append("&amode off. All the time").append("&ait is &6enabled the zone is")
+                                   .append("&ausable by players").blankLine().then("&bHello Relicum &b&l" + Symbols.TICK.asString()).blankLine()
+                                   .newList("&6" + Symbols.RADIOACTIVE.asString(), "&e").withTitle("My Title").blankLine().addItem("Pizza").addItem("Chips")
+                                   .addItem("Pies").blankLine().end().then("&5Toggle will save and").append("&5close the menu").toLore();
+        // Bukkit.getConsoleSender().sendMessage(res.toString());
+
 
         AbstractItem ed = new ActionItem(new ItemBuilder(Material.INK_SACK)
-                .setDisplayName("&6&lToggle Edit Mode")
-                .setDurability((short) 10)
-                .setItemLores(Arrays.asList(" ", "&aClick to toggle edit", "&amode off, all the time", "&ait is enabled the zone is", "&ausable by players", " ", "&5Toggling will save and", "&5close the menu"))
-                .build(), Slot.SEVEN.ordinal(), ClickAction.CONFIG, new ActionHandler() {
+                                                 .setDisplayName("&6&lToggle Edit Mode")
+                                                 .setDurability((short) 10)
+                                                 .setItemLores(res)
+                                                 .build(), Slot.SEVEN.ordinal(), ClickAction.CONFIG, new ActionHandler() {
             @Override
             public ActionHandler getExecutor() {
+
                 return this;
             }
 
@@ -214,7 +243,8 @@ public class ZoneEditMenu extends ActionMenu {
                 if (zone.isEditing()) {
                     zone.setEditing(false);
                     player.sendMessage(ChatColor.GOLD + "Zone editing is now set to false");
-                } else {
+                }
+                else {
                     zone.setEditing(true);
                     player.sendMessage(ChatColor.GOLD + "Zone editing is now set to true");
                 }
@@ -227,7 +257,8 @@ public class ZoneEditMenu extends ActionMenu {
                 return response;
 
             }
-        });
+        }
+        );
 
 
         addMenuItem(lever, Slot.ZERO.ordinal());
@@ -294,11 +325,15 @@ public class ZoneEditMenu extends ActionMenu {
 
         if (check(spawn))
 
+        {
             addMenuItem(new SpawnPointItem(getSetItem(spawn), slot.ordinal(), ClickAction.CONFIG, new SpawnSetHandler()), slot.ordinal());
+        }
 
         else
 
+        {
             addMenuItem(new SpawnPointItem(getUnSetItem(spawn), slot.ordinal(), ClickAction.CONFIG, new SpawnSetHandler()), slot.ordinal());
+        }
     }
 
     /**
@@ -311,11 +346,15 @@ public class ZoneEditMenu extends ActionMenu {
 
         if (spawn.equals(Spawns1v1.END)) {
             return zone.endSpawnSet();
-        } else if (spawn.equals(Spawns1v1.SPECTATOR))
+        }
+        else if (spawn.equals(Spawns1v1.SPECTATOR))
 
+        {
             return zone.spectatorSet();
-        else
+        }
+        else {
             return zone.containsSpawn(spawn.getName());
+        }
     }
 
     public ItemStack getSetItem(Spawns1v1 spawn) {
@@ -324,37 +363,34 @@ public class ZoneEditMenu extends ActionMenu {
 
         if (spawn.equals(Spawns1v1.END)) {
             p = zone.getEndSpawn();
-        } else if (spawn.equals(Spawns1v1.SPECTATOR))
+        }
+        else if (spawn.equals(Spawns1v1.SPECTATOR)) {
             p = zone.getSpecSpawn();
-        else
+        }
+        else {
             p = zone.getSpawn(spawn.getName());
+        }
 
-        return new ItemBuilder(Material.INK_SACK).setDisplayName("&6&l" + spawn.getTitle())
-                .setDurability((short) 10)
-                .setItemLores(Arrays.asList(" ",
-                        "&aSpawn Set",
-                        " ",
-                        "&4Collection: &e" + zone.getName(),
-                        "&4Zone: &a" + zone.getNameId(),
-                        " ",
-                        "&eWorld: &c" + p.getWorld(),
-                        "&eX:    " + "  &c" + p.getX(),
-                        "&eY:      &c" + p.getY(),
-                        "&eZ:      &c" + p.getZ(),
-                        "&eYaw:   &c" + p.getYaw(),
-                        "&ePitch:  &c" + p.getPitch(),
-                        " ",
-                        "&bRight Click to Teleport",
-                        "&bto this location")).build();
+
+        return new ItemBuilder(Material.INK_SACK)
+                       .setDisplayName("&6&l" + spawn.getTitle())
+                       .setDurability((short) 10)
+                       .setItemLores(Arrays.asList(" ", "&aSpawn Set", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(), " ",
+                                                   "&eWorld: &c" + p.getWorld(), "&eX:      &c" + p.getX(), "&eY:      &c" + p.getY(), "&eZ:      &c" + p.getZ(),
+                                                   "&eYaw:   &c" + p.getYaw(), "&ePitch:  &c" + p.getPitch(), " ", "&bRight Click to Teleport", "&bto this location"))
+                       .build();
 
     }
 
     public ItemStack getUnSetItem(Spawns1v1 spawn) {
 
-        return new ItemBuilder(Material.INK_SACK).setDisplayName("&4&l" + spawn.getTitle())
-                .setDurability((short) 8)
-                .setItemLores(Arrays.asList(" ", "&aSpawn Not Set ", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a"
-                        + zone.getNameId(), " ", "&bLeft Click to set")).build();
+        return new ItemBuilder(Material.INK_SACK)
+                       .setDisplayName("&4&l" + spawn.getTitle())
+                       .setDurability((short) 8)
+                       .setItemLores(Arrays.asList(" ", "&aSpawn Not Set ", " ",
+                                                   "&4Collection: &e" + zone.getName(),
+                                                   "&4Zone: &a" + zone.getNameId(), " ",
+                                                   "&bLeft " + "Click to set")).build();
     }
 
 }

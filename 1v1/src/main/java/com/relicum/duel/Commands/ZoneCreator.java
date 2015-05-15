@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
  * @version 0.0.1
  */
 @SuppressFBWarnings({"CLI_CONSTANT_LIST_INDEX"})
-@Command(aliases = {"create"}, desc = "Create new Zones and Zone Collections", perm = "duel.admin.create", usage = "/noxarena create", isSub = true, parent = "noxarena", min = 2, useTab = true)
+@Command(aliases = {"create"}, desc = "Create new Zones and Zone Collections", perm = "duel.admin.create", usage = "/noxarena create", isSub = true, parent =
+                                                                                                                                                             "noxarena", min = 2, useTab = true)
 public class ZoneCreator extends DuelCmd {
 
     private List<String> OPTIONS = ImmutableList.of("collection", "zone");
@@ -95,7 +96,8 @@ public class ZoneCreator extends DuelCmd {
                 plugin.getZoneManager().registerCollection(args[1]);
                 sendMessage("Successfully registered new ZoneCollection &a" + args[1]);
                 return true;
-            } catch (DuplicateZoneException e) {
+            }
+            catch (DuplicateZoneException e) {
                 sendErrorMessage(e.getMessage());
                 e.printStackTrace();
                 return true;
@@ -111,7 +113,8 @@ public class ZoneCreator extends DuelCmd {
 
             try {
                 plugin.getZoneManager().registerZone(args[1], new PvPZone(ArenaType.ARENA1v1, args[1], zones.get(args[1])));
-            } catch (InvalidZoneException e) {
+            }
+            catch (InvalidZoneException e) {
                 sendErrorMessage("Error: " + e.getMessage());
                 e.printStackTrace();
                 return true;

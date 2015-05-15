@@ -1,7 +1,7 @@
 package com.relicum.pvpcore.Configs;
 
 import com.google.gson.reflect.TypeToken;
-import com.relicum.configs.Gson.Loaders.AbstractLoader;
+import com.relicum.pvpcore.Configs.Loaders.AbstractLoader;
 import com.relicum.pvpcore.Game.PlayerStats;
 
 /**

@@ -5,7 +5,7 @@
     <groupId>com.relicum</groupId>
     <artifactId>pvping-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.12-SNAPSHOT</version>
+    <version>1.0.13-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -41,6 +41,12 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8.3-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.massivecraft</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>2.7.5-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

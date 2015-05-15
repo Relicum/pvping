@@ -2,6 +2,9 @@ package com.relicum.duel.Commands;
 
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
+import com.relicum.duel.Events.PlayerJoinLobbyEvent;
+import com.relicum.locations.SpawnPoint;
+import com.relicum.pvpcore.Enums.JoinCause;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,20 +30,13 @@ public class Join extends DuelCmd {
         super(plugin);
     }
 
+
     @Override
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
-        Player player = (Player) sender;
 
-        if (!plugin.getStatsManager().hasStatsLoaded(player.getUniqueId().toString())) {
-            plugin.getStatsManager().load(player.getUniqueId().toString());
-        }
-
-        if (!plugin.getGameHandler().add(player)) {
-
-            sendErrorMessage("Error: You have already joined 1v1");
-            return true;
-        }
+        PlayerJoinLobbyEvent event = new PlayerJoinLobbyEvent((Player) sender, new SpawnPoint(((Player) sender).getLocation()), JoinCause.COMMAND);
+        plugin.getServer().getPluginManager().callEvent(event);
 
         return true;
 
