@@ -29,8 +29,9 @@ public class ActionMenu implements InventoryHolder {
     protected boolean exitOnClickOutside;
     protected MenuCloseBehaviour menuCloseBehaviour;
     protected boolean bypassMenuCloseBehaviour;
-    protected ActionMenu parentMenu;
-    private boolean editing = false;
+    protected transient ActionMenu parentMenu;
+    private transient boolean modifiable = false;
+    private transient boolean editing = false;
     private boolean altered = false;
 
     public ActionMenu(String title, int rows) {
@@ -99,7 +100,7 @@ public class ActionMenu implements InventoryHolder {
         if ((slot != null) && (slot.getType() != Material.AIR)) {
             return false;
         }
-        getInventory().setItem(index, item.getIcon());
+        getInventory().setItem(index, item.getItem());
         this.items.put(index, item);
         item.addToMenu(this);
         return true;
@@ -221,9 +222,24 @@ public class ActionMenu implements InventoryHolder {
 
         ActionResponse response = item.getActionHandler().perform(player, item, event);
 
+//        if (!response.isModifiable()) {
+//
+//            if (!event.isCancelled())
+//                event.setCancelled(true);
+//
+//            player.sendMessage("Error: the menu is not set to modifiable, set that first.");
+//
+//            return;
+//        }
+
         if (response.isClose()) {
             item.getMenu().closeMenu(response.getPlayer());
             return;
+        }
+
+        if (response.isToggle()) {
+
+
         }
 
         if (response.isUpdate()) {
@@ -242,8 +258,18 @@ public class ActionMenu implements InventoryHolder {
         player.openInventory(getInventory());
     }
 
+    public void openMenuForEditing(Player player) {
+
+        if (getInventory().getViewers().contains(player)) {
+            throw new IllegalArgumentException(String.valueOf(player.getName()) + " is already viewing " + getInventory().getTitle());
+        }
+        this.setEditing(true);
+        player.openInventory(getInventory());
+    }
+
     public void closeMenu(Player player) {
 
+        this.setEditing(false);
         if (getInventory().getViewers().contains(player)) {
             getInventory().getViewers().remove(player);
             player.closeInventory();
@@ -305,6 +331,20 @@ public class ActionMenu implements InventoryHolder {
 
         return this.exitOnClickOutside;
     }
+
+    /**
+     * Gets if this item can be modified.
+     *
+     * @return true and it can be modified, false and it can not.
+     */
+    public boolean isModifiable() { return modifiable; }
+
+    /**
+     * Sets if the item can be modified.
+     *
+     * @param modifiable set true and it can be modified, false and it can not.
+     */
+    public void setModifiable(boolean modifiable) { this.modifiable = modifiable; }
 
     protected ActionMenu clone() {
 

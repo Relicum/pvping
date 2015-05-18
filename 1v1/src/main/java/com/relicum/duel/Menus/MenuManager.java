@@ -1,6 +1,7 @@
 package com.relicum.duel.Menus;
 
 import com.relicum.duel.Duel;
+import com.relicum.duel.Events.ItemToggleChange;
 import com.relicum.pvpcore.Arenas.PvPZone;
 import com.relicum.pvpcore.Arenas.ZoneCollection;
 import com.relicum.pvpcore.Enums.ArenaState;
@@ -10,6 +11,7 @@ import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
 import com.relicum.utilities.Items.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -24,7 +26,7 @@ import java.util.Map;
  * @author Relicum
  * @version 0.0.1
  */
-public class MenuManager {
+public class MenuManager implements Listener {
 
     private static MenuManager instance;
     private Duel plugin;
@@ -36,12 +38,27 @@ public class MenuManager {
 
         instance = this;
         this.plugin = plugin;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public static MenuManager getInstance() {
 
         return instance;
     }
+
+    public void itemViewStateChange(ItemToggleChange event) {
+
+        ActionMenu menu = event.getMenu();
+        ActionItem item = (ActionItem) menu.getMenuItems().get(event.getSlot());
+
+        item.setToggleState(event.getToggleState());
+
+        if (item.getToggleState().equals(AbstractItem.ToggleState.DEFAULT)) {
+
+
+        }
+    }
+
 
     public Duel getPlugin() {
 
@@ -84,6 +101,16 @@ public class MenuManager {
         zoneMainMenu.addMenuItem(cm, 8);
 
         return zoneMainMenu;
+    }
+
+    /**
+     * Get new {@link DuelSettingsMenu}
+     *
+     * @return the {@link DuelSettingsMenu}
+     */
+    public DuelSettingsMenu getDuelSettings() {
+
+        return new DuelSettingsMenu(FormatUtil.colorize("&6&l1v1 Settings Menu"), 4, Duel.get().getConfigs());
     }
 
     public ZoneSelectMenu createSelectMenu(String zone) {

@@ -5,6 +5,7 @@ import com.relicum.pvpcore.Menus.ActionHandler;
 import com.relicum.pvpcore.Menus.ActionResponse;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 /**
  * Name: CloseMenuHandler.java Created: 05 May 2015
@@ -23,6 +24,18 @@ public class CloseMenuHandler implements ActionHandler {
     @Override
     public ActionResponse perform(Player player, AbstractItem icon) {
 
+        player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
+        ActionResponse response = new ActionResponse(icon);
+        response.setPlayer(player);
+        response.setWillClose(true);
+
+        return response;
+
+    }
+
+    @Override
+    public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+        event.setCancelled(true);
         player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 10.0f, 1.0f);
         ActionResponse response = new ActionResponse(icon);
         response.setPlayer(player);

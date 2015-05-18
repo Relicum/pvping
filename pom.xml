@@ -5,7 +5,7 @@
     <groupId>com.relicum</groupId>
     <artifactId>pvping-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.13-SNAPSHOT</version>
+    <version>1.0.14-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>

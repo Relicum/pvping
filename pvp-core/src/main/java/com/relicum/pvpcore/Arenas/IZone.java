@@ -38,18 +38,18 @@ public interface IZone {
     String getNameId();
 
     /**
-     * Sets the zones current {@link ArenaState}.
-     *
-     * @param state the {@link ArenaState} to be set.
-     */
-    void setState(ArenaState state);
-
-    /**
      * Gets the current zones {@link ArenaState}.
      *
      * @return the {@link ArenaState}
      */
     ArenaState getState();
+
+    /**
+     * Sets the zones current {@link ArenaState}.
+     *
+     * @param state the {@link ArenaState} to be set.
+     */
+    void setState(ArenaState state);
 
     /**
      * Gets a player {@link SpawnPoint} by key.
@@ -95,13 +95,6 @@ public interface IZone {
     SpawnPoint removeSpawn(String key);
 
     /**
-     * Set the {@link SpawnPoint} players will be sent at the end of the game.
-     *
-     * @param endSpawn the {@link SpawnPoint}
-     */
-    void setEndSpawn(SpawnPoint endSpawn);
-
-    /**
      * Get the {@link SpawnPoint} players are sent to at the end of the game.
      *
      * @return the end spawn
@@ -109,11 +102,11 @@ public interface IZone {
     SpawnPoint getEndSpawn();
 
     /**
-     * Set the spectator {@link SpawnPoint} if spectating is allowed.
+     * Set the {@link SpawnPoint} players will be sent at the end of the game.
      *
-     * @param specSpawn the spectator {@link SpawnPoint}
+     * @param endSpawn the {@link SpawnPoint}
      */
-    void setSpecSpawn(SpawnPoint specSpawn);
+    void setEndSpawn(SpawnPoint endSpawn);
 
     /**
      * Get the spectator {@link SpawnPoint}.
@@ -123,11 +116,11 @@ public interface IZone {
     SpawnPoint getSpecSpawn();
 
     /**
-     * Set the {@link ArenaType}.
+     * Set the spectator {@link SpawnPoint} if spectating is allowed.
      *
-     * @param types the {@link ArenaType}
+     * @param specSpawn the spectator {@link SpawnPoint}
      */
-    void setArenaType(ArenaType types);
+    void setSpecSpawn(SpawnPoint specSpawn);
 
     /**
      * Get the {@link ArenaType}.
@@ -137,11 +130,11 @@ public interface IZone {
     ArenaType getArenaType();
 
     /**
-     * Set max players.
+     * Set the {@link ArenaType}.
      *
-     * @param maxPlayers the max players
+     * @param types the {@link ArenaType}
      */
-    void setMaxPlayers(int maxPlayers);
+    void setArenaType(ArenaType types);
 
     /**
      * Get max players.
@@ -151,11 +144,11 @@ public interface IZone {
     int getMaxPlayers();
 
     /**
-     * Set min players.
+     * Set max players.
      *
-     * @param minPlayers the min players
+     * @param maxPlayers the max players
      */
-    void setMinPlayers(int minPlayers);
+    void setMaxPlayers(int maxPlayers);
 
     /**
      * Get min players.
@@ -163,5 +156,26 @@ public interface IZone {
      * @return the min players
      */
     int getMinPlayers();
+
+    /**
+     * Set min players.
+     *
+     * @param minPlayers the min players
+     */
+    void setMinPlayers(int minPlayers);
+
+    /**
+     * Is the zone enabled
+     *
+     * @return true and it is enabled, false and its disabled.
+     */
+    boolean isEnabled();
+
+    /**
+     * Set the zone to enable or disable.
+     *
+     * @param enable true to enable, false to disable.
+     */
+    void setEnable(boolean enable);
 
 }

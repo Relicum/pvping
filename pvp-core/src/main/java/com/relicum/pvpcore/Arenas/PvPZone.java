@@ -4,6 +4,7 @@ import com.relicum.locations.PointsGroup;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.Enums.ArenaType;
+import com.relicum.pvpcore.Enums.Symbols;
 import com.relicum.pvpcore.Menus.Spawns1v1;
 import lombok.ToString;
 import org.apache.commons.lang.Validate;
@@ -33,8 +34,9 @@ public class PvPZone implements IZone {
     private int minPlayers;
     private int maxPlayers;
     private ArenaType arenaType;
-    private ArenaState state = ArenaState.SETUP;
-    private boolean editing = false;
+    private ArenaState state = ArenaState.EDITING;
+    private boolean enabled = false;
+    private transient boolean editing = false;
 
     private PvPZone() {
 
@@ -46,6 +48,7 @@ public class PvPZone implements IZone {
         this.id = nextId;
         this.nameId = name + "-" + nextId;
         setArenaType(arenaType);
+
 
     }
 
@@ -260,6 +263,17 @@ public class PvPZone implements IZone {
     }
 
     /**
+     * Checks if this zone can be enabled.
+     * <p>All spawns need to be set before it can be enabled
+     *
+     * @return true if it can be enable, false if it can not.
+     */
+    public boolean canBeEnabled() {
+
+        return spectatorSet() && endSpawnSet() && (getSpawnsSize() == 2);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -295,6 +309,16 @@ public class PvPZone implements IZone {
         this.minPlayers = minPlayers;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnable(boolean enable) {
+        this.enabled = enable;
+    }
+
     public int getId() {
 
         return id;
@@ -313,6 +337,14 @@ public class PvPZone implements IZone {
         t.add("&6PVPZone name:&b " + name);
         t.add("&6PVPZone ID:&b " + id);
         t.add("&6Zone Type:&b " + arenaType.getType());
+        t.add(" ");
+        if (isEnabled()) {
+            t.add("&6Zone is:&a Enabled " + Symbols.TICK.asString());
+        }
+        else {
+            t.add("&6Zone is:&4 Disabled " + Symbols.CROSS.asString());
+        }
+
         t.add("&6Zone State: &b " + state.name());
 
         if (isEditing()) {

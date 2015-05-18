@@ -3,8 +3,10 @@ package com.relicum.pvpcore.Arenas;
 import com.google.common.collect.Maps;
 import com.relicum.pvpcore.Enums.ArenaState;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * ZoneCollection
@@ -57,9 +59,50 @@ public class ZoneCollection {
         return zones.size();
     }
 
+
+    /**
+     * Gets a list of enabled zones in this collection.
+     *
+     * @return the list of {@link PvPZone} that are enabled.
+     */
+    public List<PvPZone> getEnabledZones() {
+
+        return zones.values().stream().filter(PvPZone::isEnabled).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets a list of disabled zones in this collection.
+     *
+     * @return the list of {@link PvPZone} that are disabled
+     */
+    public List<PvPZone> getDisabledZones() {
+
+        return zones.values().stream().filter(p -> !p.isEnabled()).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets number of enabled zones in this collection.
+     *
+     * @return the number enabled zones
+     */
+    public int getNumEnabledZones() {
+
+        return (int) zones.values().stream().filter(PvPZone::isEnabled).count();
+    }
+
+    /**
+     * Gets number of disabled zones in this collection.
+     *
+     * @return the number of disabled zones
+     */
+    public int getNumDisabledZones() {
+
+        return (int) zones.values().stream().filter(p -> !p.isEnabled()).count();
+    }
+
     public int getZonesSetup() {
 
-        return getZonesInState(ArenaState.SETUP);
+        return getZonesInState(ArenaState.EDITING);
     }
 
     public int getZonesWaiting() {
@@ -68,30 +111,22 @@ public class ZoneCollection {
 
     }
 
+
     public int getZonesInGame() {
 
         return getZonesInState(ArenaState.INGAME);
     }
 
-    public int getZonesDisabled() {
-
-        return getZonesInState(ArenaState.DISABLED);
-    }
 
     public int getZonesInState(ArenaState state) {
 
-        return (int) zones.values()
-                             .stream()
-                             .filter(p -> p.getState()
-                                                  .equals(state))
-                             .count();
+        return (int) zones.values().stream().filter(p -> p.getState().equals(state)).count();
     }
 
     public PvPZone getNextAvailableZone() throws Exception {
 
         for (PvPZone zone : zones.values()) {
-            if (zone.getState()
-                        .equals(ArenaState.WAITING)) {
+            if (zone.getState().equals(ArenaState.WAITING)) {
                 zone.setState(ArenaState.WAITING);
                 return zone;
             }

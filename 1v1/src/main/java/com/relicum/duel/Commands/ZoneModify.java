@@ -103,7 +103,7 @@ public class ZoneModify extends DuelCmd {
                     return true;
                 }
                 sendMessage("Opening Zone Edit Menu for " + args[2]);
-                plugin.getMenuManager().getZoneEditMenu(args[1], args[2]).openMenu((Player) sender);
+                plugin.getMenuManager().getZoneEditMenu(args[1], args[2]).openMenuForEditing((Player) sender);
                 return true;
 
             }
@@ -125,7 +125,7 @@ public class ZoneModify extends DuelCmd {
 
                 Player player = (Player) sender;
 
-                SpawnHotBar bar = new SpawnHotBar(pvPZone, player, plugin);
+                SpawnHotBar bar = new SpawnHotBar(pvPZone.getName(), pvPZone.getNameId(), player, plugin);
 
                 // player.getInventory().setItem(0,bar.getItem(Slot.ZERO));
                 // player.getInventory().setItem(1,bar.getItem(Slot.ONE));

@@ -49,7 +49,7 @@ public interface BaseItem {
      *
      * @return the item
      */
-    ItemStack getIcon();
+    ItemStack getItem();
 
     /**
      * Sets slot index.

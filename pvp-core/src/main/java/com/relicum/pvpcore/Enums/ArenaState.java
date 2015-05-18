@@ -8,5 +8,5 @@ package com.relicum.pvpcore.Enums;
  */
 public enum ArenaState {
 
-    SETUP, LOADING, WAITING, INGAME, DISABLED
+    EDITING, LOADING, WAITING, INGAME
 }

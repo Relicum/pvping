@@ -1,3 +1,3 @@
-PVPING-PLUGINGS-1.0.13-SNAPSHOT
+PVPING-PLUGINGS-1.0.14-SNAPSHOT
 ===
 Collection of PVP plugins that share various core modules

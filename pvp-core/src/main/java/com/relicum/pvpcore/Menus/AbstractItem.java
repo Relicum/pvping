@@ -22,17 +22,24 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     protected ActionHandler actionHandler;
     protected List<String> lores = new ArrayList<>();
     protected ItemStack item;
+    protected ItemStack itemAlt;
     protected int slot;
     protected String permission;
     protected boolean permRequired;
     protected ActionMenu menu;
-
+    protected boolean modifiable;
+    protected ToggleState toggleState;
     protected ClickAction action;
+
+    public AbstractItem() {
+
+    }
 
     public AbstractItem(ItemStack item) {
 
         this.item = item;
     }
+
 
     /**
      * Instantiates a new Abstract item.
@@ -82,6 +89,32 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     /**
      * Instantiates a new Abstract item.
      *
+     * @param paramItem     the {@link ItemStack} used as the icon
+     * @param paramItemAlt  the {@link ItemStack} used if the item has toggled to a alternative state
+     * @param paramSlot     the slot inventory position
+     * @param paramAction   the action to perform when the icon is clicked
+     *                      {@link ClickAction}
+     * @param actionHandler the {@link ActionHandler} that deals if the item being clicked.
+     */
+    public AbstractItem(ItemStack paramItem, ItemStack paramItemAlt, int paramSlot, ClickAction paramAction, ActionHandler actionHandler) {
+
+        item = paramItem;
+        itemAlt = paramItemAlt;
+        slot = paramSlot;
+        action = paramAction;
+        this.actionHandler = actionHandler;
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasDisplayName()) {
+            setText(paramItem.getItemMeta().getDisplayName());
+        }
+        if (meta.hasLore()) {
+            setDescription(paramItem.getItemMeta().getLore());
+        }
+    }
+
+    /**
+     * Instantiates a new Abstract item.
+     *
      * @param paramItem        the {@link ItemStack} used as the icon
      * @param paramSlot        the slot inventory position
      * @param paramAction      the action to perform when the icon is clicked
@@ -91,6 +124,29 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction, String paramDisplayName) {
 
         item = paramItem;
+        slot = paramSlot;
+        action = paramAction;
+        displayName = paramDisplayName;
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasLore()) {
+            setDescription(paramItem.getItemMeta().getLore());
+        }
+    }
+
+    /**
+     * Instantiates a new Abstract item.
+     *
+     * @param paramItem        the {@link ItemStack} used as the icon
+     * @param paramItemAlt     the {@link ItemStack} used if the item has toggled to a alternative state
+     * @param paramSlot        the slot inventory position
+     * @param paramAction      the action to perform when the icon is clicked
+     *                         {@link ClickAction}
+     * @param paramDisplayName the icon display name
+     */
+    public AbstractItem(ItemStack paramItem, ItemStack paramItemAlt, int paramSlot, ClickAction paramAction, String paramDisplayName) {
+
+        item = paramItem;
+        itemAlt = paramItemAlt;
         slot = paramSlot;
         action = paramAction;
         displayName = paramDisplayName;
@@ -117,6 +173,32 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         action = paramAction;
         displayName = paramDisplayName;
         lores = paramLores;
+    }
+
+    public ToggleState getToggleState() {
+        return toggleState;
+    }
+
+    public void setToggleState(ToggleState state) {
+        this.toggleState = state;
+
+
+    }
+
+    public boolean updateItemViewState(ToggleState newState) {
+        if (newState.equals(ToggleState.ALTERNATIVE)) {
+
+            menu.addMenuItem(this, this.slot);
+            menu.getInventory().setItem(slot, itemAlt);
+            return true;
+        }
+        if (newState.equals(ToggleState.DEFAULT)) {
+            menu.addMenuItem(this, this.slot);
+            menu.getInventory().setItem(slot, item);
+            return true;
+        }
+
+        return false;
     }
 
     public ActionHandler getActionHandler() {
@@ -218,7 +300,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * {@inheritDoc}
      */
     @Override
-    public ItemStack getIcon() {
+    public ItemStack getItem() {
 
         return item;
     }
@@ -315,4 +397,23 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
 
     }
 
+    /**
+     * Gets if this item can be modified.
+     *
+     * @return true and it can be modified, false and it can not.
+     */
+    public boolean isModifiable() { return modifiable; }
+
+    /**
+     * Sets if the item can be modified.
+     *
+     * @param modifiable set true and it can be modified, false and it can not.
+     */
+    public void setModifiable(boolean modifiable) { this.modifiable = modifiable; }
+
+    public enum ToggleState {
+
+        DEFAULT,
+        ALTERNATIVE
+    }
 }

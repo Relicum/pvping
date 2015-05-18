@@ -15,9 +15,12 @@ public class ActionResponse {
     private boolean nothing = true;
     private boolean goBack = false;
     private boolean close = false;
+    private boolean toggle = false;
+    private AbstractItem.ToggleState state;
     private boolean update = false;
     private boolean voidIcon = false;
     private boolean destroy = false;
+    private boolean modifiable = false;
 
     public ActionResponse(AbstractItem icon) {
 
@@ -29,6 +32,7 @@ public class ActionResponse {
         this.icon = icon;
         this.player = player;
     }
+
 
     public boolean isClose() {
 
@@ -65,6 +69,10 @@ public class ActionResponse {
         return update;
     }
 
+    public boolean isToggle() {
+        return toggle;
+    }
+
     public boolean isVoidIcon() {
 
         return voidIcon;
@@ -78,6 +86,16 @@ public class ActionResponse {
     public void setIcon(ActionItem icon) {
 
         this.icon = icon;
+    }
+
+    public void setWillToggle(AbstractItem.ToggleState newState) {
+
+        this.toggle = true;
+        this.state = newState;
+    }
+
+    public AbstractItem.ToggleState getState() {
+        return state;
     }
 
     public void setWillClose(boolean close) {
@@ -121,4 +139,18 @@ public class ActionResponse {
 
         this.voidIcon = voidIcon;
     }
+
+    /**
+     * Sets new modifiable.
+     *
+     * @param modifiable New value of modifiable.
+     */
+    public void setModifiable(boolean modifiable) { this.modifiable = modifiable; }
+
+    /**
+     * Gets modifiable.
+     *
+     * @return Value of modifiable.
+     */
+    public boolean isModifiable() { return modifiable; }
 }

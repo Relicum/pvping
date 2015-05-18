@@ -28,7 +28,15 @@ public enum Symbols {
     SNOWFLAKE('\u2744'),
     YIN_YANG('\u262D'),
     RADIOACTIVE('\u2622'),
-    FLORETTE('\u2740');
+    FLORETTE('\u2740'),
+    BLACK_STAR('\u2605'),
+    WHITE_STAR('\u2606'),
+    LIGHT_VERTICAL_BAR('\u2758'),
+    MEDIUM_VERTICAL_BAR('\u2759'),
+    HEAVY_VERTICAL_BAR('\u275a'),
+    H_LINE('\u2501'),
+    VR_LINE('\u2523'),
+    VL_LINE('\u252B');
 
 
     private final char symbol;

@@ -32,9 +32,20 @@ public class SpawnSetHandler implements ActionHandler {
     @Override
     public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
 
+
+        if (!icon.getMenu().isModifiable()) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Menu is currently not modifiable");
+            ActionResponse response = new ActionResponse(icon, player);
+            response.setDoNothing(true);
+            return response;
+
+        }
         boolean rightClick = event.isRightClick();
         event.setCancelled(true);
         ZoneEditMenu am = (ZoneEditMenu) icon.getMenu();
+
+
         PvPZone zone = am.getZone();
         Spawns1v1 sp = Spawns1v1.fromTitle(ChatColor.stripColor(icon.getText()));
 
@@ -141,7 +152,10 @@ public class SpawnSetHandler implements ActionHandler {
             @Override
             public void run() {
 
+                menu.setEditing(true);
+                menu.setModifiable(true);
                 menu.openMenu(player);
+
             }
         }.runTaskLater(Duel.get(), 1l);
 

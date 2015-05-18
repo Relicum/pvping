@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -65,10 +66,10 @@ public class PlayerKit implements Cloneable {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                       .add("armor", armor)
+                       .add("armor", Arrays.toString(armor))
                        .add("name", name)
-                       .add("contents", contents)
-                       .add("potionEffects", potionEffects)
+                       .add("contents", Arrays.toString(contents))
+                       .add("potionEffects", potionEffects.toString())
                        .toString();
     }
 }

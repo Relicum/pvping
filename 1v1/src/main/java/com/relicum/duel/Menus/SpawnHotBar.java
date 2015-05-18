@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 
@@ -38,14 +39,16 @@ public class SpawnHotBar implements InventoryRow, Listener {
     private PvPZone zone;
     private Player player;
 
-    public SpawnHotBar(PvPZone zone, Player player, Duel plug) {
 
-        Validate.notNull(zone);
+    public SpawnHotBar(String name, String nameId, Player player, Duel plug) {
+
+        Validate.notNull(name);
+        Validate.notNull(nameId);
+        zone = plug.getZoneManager().getPvpZone(name, nameId);
         if (!player.hasPermission("duel.admin.modify")) {
             player.sendMessage(ChatColor.RED + "Error: you do not have the permission");
             return;
         }
-        this.zone = zone;
         this.player = player;
 
         plug.getServer().getPluginManager().registerEvents(this, plug);
@@ -64,6 +67,7 @@ public class SpawnHotBar implements InventoryRow, Listener {
         setSpawn2();
         setSpectator();
         setEnd();
+        setGoback();
         setSaveItem();
     }
 
@@ -129,6 +133,31 @@ public class SpawnHotBar implements InventoryRow, Listener {
         }
     }
 
+    public void setGoback() {
+        addItem(Slot.SIX, new ItemBuilder(Material.ARROW)
+                                  .setDisplayName("&6&lGo Back To Menu")
+                                  .setItemLores(Arrays.asList(" ", "&aRight click to open menu"))
+                                  .build());
+    }
+
+    public void goBackTo() {
+
+        ZoneEditMenu tmpm = Duel.get().getMenuManager().getZoneEditMenu(zone);
+        tmpm.setModifiable(true);
+        tmpm.setEditing(true);
+        unregisterListeners();
+        restoreInventory();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                tmpm.openMenu(player);
+
+            }
+        }.runTask(Duel.get());
+
+    }
+
     public void setSaveItem() {
 
         addItem(Slot.SEVEN,
@@ -146,7 +175,7 @@ public class SpawnHotBar implements InventoryRow, Listener {
     }
 
     public void save() {
-
+        zone.setEditing(false);
         Duel.get().getZoneManager().saveZone(zone);
     }
 
@@ -336,6 +365,9 @@ public class SpawnHotBar implements InventoryRow, Listener {
                             event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Saving Zone.....");
                             save();
                             closeIt();
+                        }
+                        else if (sl == 6) {
+                            goBackTo();
                         }
                         else {
                             event.getPlayer().sendMessage(ChatColor.GREEN + "Slot was in the hotbar " + sl);

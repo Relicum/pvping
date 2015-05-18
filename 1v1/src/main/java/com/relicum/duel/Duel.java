@@ -4,6 +4,7 @@ package com.relicum.duel;
 import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.BuildLoadOut;
 import com.relicum.duel.Commands.DuelMsg;
+import com.relicum.duel.Commands.DuelSettings;
 import com.relicum.duel.Commands.Join;
 import com.relicum.duel.Commands.Leave;
 import com.relicum.duel.Commands.ZoneCreator;
@@ -141,6 +142,7 @@ public class Duel extends JavaPlugin implements Listener {
         adminCommands.register(new ZoneCreator(this));
         adminCommands.register(new ZoneModify(this));
         adminCommands.register(new BuildLoadOut(this));
+        adminCommands.register(new DuelSettings(this));
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 
@@ -218,6 +220,10 @@ public class Duel extends JavaPlugin implements Listener {
             configLoader.save(configs);
             DuelMsg.getInstance().logInfoFormatted("Successfully created config.json");
             configs.setFirstLoad(false);
+
+            if (!Files.exists(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator))) {
+                Files.createDirectories(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator));
+            }
 
             gameHandler = new GameHandler(this);
             lobbyHandler = new LobbyHandler(this);
