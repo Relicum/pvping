@@ -1,4 +1,4 @@
-package com.relicum.pvpcore.Configs.Loaders;
+package com.relicum.pvpcore.Configs;
 
 import com.massivecraft.massivecore.MassiveCore;
 import com.massivecraft.massivecore.xlib.gson.Gson;
@@ -56,7 +56,7 @@ public abstract class AbstractLoader<T> {
     }
 
     /**
-     * This should create a new {@link com.google.gson.reflect.TypeToken} and
+     * This should create a new {@link com.massivecraft.massivecore.xlib.gson.reflect.TypeToken} and
      * set the field {@link #token} to the objects Type.
      */
     public abstract void setToken();
@@ -77,7 +77,7 @@ public abstract class AbstractLoader<T> {
             }
         }
 
-        try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(getPath(), Charset.defaultCharset()))) {
+        try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(getPath(), Charset.forName("UTF-8")))) {
             writer.setIndent("    ");
             GSON.toJson(type, getToken(), writer);
             writer.flush();
@@ -108,7 +108,7 @@ public abstract class AbstractLoader<T> {
 
 
         T obj = null;
-        try (JsonReader reader = new JsonReader(Files.newBufferedReader(getPath(), Charset.defaultCharset()))) {
+        try (JsonReader reader = new JsonReader(Files.newBufferedReader(getPath(), Charset.forName("UTF-8")))) {
             obj = GSON.fromJson(reader, getToken());
             reader.close();
 

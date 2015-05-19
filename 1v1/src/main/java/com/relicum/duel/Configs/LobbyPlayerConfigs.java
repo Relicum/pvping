@@ -3,6 +3,7 @@ package com.relicum.duel.Configs;
 import com.google.common.base.Objects;
 import com.relicum.pvpcore.Gamers.PlayerGameSettings;
 import com.relicum.pvpcore.Gamers.PlayerGameSettingsBuilder;
+import org.bukkit.GameMode;
 
 /**
  * Name: LobbyPlayerConfigs.java Created: 11 May 2015
@@ -32,7 +33,7 @@ public class LobbyPlayerConfigs {
 
     public void setDefaults() {
 
-        this.settings = PlayerGameSettingsBuilder.builder().build();
+        this.settings = PlayerGameSettingsBuilder.builder().setGameMode(GameMode.ADVENTURE.name()).build();
     }
 
     public PlayerGameSettings getSettings() {
@@ -45,7 +46,7 @@ public class LobbyPlayerConfigs {
     public String toString() {
 
         return Objects.toStringHelper(this)
-                       .add("settings", settings)
+                       .add("settings", settings.toString())
                        .toString();
     }
 }

@@ -73,8 +73,7 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
                 return;
             }
 
-            ((ActionMenu) event.getInventory()
-                                  .getHolder()).onInventoryClick(event);
+            ((ActionMenu) event.getInventory().getHolder()).onInventoryClick(event);
 
         }
     }

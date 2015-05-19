@@ -7,13 +7,13 @@ import com.relicum.duel.Configs.LobbyPlayerConfigs;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Events.PlayerJoinLobbyEvent;
 import com.relicum.duel.Objects.LobbyLoadOut;
-import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.JoinCause;
 import com.relicum.pvpcore.Enums.Symbols;
 import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,9 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,7 +40,6 @@ public class LobbyHandler implements Listener {
     private transient Duel plugin;
     private DuelMsg msg;
     private transient GameHandler gameHandler;
-    private Map<String, PvpPlayer> players = new HashMap<>();
     private boolean lobbyEnabled = false;
     private boolean adminMode = true;
     private boolean autoJoin = false;
@@ -51,6 +48,8 @@ public class LobbyHandler implements Listener {
     private Set<String> inLobby = new HashSet<>();
     private boolean accepting = true;
     private SpawnPoint lobbySpawn;
+
+    private LobbyGameLink.Inner gameLink;
 
 
     public LobbyHandler(Duel plugin) {
@@ -82,6 +81,7 @@ public class LobbyHandler implements Listener {
     public LobbyHandler(Duel plugin, GameHandler gameHandler) {
 
         this.plugin = plugin;
+
         this.msg = DuelMsg.getInstance();
         this.gameHandler = gameHandler;
 
@@ -94,6 +94,18 @@ public class LobbyHandler implements Listener {
         autoJoin = plugin.getConfigs().isAutoJoin();
         lobbySpawn = plugin.getConfigs().getLobbySpawn();
 
+        if (!isLobbySpawn()) {
+            msg.logInfoFormatted("1v1 Lobby Spawn is not set, you need to set this before you do anything else");
+
+            setLobbyEnabled(false);
+            setIasAccepting(false);
+
+            plugin.getConfigs().setLobbyEnabled(false);
+        }
+
+        this.gameLink = getGameHandler().getAccess(this);
+
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
 
@@ -102,14 +114,13 @@ public class LobbyHandler implements Listener {
 
     public void addPlayer(Player player, RankArmor rank, SpawnPoint backLocation, JoinCause cause) {
 
-        if (isKnown(player.getUniqueId().toString())) {
-            msg.sendErrorMessage(player, "Error: Unable to join 1v1 Zone as you are already in it");
-            return;
+        if (cause == JoinCause.END_GAME) {
+
+            //Might want to do some checking to make sure everything completed ok.
         }
 
-        //PvpPlayer pvp = new PvpPlayer(player, plugin);
+        getGameHandler().add(player, rank, backLocation);
 
-        getGameHandler().add(player, backLocation);
     }
 
     public DuelMsg getMsg() {
@@ -117,7 +128,13 @@ public class LobbyHandler implements Listener {
         return msg;
     }
 
-    public boolean islobbySpawn() {
+
+    /**
+     * Is lobby spawn been set.
+     *
+     * @return true if it has, false if not.
+     */
+    public boolean isLobbySpawn() {
 
         return lobbySpawn != null;
     }
@@ -138,23 +155,13 @@ public class LobbyHandler implements Listener {
      * Remove player from list of players in the lobby.
      *
      * @param uuid the players string uuid
-     * @return the true if they were removed, false if the player was not in the list or an error occurred.
+     * @return true if they were removed, false if the player was not in the list or an error occurred.
      */
     public boolean removeFromLobby(String uuid) {
 
         return inLobby.remove(uuid);
     }
 
-    /**
-     * Is the player being handled.
-     *
-     * @param uuid the string uuid of the player to check for
-     * @return true if the player is found, false if not.
-     */
-    public boolean isKnown(String uuid) {
-
-        return players.containsKey(uuid);
-    }
 
     /**
      * Checks if the player is in the lobby.
@@ -187,15 +194,7 @@ public class LobbyHandler implements Listener {
         return lobbyLoadOut;
     }
 
-    /**
-     * Gets Gson loader.
-     *
-     * @return the loader {@link LobbyLoadOutLoader}
-     */
-    public LobbyLoadOutLoader getLoader() {
 
-        return loader;
-    }
 
     /**
      * Gets game handler {@link GameHandler}.
@@ -227,19 +226,6 @@ public class LobbyHandler implements Listener {
         this.accepting = accept;
     }
 
-    public void doFirstLoad() {
-
-        lobbyLoadOut = new LobbyLoadOut();
-        lobbyLoadOut.setContents(LobbyHotBar.create().getItems());
-        lobbyLoadOut.setArmor(new LobbyArmor(true));
-        lobbyLoadOut.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
-        PotionEffect p = new PotionEffect(PotionEffectType.FAST_DIGGING, 1000000, 1, false, false);
-        lobbyLoadOut.addPotionEffect(p);
-        lobbyLoadOut.setSettings(LobbyPlayerConfigs.create(true).getSettings());
-        loader = new LobbyLoadOutLoader(plugin.getDataFolder().toString() + File.separator, "lobbysettings");
-        loader.save(lobbyLoadOut);
-
-    }
 
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -249,20 +235,18 @@ public class LobbyHandler implements Listener {
 
         if (event.isCancelled()) {
 
-            DuelMsg.getInstance().sendErrorMessage(player, "Error: Lobby Join event has been canceled by another plugin " + Symbols
-                                                                                                                                    .EXCLAMATION_MARK.toChar()
-            );
+            DuelMsg.getInstance().sendErrorMessage(player, "Error: Lobby Join event has been canceled by another plugin " + Symbols.EXCLAMATION_MARK.toChar());
 
             return;
         }
 
-        if (isKnown(player.getUniqueId().toString())) {
+        if (isInLobby(player.getUniqueId().toString())) {
             msg.sendErrorMessage(player, "Error: Unable to join 1v1 Zone as you are already in it");
             event.setCancelled(true);
             return;
         }
 
-        if (!player.isOp() && (!isAdminMode() || !isLobbyEnabled() || !isAccepting())) {
+        if (!player.isOp() && (isAdminMode() || !isLobbyEnabled() || !isAccepting() || !isLobbySpawn())) {
 
             getMsg().sendErrorMessage(player, "Sorry but you can not currently join 1v1 ");
 
@@ -295,9 +279,7 @@ public class LobbyHandler implements Listener {
 
 
         plugin.getStatsManager().load(event.getStringUUID());
-
-        inLobby.add(event.getStringUUID());
-
+        addToLobby(event.getStringUUID());
 
     }
 
@@ -318,12 +300,29 @@ public class LobbyHandler implements Listener {
         }
 
         int slot = player.getInventory().getHeldItemSlot();
-
-        if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) || !event.getAction().equals(Action.LEFT_CLICK_AIR)) {
+        Action action = event.getAction();
+        if (!action.equals(Action.RIGHT_CLICK_BLOCK) && !action.equals(Action.LEFT_CLICK_AIR)) {
 
             return;
         }
 
+        if (slot == 0) {
+            if (event.getItem().getType().equals(Material.GOLD_AXE)) {
+                player.sendMessage("Getting this far");
+                if (action.equals(Action.LEFT_CLICK_AIR)) {
+
+                    event.setCancelled(true);
+                    msg.sendMessage(player, "You have left clicked the air");
+                    return;
+                }
+                if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
+
+                    event.setCancelled(true);
+                    msg.sendMessage(player, "You have right clicked a block" + event.getClickedBlock().getType().name());
+                    return;
+                }
+            }
+        }
 
     }
 
@@ -406,5 +405,19 @@ public class LobbyHandler implements Listener {
     public void setAutoJoin(boolean autoJoin) {
 
         this.autoJoin = autoJoin;
+    }
+
+    public void doFirstLoad() {
+
+        lobbyLoadOut = new LobbyLoadOut();
+        lobbyLoadOut.setContents(LobbyHotBar.create().getItems());
+        lobbyLoadOut.setArmor(new LobbyArmor(true));
+        lobbyLoadOut.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
+        PotionEffect p = new PotionEffect(PotionEffectType.FAST_DIGGING, 1000000, 1, false, false);
+        lobbyLoadOut.addPotionEffect(p);
+        lobbyLoadOut.setSettings(LobbyPlayerConfigs.create(true).getSettings());
+        loader = new LobbyLoadOutLoader(plugin.getDataFolder().toString() + File.separator, "lobbysettings");
+        loader.save(lobbyLoadOut);
+
     }
 }

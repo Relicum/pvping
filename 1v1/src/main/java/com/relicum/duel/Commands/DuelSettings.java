@@ -17,6 +17,7 @@ import java.util.List;
 @Command(aliases = {"settings"}, desc = "Opens menu to set the main plugin settings", perm = "duel.admin.settings", usage = "/noxarena settings", isSub = true, parent = "noxarena")
 public class DuelSettings extends DuelCmd {
 
+
     /**
      * Instantiates a new AbstractCommand
      *
@@ -24,17 +25,19 @@ public class DuelSettings extends DuelCmd {
      */
     public DuelSettings(Duel plugin) {
         super(plugin);
+
     }
 
 
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
-
+        Player player = (Player) sender;
         if (args.length == 0) {
             sendMessage("Opening Settings Menu");
             plugin.getMenuManager().getDuelSettings().openMenuForEditing((Player) sender);
             return true;
         }
+
 
         return true;
     }

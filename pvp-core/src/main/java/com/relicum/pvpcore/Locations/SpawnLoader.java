@@ -1,8 +1,9 @@
 package com.relicum.pvpcore.Locations;
 
-import com.google.gson.reflect.TypeToken;
+
+import com.massivecraft.massivecore.xlib.gson.reflect.TypeToken;
 import com.relicum.locations.SpawnPoint;
-import com.relicum.pvpcore.Configs.Loaders.AbstractLoader;
+import com.relicum.pvpcore.Configs.AbstractLoader;
 
 /**
  * SpawnLoader save and load {@link SpawnPoint} to Json.

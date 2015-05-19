@@ -4,13 +4,10 @@ import com.relicum.pvpcore.Enums.ArmorItems;
 import com.relicum.pvpcore.Enums.ArmorType;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,8 +16,7 @@ import java.util.Map;
  * @author Relicum
  * @version 0.0.1
  */
-@SerializableAs("Armor")
-public class Armor implements ConfigurationSerializable {
+public class Armor {
 
     private String name;
     private EnumMap<ArmorType, ItemStack> armor = new EnumMap<>(ArmorType.class);
@@ -157,25 +153,25 @@ public class Armor implements ConfigurationSerializable {
         return name;
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", getName());
-        map.put("helmet", getArmorPart(ArmorType.HELMET));
-        map.put("chest", getArmorPart(ArmorType.CHEST_PLATE));
-        map.put("leggings", getArmorPart(ArmorType.LEGGINGS));
-        map.put("boots", getArmorPart(ArmorType.BOOTS));
-
-        return map;
-    }
-
-    @Override
-    public String toString() {
-
-        return new org.apache.commons.lang.builder.ToStringBuilder(this)
-                       .append("armor", armor)
-                       .append("name", name)
-                       .toString();
-    }
+//    @Override
+//    public Map<String, Object> serialize() {
+//
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("name", getName());
+//        map.put("helmet", getArmorPart(ArmorType.HELMET));
+//        map.put("chest", getArmorPart(ArmorType.CHEST_PLATE));
+//        map.put("leggings", getArmorPart(ArmorType.LEGGINGS));
+//        map.put("boots", getArmorPart(ArmorType.BOOTS));
+//
+//        return map;
+//    }
+//
+//    @Override
+//    public String toString() {
+//
+//        return new org.apache.commons.lang.builder.ToStringBuilder(this)
+//                       .append("armor", armor)
+//                       .append("name", name)
+//                       .toString();
+//    }
 }

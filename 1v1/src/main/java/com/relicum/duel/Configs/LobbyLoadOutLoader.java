@@ -1,8 +1,9 @@
 package com.relicum.duel.Configs;
 
-import com.google.gson.reflect.TypeToken;
+
+import com.massivecraft.massivecore.xlib.gson.reflect.TypeToken;
 import com.relicum.duel.Objects.LobbyLoadOut;
-import com.relicum.pvpcore.Configs.Loaders.AbstractLoader;
+import com.relicum.pvpcore.Configs.AbstractLoader;
 
 /**
  * LobbyLoadOutLoader loads and save players settings and loadout while in the lobby.

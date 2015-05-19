@@ -64,7 +64,9 @@ public class LobbyHotBar {
         ItemStack stacks = new ItemBuilder(Material.GOLD_AXE, 1)
                                    .setDisplayName("&3&l\u00BB &6&lChallenge a Player &3&l\u00AB")
                                    .setItemLores(Arrays.asList(" ", "&3Right click to challenge", "&3a player to a 1v1"))
+                                   .setUnBreaking(true)
                                    .setItemFlag(ItemFlag.HIDE_ATTRIBUTES)
+                                   .setItemFlag(ItemFlag.HIDE_UNBREAKABLE)
                                    .build();
 
         addItem(Slot.ZERO, stacks.clone());

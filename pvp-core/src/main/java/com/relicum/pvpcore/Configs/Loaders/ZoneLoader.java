@@ -1,9 +1,9 @@
-package com.relicum.pvpcore.Configs;
+package com.relicum.pvpcore.Configs.Loaders;
 
 
 import com.massivecraft.massivecore.xlib.gson.reflect.TypeToken;
 import com.relicum.pvpcore.Arenas.PvPZone;
-import com.relicum.pvpcore.Configs.Loaders.AbstractLoader;
+import com.relicum.pvpcore.Configs.AbstractLoader;
 
 /**
  * Name: ZoneLoader.java Created: 01 May 2015

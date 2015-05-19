@@ -11,23 +11,19 @@ import com.relicum.duel.Commands.ZoneCreator;
 import com.relicum.duel.Commands.ZoneModify;
 import com.relicum.duel.Configs.ConfigLoader;
 import com.relicum.duel.Configs.DuelConfigs;
-import com.relicum.duel.Configs.KitDataLoader;
 import com.relicum.duel.Handlers.GameHandler;
 import com.relicum.duel.Handlers.LobbyHandler;
+import com.relicum.duel.Kits.KitManager;
 import com.relicum.duel.Menus.MenuManager;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Arenas.ZoneManager;
 import com.relicum.pvpcore.Game.StatsManager;
-import com.relicum.pvpcore.Kits.KitData;
-import com.relicum.pvpcore.Kits.LoadOut;
 import com.relicum.pvpcore.Menus.MenuAPI;
 import com.relicum.titleapi.TitleApi;
 import com.relicum.titleapi.TitleMaker;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -48,6 +44,7 @@ public class Duel extends JavaPlugin implements Listener {
     public static final String META_KEY = "PVP-META";
     private static Duel instance;
     public PvpPlayer player;
+    private KitManager kitHandler;
     private boolean firstLoad = false;
     private GameHandler gameHandler;
     private ZoneManager<Duel> zoneManager;
@@ -60,6 +57,7 @@ public class Duel extends JavaPlugin implements Listener {
     private LobbyHandler lobbyHandler;
     private ConfigLoader configLoader;
     private DuelConfigs configs;
+
 
     /**
      * Utility method for getting a plugins Main JavaPlugin Class
@@ -74,7 +72,7 @@ public class Duel extends JavaPlugin implements Listener {
 
     public void onEnable() {
 
-        ConfigurationSerialization.registerClass(LoadOut.class, "LoadOut");
+
         instance = this;
 
         if (!checkAndCreate(getDataFolder().toString() + File.separator + "config.json")) {
@@ -95,8 +93,15 @@ public class Duel extends JavaPlugin implements Listener {
 
             configLoader = new ConfigLoader(getDataFolder().toString() + File.separator, "config");
             configs = configLoader.load();
+            if (!configs.isEnable()) {
+
+                getServer().getPluginManager().disablePlugin(this);
+
+                return;
+            }
 
 
+            kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
 
             lobbyHandler = new LobbyHandler(this, gameHandler);
@@ -111,6 +116,7 @@ public class Duel extends JavaPlugin implements Listener {
 
                 zoneManager = new ZoneManager<>(this, Collections.<String>emptyList());
             }
+
 
             menuAPI = new MenuAPI<>(this);
 
@@ -149,6 +155,7 @@ public class Duel extends JavaPlugin implements Listener {
 
     }
 
+
     public boolean isFirstLoad() {
 
         return firstLoad;
@@ -159,6 +166,7 @@ public class Duel extends JavaPlugin implements Listener {
         DuelMsg.getInstance().logInfoFormatted("Saving Configuration files");
         configLoader.save(configs);
 
+        kitHandler.saveAndRemoveAll();
         statsManager.saveAndClearAll();
         gameHandler.clearAllPlayers();
     }
@@ -178,6 +186,9 @@ public class Duel extends JavaPlugin implements Listener {
         return menuManager;
     }
 
+    public KitManager getKitHandler() {
+        return kitHandler;
+    }
 
     public LobbyHandler getLobbyHandler() {
 
@@ -221,13 +232,14 @@ public class Duel extends JavaPlugin implements Listener {
             DuelMsg.getInstance().logInfoFormatted("Successfully created config.json");
             configs.setFirstLoad(false);
 
-            if (!Files.exists(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator))) {
-                Files.createDirectories(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator));
-            }
-
+//            if (!Files.exists(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator))) {
+//                Files.createDirectories(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator));
+//            }
+            kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
             lobbyHandler = new LobbyHandler(this);
             lobbyHandler.setGameHandler(gameHandler);
+
 
             statsManager = new StatsManager(this);
 
@@ -269,19 +281,6 @@ public class Duel extends JavaPlugin implements Listener {
             }
         }
         return true;
-    }
-
-
-    public void onLog(PlayerJoinEvent event) {
-
-
-        KitDataLoader loader = new KitDataLoader(getDataFolder().toString() + File.separator + "kits" + File.separator, "relicum");
-
-        KitData kitData = new KitData("relicum", event.getPlayer());
-
-        loader.save(kitData);
-
-
     }
 
 }

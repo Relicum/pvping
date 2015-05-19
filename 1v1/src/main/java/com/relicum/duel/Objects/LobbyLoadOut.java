@@ -1,5 +1,6 @@
 package com.relicum.duel.Objects;
 
+
 import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Handlers.LobbyArmor;
 import com.relicum.pvpcore.Gamers.IPlayerSettings;
@@ -148,7 +149,7 @@ public class LobbyLoadOut implements IPlayerSettings {
     @Override
     public ItemStack[] getContents() {
 
-        return contents;
+        return contents.clone();
     }
 
     /**
@@ -167,7 +168,7 @@ public class LobbyLoadOut implements IPlayerSettings {
     @Override
     public Collection<PotionEffect> getEffects() {
 
-        return potionEffects;
+        return new ArrayList<>(potionEffects);
     }
 
     /**

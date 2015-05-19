@@ -1,6 +1,6 @@
 package com.relicum.pvpcore.Game;
 
-import com.relicum.pvpcore.Configs.StatsLoader;
+import com.relicum.pvpcore.Configs.Loaders.StatsLoader;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;

@@ -1,10 +1,12 @@
 package com.relicum.duel.Handlers;
 
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
+import com.relicum.pvpcore.Enums.PlayerState;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -14,7 +16,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.UUID;
 
 /**
  * GameHandler
@@ -25,18 +31,65 @@ import java.util.*;
 public class GameHandler implements Listener {
 
     private final static int TOTAL = 2;
+    private final SpawnPoint worldSpawn;
     private Queue<String> playerQueue = new LinkedList<>();
     private Map<String, PvpPlayer> players = new HashMap<>();
     private Duel plugin;
     private DuelMsg msg;
-    private final SpawnPoint worldSpawn;
+    private LobbyGameLink link;
 
     public GameHandler(Duel plugin) {
 
         this.plugin = plugin;
         worldSpawn = new SpawnPoint(plugin.getServer().getWorld("world").getSpawnLocation());
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        openLink();
+    }
 
+    public LobbyGameLink.Inner getAccess(LobbyHandler handler) {
+
+        return link.requestAccess(handler);
+    }
+
+
+    public void openLink() {
+
+        this.link = new LobbyGameLink(this) {
+
+            @Override
+            public PlayerState getPlayerState(String uuid) {
+                return GameHandler.this.getPlayerState(uuid);
+            }
+
+            @Override
+            public void setPlayerState(String uuid, PlayerState state) {
+
+                GameHandler.this.setPlayerState(uuid, state);
+            }
+
+
+        };
+    }
+
+    /**
+     * Gets players current state {@link PlayerState}.
+     *
+     * @param uuid the uuid
+     * @return the player state
+     */
+    public PlayerState getPlayerState(String uuid) {
+        return getPvpPlayer(uuid).getState();
+    }
+
+    public void setPlayerState(String uuid, PlayerState state) {
+
+        getPvpPlayer(uuid).setState(state);
+    }
+
+
+    private PvpPlayer getPvpPlayer(String uuid) {
+
+        return players.get(uuid);
     }
 
     /**
@@ -55,40 +108,31 @@ public class GameHandler implements Listener {
         return msg;
     }
 
+
     /**
      * Creates a {@link PvpPlayer} for the player and adds them to the central
      * store as well as the Queue if needed.
      *
      * @param player the player
      */
-    public boolean add(Player player, SpawnPoint point) {
+    public boolean add(Player player, RankArmor rank, SpawnPoint point) {
 
         if (isKnown(player.getUniqueId().toString())) {
             return false;
         }
 
 
-        PvpPlayer pvp = new PvpPlayer(player, getPlugin(), point);
+        PvpPlayer pvp = new PvpPlayer(player, getPlugin(), point, rank);
 
         players.put(uuidToString(player.getUniqueId()), pvp);
 
-        if (isFull()) {
-            pvp.sendMessage("You are in luck we have found a match get ready");
+        pvp.sendMessage("Welcome to the 1v1 lobby");
 
-        }
-        else {
-            if (addToQueue(pvp)) {
-                pvp.sendMessage("You have been added to the queue");
-                pvp.sendActionMessage("&6&lYou have been added to the queue");
-            }
-            else {
-                pvp.sendMessage("You are already in the queue");
-            }
-        }
 
         return true;
 
     }
+
 
     /**
      * Remove the {@link Player} {@link PvpPlayer} object and returns it.
@@ -254,11 +298,11 @@ public class GameHandler implements Listener {
 
     public void clearAllPlayers() {
 
+        link.setActive(false);
+
         clearQueue();
 
-        for (PvpPlayer pvpPlayer : players.values()) {
-            pvpPlayer.clearRef();
-        }
+        players.values().forEach(com.relicum.duel.Objects.PvpPlayer::clearRef);
 
         players.clear();
 

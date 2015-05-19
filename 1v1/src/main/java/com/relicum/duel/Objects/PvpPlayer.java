@@ -1,6 +1,5 @@
 package com.relicum.duel.Objects;
 
-import com.massivecraft.massivecore.MassiveCore;
 import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
@@ -18,12 +17,10 @@ import com.relicum.pvpcore.Tasks.UpdateInventory;
 import com.relicum.titleapi.Exception.ReflectionException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -49,13 +46,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private String name = "";
     private InventoryStore store;
     private SpawnPoint backLocation;
-    private String jsonInventory;
-    private String jsonSettings;
     private ItemStack[] lobbyArmor;
     private ItemStack[] lobbyBar;
     private List<PotionEffect> lobbyEffects;
     private PlayerStats stats;
     private Objective objective;
+    private RankArmor rank;
     private int start = 10;
 
     /**
@@ -64,21 +60,19 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param paramPlayer the param player
      * @param paramPlugin the param plugin
      */
-    public PvpPlayer(final Player paramPlayer, final Duel paramPlugin, SpawnPoint backLocation) {
+    public PvpPlayer(final Player paramPlayer, final Duel paramPlugin, SpawnPoint backLocation, RankArmor rank) {
 
         super(paramPlayer, paramPlugin);
-        this.jsonInventory = MassiveCore.gson.toJson(paramPlayer.getInventory(), PlayerInventory.class);
+        this.rank = rank;
 
 
         this.backLocation = backLocation;
 
-        lobbyArmor = plugin.getLobbyHandler().getLobbyLoadOut().getArmor(RankArmor.DEV);
+        lobbyArmor = plugin.getLobbyHandler().getLobbyLoadOut().getArmor(rank);
 
         lobbyBar = plugin.getLobbyHandler().getLobbyLoadOut().getContents();
 
-        lobbyEffects = new ArrayList<>();
-
-        lobbyEffects.addAll(plugin.getLobbyHandler().getLobbyLoadOut().getEffects());
+        lobbyEffects = new ArrayList<>(plugin.getLobbyHandler().getLobbyLoadOut().getEffects());
 
         stats = paramPlugin.getStatsManager().getAPlayersStats(paramPlayer.getUniqueId().toString());
 
@@ -170,15 +164,14 @@ public class PvpPlayer extends WeakGamer<Duel> {
         System.out.println("PvpPlayer Object destroyed");
     }
 
-    public String getJsonInventory() {
+    /**
+     * Gets players rank.
+     *
+     * @return the rank
+     */
+    public String getRank() {
 
-        return jsonInventory;
-    }
-
-
-    public String getJsonSettings() {
-
-        return jsonSettings;
+        return rank.name();
     }
 
     public PlayerStats getStats() {
@@ -342,26 +335,14 @@ public class PvpPlayer extends WeakGamer<Duel> {
         Player pl = getPlayer();
 
 
-        ItemStack stack = new ItemStack(Material.POTION, 1);
-
-        List<ItemStack> po = new ArrayList<>();
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
-
-            ItemStack stack1 = stack.clone();
-            PotionMeta meta = (PotionMeta) stack.getItemMeta();
-            meta.addCustomEffect(effect, false);
-            stack1.setItemMeta(meta);
-            po.add(stack1);
-        }
+        this.store = new InventoryStore(pl.getInventory(), pl.getActivePotionEffects(), PlayerSettings.save(pl));
 
 
         for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
 
-        this.store = new InventoryStore(pl.getInventory(), po, PlayerSettings.save(pl));
 
-        this.jsonSettings = MassiveCore.gson.toJson(store.getSettings(), PlayerSettings.class);
     }
 
     /**
@@ -370,8 +351,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
     @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
     public void clearInventory() {
 
-        // playerInventory.setArmorContents(new ItemStack[4]);
-        // playerInventory.clear();
         PlayerInventory inv = getPlayer().getInventory();
         getPlayer().closeInventory();
         inv.setArmorContents(new ItemStack[4]);

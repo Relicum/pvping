@@ -1,6 +1,6 @@
 package com.relicum.pvpcore.Arenas;
 
-import com.relicum.pvpcore.Configs.ZoneLoader;
+import com.relicum.pvpcore.Configs.Loaders.ZoneLoader;
 import com.relicum.utilities.Files.FileUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 

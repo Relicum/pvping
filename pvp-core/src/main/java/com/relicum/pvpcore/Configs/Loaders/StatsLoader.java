@@ -1,7 +1,8 @@
-package com.relicum.pvpcore.Configs;
+package com.relicum.pvpcore.Configs.Loaders;
 
-import com.google.gson.reflect.TypeToken;
-import com.relicum.pvpcore.Configs.Loaders.AbstractLoader;
+
+import com.massivecraft.massivecore.xlib.gson.reflect.TypeToken;
+import com.relicum.pvpcore.Configs.AbstractLoader;
 import com.relicum.pvpcore.Game.PlayerStats;
 
 /**
