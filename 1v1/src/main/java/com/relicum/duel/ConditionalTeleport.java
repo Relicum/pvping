@@ -1,5 +1,6 @@
 package com.relicum.duel;
 
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Events.PlayerJoinLobbyEvent;
 import com.relicum.locations.SpawnPoint;
@@ -37,7 +38,7 @@ public class ConditionalTeleport extends BukkitRunnable {
             location.getChunk().load();
         }
 
-        PlayerJoinLobbyEvent event = new PlayerJoinLobbyEvent(player, new SpawnPoint(player.getLocation()), this.joinCause);
+        PlayerJoinLobbyEvent event = new PlayerJoinLobbyEvent(player, new SpawnPoint(player.getLocation()), RankArmor.DEV, this.joinCause);
 
 
         if (call(event, condition)) {

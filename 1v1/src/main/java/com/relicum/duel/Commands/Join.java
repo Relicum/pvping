@@ -1,5 +1,6 @@
 package com.relicum.duel.Commands;
 
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Events.PlayerJoinLobbyEvent;
@@ -35,7 +36,8 @@ public class Join extends DuelCmd {
     public boolean onCommand(CommandSender sender, String s, String[] args) {
 
 
-        PlayerJoinLobbyEvent event = new PlayerJoinLobbyEvent((Player) sender, new SpawnPoint(((Player) sender).getLocation()), JoinCause.COMMAND);
+        PlayerJoinLobbyEvent event = new PlayerJoinLobbyEvent((Player) sender, new SpawnPoint(((Player) sender).getLocation()), RankArmor.DEV, JoinCause
+                                                                                                                                                       .COMMAND);
         plugin.getServer().getPluginManager().callEvent(event);
 
         return true;

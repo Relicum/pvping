@@ -22,6 +22,8 @@ import java.util.Map;
  */
 public class ActionMenu implements InventoryHolder {
 
+    private static final long serialVersionUID = 1L;
+
     protected Map<Integer, AbstractItem> items;
     protected Inventory inventory;
     protected String title;
@@ -33,6 +35,7 @@ public class ActionMenu implements InventoryHolder {
     private transient boolean modifiable = false;
     private transient boolean editing = false;
     private boolean altered = false;
+
 
     public ActionMenu(String title, int rows) {
 
@@ -219,7 +222,21 @@ public class ActionMenu implements InventoryHolder {
             item = items.get(index);
         }
 
+        if (item.getAction() == ClickAction.VALIDATION) {
 
+            if (index < 4) {
+                player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 10.0f, 1.0f);
+                player.sendMessage(ChatColor.GREEN + "Confirmation given");
+            }
+            else {
+                player.playSound(player.getEyeLocation(), Sound.ZOMBIE_PIG_ANGRY, 10.0f, 1.0f);
+                player.sendMessage(ChatColor.DARK_RED + "Confirmation cancelled");
+            }
+
+            item.getMenu().closeMenu(player);
+
+            return;
+        }
         ActionResponse response = item.getActionHandler().perform(player, item, event);
 
 //        if (!response.isModifiable()) {
@@ -333,14 +350,14 @@ public class ActionMenu implements InventoryHolder {
     }
 
     /**
-     * Gets if this item can be modified.
+     * Gets if this menu can be modified.
      *
      * @return true and it can be modified, false and it can not.
      */
     public boolean isModifiable() { return modifiable; }
 
     /**
-     * Sets if the item can be modified.
+     * Sets if the menu can be modified.
      *
      * @param modifiable set true and it can be modified, false and it can not.
      */

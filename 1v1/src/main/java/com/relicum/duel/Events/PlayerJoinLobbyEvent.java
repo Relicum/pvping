@@ -1,5 +1,6 @@
 package com.relicum.duel.Events;
 
+import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.JoinCause;
 import org.bukkit.entity.Player;
@@ -21,20 +22,33 @@ public class PlayerJoinLobbyEvent extends Event implements Cancellable {
     private Player player;
     private SpawnPoint from;
     private JoinCause cause;
+    private RankArmor rank;
 
-    public PlayerJoinLobbyEvent(Player player, SpawnPoint point, JoinCause cause) {
+    public PlayerJoinLobbyEvent(Player player, SpawnPoint point, RankArmor rankArmor, JoinCause cause) {
 
         this.player = player;
+        this.rank = rankArmor;
         this.from = point;
         this.cause = cause;
 
     }
 
-    public PlayerJoinLobbyEvent(Player player, JoinCause cause) {
+    public PlayerJoinLobbyEvent(Player player, RankArmor rankArmor, JoinCause cause) {
 
         this.player = player;
+        this.rank = rankArmor;
         this.cause = cause;
 
+    }
+
+    public static HandlerList getHandlerList() {
+
+        return handlers;
+
+    }
+
+    public RankArmor getRank() {
+        return rank;
     }
 
     public Player getPlayer() {
@@ -64,13 +78,6 @@ public class PlayerJoinLobbyEvent extends Event implements Cancellable {
 
     @Override
     public HandlerList getHandlers() {
-
-        return handlers;
-
-    }
-
-
-    public static HandlerList getHandlerList() {
 
         return handlers;
 

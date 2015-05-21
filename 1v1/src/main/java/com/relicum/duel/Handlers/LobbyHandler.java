@@ -10,8 +10,10 @@ import com.relicum.duel.Objects.LobbyLoadOut;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.JoinCause;
 import com.relicum.pvpcore.Enums.Symbols;
+import com.relicum.pvpcore.Gamers.PvpResponse;
 import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -112,14 +115,14 @@ public class LobbyHandler implements Listener {
     }
 
 
-    public void addPlayer(Player player, RankArmor rank, SpawnPoint backLocation, JoinCause cause) {
+    public PvpResponse addPlayer(Player player, RankArmor rank, SpawnPoint backLocation, JoinCause cause) {
 
         if (cause == JoinCause.END_GAME) {
 
             //Might want to do some checking to make sure everything completed ok.
         }
 
-        getGameHandler().add(player, rank, backLocation);
+        return getGameHandler().add(player, rank, backLocation);
 
     }
 
@@ -266,7 +269,17 @@ public class LobbyHandler implements Listener {
                 }
 
                 if (c == 2) {
-                    addPlayer(event.getPlayer(), RankArmor.EMERALD, event.getFrom(), event.getCause());
+
+                    PvpResponse response = addPlayer(event.getPlayer(), event.getRank(), event.getFrom(), event.getCause());
+
+                    if (!response.response()) {
+                        event.getPlayer().sendMessage(ChatColor.RED + response.getMessage());
+
+                        event.setCancelled(true);
+
+                        cancel();
+
+                    }
                 }
 
                 c++;
@@ -324,6 +337,19 @@ public class LobbyHandler implements Listener {
             }
         }
 
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+
+        if (isInLobby(event.getPlayer().getUniqueId().toString())) {
+            plugin.getLogger().info("Player has quit but is still in the Set of players in Lobby handler");
+
+            if (inLobby.remove(event.getPlayer().getUniqueId().toString())) {
+                plugin.getLogger().info("Successfully removed the player from the map");
+            }
+
+        }
     }
 
 

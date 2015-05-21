@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ActionItem extends AbstractItem {
 
-
+    private static final long serialVersionUID = 1L;
     /**
      * Instantiates a new Abstract item.
      *
@@ -34,6 +34,23 @@ public class ActionItem extends AbstractItem {
 
         super(paramItem, paramSlot);
     }
+
+    /**
+     * Instantiates a new Abstract item.
+     *
+     * @param paramItem   the {@link ItemStack} used as the icon
+     * @param paramSlot   the slot inventory position
+     * @param paramAction the action to perform when the icon is clicked
+     *                    {@link ClickAction}
+     */
+    public ActionItem(ItemStack paramItem, int paramSlot, ClickAction paramAction) {
+
+        super(paramItem, paramSlot, paramAction);
+
+        this.setActionHandler(actionHandler);
+
+    }
+
 
     /**
      * Instantiates a new Abstract item.

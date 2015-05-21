@@ -2,6 +2,8 @@ package com.relicum.pvpcore.Menus;
 
 import com.relicum.pvpcore.FormatUtil;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
  * @version 0.0.1
  */
 public abstract class AbstractItem implements BaseItem, Permissible, Actionable {
+
+    private static final long serialVersionUID = 1L;
 
     protected String displayName;
     protected ActionHandler actionHandler;
@@ -60,6 +64,47 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
             setDescription(paramItem.getItemMeta().getLore());
         }
 
+    }
+
+
+    /**
+     * Instantiates a new Abstract item.
+     *
+     * @param paramItem   the {@link ItemStack} used as the icon
+     * @param paramSlot   the slot inventory position
+     * @param paramAction the action to perform when the icon is clicked
+     *                    {@link ClickAction}
+     */
+    public AbstractItem(ItemStack paramItem, int paramSlot, ClickAction paramAction) {
+
+        item = paramItem;
+        slot = paramSlot;
+        action = paramAction;
+
+
+        ItemMeta meta;
+        try {
+            meta = item.getItemMeta();
+        }
+        catch (Exception ignored) {
+
+            meta = Bukkit.getItemFactory().getItemMeta(Material.AIR);
+        }
+
+        try {
+            if (meta.hasDisplayName()) {
+                setText(paramItem.getItemMeta().getDisplayName());
+            }
+        }
+        catch (Exception ignored) {
+        }
+        try {
+            if (meta.hasLore()) {
+                setDescription(paramItem.getItemMeta().getLore());
+            }
+        }
+        catch (Exception ignored) {
+        }
     }
 
     /**

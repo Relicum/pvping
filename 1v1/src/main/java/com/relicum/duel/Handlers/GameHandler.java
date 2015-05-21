@@ -7,6 +7,7 @@ import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
+import com.relicum.pvpcore.Gamers.PvpResponse;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -64,7 +65,7 @@ public class GameHandler implements Listener {
             @Override
             public void setPlayerState(String uuid, PlayerState state) {
 
-                GameHandler.this.setPlayerState(uuid, state);
+                GameHandler.this.registerPlayerState(uuid, state);
             }
 
 
@@ -81,9 +82,20 @@ public class GameHandler implements Listener {
         return getPvpPlayer(uuid).getState();
     }
 
-    public void setPlayerState(String uuid, PlayerState state) {
 
-        getPvpPlayer(uuid).setState(state);
+    /**
+     * Attempts to register the {@link PlayerState} for the player.
+     * <p>It might not always to be possible to resgister the {@link PlayerState} under certain conditions.
+     * <p>It is important to check the returned {@link PvpResponse} for the outcome.
+     *
+     * @param uuid  the uuid
+     * @param state the {@link PlayerState} to set
+     * @return {@link PvpResponse} which holds the outcome of attempting to set the players state.
+     */
+    public PvpResponse registerPlayerState(String uuid, PlayerState state) {
+
+        return players.get(uuid).registerState(state);
+
     }
 
 
@@ -115,10 +127,10 @@ public class GameHandler implements Listener {
      *
      * @param player the player
      */
-    public boolean add(Player player, RankArmor rank, SpawnPoint point) {
+    public PvpResponse add(Player player, RankArmor rank, SpawnPoint point) {
 
         if (isKnown(player.getUniqueId().toString())) {
-            return false;
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Player: " + player.getName() + " is alredy in the players map");
         }
 
 
@@ -129,7 +141,7 @@ public class GameHandler implements Listener {
         pvp.sendMessage("Welcome to the 1v1 lobby");
 
 
-        return true;
+        return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
 
     }
 
@@ -169,7 +181,7 @@ public class GameHandler implements Listener {
             if (reason.equals(EndReason.LOGGED)) {
                 pvpPlayer.gameEnd(reason);
                 removeFromQueue(player.getUniqueId().toString());
-
+                plugin.getLobbyHandler().removeFromLobby(player.getUniqueId().toString());
                 pvpPlayer.clearRef();
 
                 System.out.println("Number of players now in queue is " + playerQueue.size());
@@ -177,6 +189,7 @@ public class GameHandler implements Listener {
                 return true;
             }
 
+            plugin.getLobbyHandler().removeFromLobby(player.getUniqueId().toString());
             pvpPlayer.gameEnd(reason);
             // plugin.getStatsManager().removeAndSave(pvpPlayer.getStringUUID());
             removeFromQueue(pvpPlayer);

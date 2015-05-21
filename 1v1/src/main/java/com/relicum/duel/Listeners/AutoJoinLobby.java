@@ -3,6 +3,7 @@ package com.relicum.duel.Listeners;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Handlers.LobbyHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  * Name: AutoJoinLobby.java Created: 13 May 2015
@@ -28,6 +29,16 @@ public class AutoJoinLobby implements Listener {
 
     }
 
+    public AutoJoinLobby(Duel plugin) {
+
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+
+    public void autoJoin(PlayerJoinEvent event) {
+
+
+    }
 
     /**
      * Gets dedicated.

@@ -11,12 +11,14 @@ import com.relicum.pvpcore.Menus.ActionItem;
 import com.relicum.pvpcore.Menus.ActionMenu;
 import com.relicum.pvpcore.Menus.ClickAction;
 import com.relicum.pvpcore.Menus.Handlers.CloseMenuHandler;
+import com.relicum.pvpcore.Menus.MenuAPI;
 import com.relicum.pvpcore.Menus.Slot;
 import com.relicum.utilities.Items.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -67,6 +69,90 @@ public class MenuManager implements Listener {
     public Duel getPlugin() {
 
         return plugin;
+    }
+
+
+    public ActionMenu getConfirmMenu() {
+
+
+        ActionMenu confirm = MenuAPI.get().createMenu(FormatUtil.colorize("&a&lCONFIRMATION NEEDED"), 1);
+
+        for (int i = 0; i < 9; i++) {
+
+            if (i < 4) {
+
+                confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
+                                                           .setDurability((short) 5)
+                                                           .setDisplayName("&a&lRight click to confirm")
+                                                           .build(), i, ClickAction.VALIDATION), i);
+
+            }
+
+            else if (i == 4) {
+
+                confirm.addMenuItem(new ActionItem(new ItemStack(Material.AIR), i, ClickAction.NO_ACTION), i);
+
+            }
+
+            else if (i > 4) {
+
+                confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
+                                                           .setDurability((short) 14)
+                                                           .setDisplayName("&4&lRight click to cancel")
+                                                           .build(), i, ClickAction.VALIDATION), i);
+
+            }
+        }
+
+        confirm.setEditing(true);
+
+        return confirm;
+    }
+
+    public ActionMenu getKitViewer(String title, PlayerInventory inventory) {
+
+        ActionMenu view = MenuAPI.get().createMenu(FormatUtil.colorize("&6&lKit Preview: &3&l" + title), 6);
+
+        ItemStack[] a = inventory.getArmorContents().clone();
+        ItemStack[] c = inventory.getContents().clone();
+
+        System.out.println("con = " + c.length + " and arm = " + a.length);
+
+        int e = 0;
+
+        for (int row = 36; row > 0; row -= 9) {
+
+            for (int col = 9; col > 0; col--) {
+
+                view.addMenuItem(new ActionItem(c[row - col], e, ClickAction.NO_ACTION), e);
+
+                e++;
+            }
+        }
+        int d = 0;
+        for (int i = 36; i < 54; i++) {
+
+            if (i < 45) {
+
+
+            }
+
+            if (i > 44 && i < 49) {
+
+                view.addMenuItem(new ActionItem(a[d], i, ClickAction.NO_ACTION), i);
+                d++;
+            }
+            else {
+                view.addMenuItem(new ActionItem(new ItemStack(Material.AIR), i, ClickAction.NO_ACTION), i);
+            }
+
+        }
+
+        view.setModifiable(true);
+
+
+        return view;
+
     }
 
     public ZoneMainMenu createZoneEdit() {

@@ -3,6 +3,7 @@ package com.relicum.duel;
 
 import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.BuildLoadOut;
+import com.relicum.duel.Commands.DebugCmd;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Commands.DuelSettings;
 import com.relicum.duel.Commands.Join;
@@ -149,6 +150,7 @@ public class Duel extends JavaPlugin implements Listener {
         adminCommands.register(new ZoneModify(this));
         adminCommands.register(new BuildLoadOut(this));
         adminCommands.register(new DuelSettings(this));
+        adminCommands.register(new DebugCmd(this));
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 

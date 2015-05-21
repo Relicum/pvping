@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class LobbyLoadOut implements IPlayerSettings {
 
-    private LobbyArmor armor;
+    private transient LobbyArmor armor;
     private PlayerGameSettings settings;
     private Collection<PotionEffect> potionEffects = new ArrayList<>();
     private ItemStack[] contents;
@@ -33,6 +33,8 @@ public class LobbyLoadOut implements IPlayerSettings {
     private List<ItemStack> pots = new ArrayList<>();
 
     public LobbyLoadOut() {
+
+        armor = new LobbyArmor(true);
 
     }
 

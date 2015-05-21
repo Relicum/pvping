@@ -7,10 +7,12 @@ import com.relicum.duel.Tasks.ActionTimer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
+import com.relicum.pvpcore.Enums.RestoreReason;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Game.PlayerStats;
 import com.relicum.pvpcore.Gamers.InventoryStore;
 import com.relicum.pvpcore.Gamers.PlayerSettings;
+import com.relicum.pvpcore.Gamers.PvpResponse;
 import com.relicum.pvpcore.Gamers.WeakGamer;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import com.relicum.pvpcore.Tasks.UpdateInventory;
@@ -41,6 +43,8 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     Scoreboard board;
     private PlayerState state;
+    private boolean restore = false;
+    private RestoreReason restoreReason;
     private boolean saveInv = true;
     private boolean queueing = false;
     private String name = "";
@@ -82,7 +86,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         setState(PlayerState.LOBBY);
 
-        createScoreboard();
+
 
         List<String> messages = new ArrayList<>();
         messages.add(FormatUtil.colorize("&a&lWelcome to 1v1 Zone"));
@@ -155,14 +159,328 @@ public class PvpPlayer extends WeakGamer<Duel> {
 //        }.runTaskTimer(plugin, 200l, 20l);
     }
 
-    public void destroy() {
 
-        clearInventory();
-        restorePlayerSettings();
-        updateScoreboard(true);
-        player.clear();
-        System.out.println("PvpPlayer Object destroyed");
+    //************************************** MANAGE PLAYER STATE ******************************************//
+
+    /**
+     * Get the current player state {@link PlayerState}
+     *
+     * @return the current {@link PlayerState}
+     */
+    public PlayerState getState() {
+
+        return state;
     }
+
+
+    public final PvpResponse registerState(PlayerState paramState) {
+
+        return setState(paramState);
+    }
+
+    /**
+     * Set the current {@link PlayerState} of the player and update accordingly.
+     *
+     * @param playerState the {@link PlayerState} to set.
+     */
+    private PvpResponse setState(PlayerState playerState) {
+
+        this.state = playerState;
+
+        if (inLobby()) {
+            if (saveInv) {
+                firstJoinedLobby();
+            }
+            else {
+                applyLobbyState();
+            }
+
+        }
+        else if (isLeaving()) {
+
+            setRestore(true, RestoreReason.LEAVE_CMD);
+
+
+        }
+        else if (state.equals(PlayerState.QUIT)) {
+            stateGameEnd();
+        }
+
+        return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
+    }
+
+
+    /**
+     * Check if the player is in the lobby.
+     *
+     * @return true and they are in the lobby, false and they are not.
+     */
+    public final boolean inLobby() {
+
+        return state == PlayerState.LOBBY;
+    }
+
+    /**
+     * Check if the player is in the Pre Game state.
+     * <p>This is when they are no longer considered to be in the lobby but are not in a running game.
+     *
+     * @return true if they are, false if they aren't.
+     */
+    public final boolean isPreGame() {
+
+        return state == PlayerState.PREGAME;
+    }
+
+    /**
+     * Check if the player is in a game.
+     *
+     * @return true if they are, false if they aren't
+     */
+    public final boolean inGame() {
+
+        return state == PlayerState.INGAME;
+    }
+
+    /**
+     * Checks if the player is in the Post Game state.
+     * <p>This is when the game has ended but they have not returned to the lobby yet.
+     *
+     * @return true if they are, false if they aren't
+     */
+    public final boolean isPostGame() {
+
+        return state == PlayerState.POSTGAME;
+    }
+
+    /**
+     * Checks if the player is in the leaving state.
+     * <p>This is when a player has chosen the leave 1v1
+     *
+     * @return true if they are, false if they aren't
+     */
+    public final boolean isLeaving() {
+
+        return state == PlayerState.LEAVING;
+    }
+
+    /**
+     * Checks if the player has quit, this could be for a number of reasons.
+     * <p>They rage quit, they timed out, kicked or banned etc.
+     * <p>But the definition of hasQuit is that they did not leave in a normal way.
+     *
+     * @return true and they have quit, false if they have not.
+     */
+    public final boolean hasQuit() {
+
+        return state == PlayerState.QUIT;
+    }
+
+
+    /**
+     * Sets in lobby.
+     */
+    public void setInLobby() {
+
+        setState(PlayerState.LOBBY);
+    }
+
+    /**
+     * Set pre game.
+     */
+    public void setPreGame() {
+
+        setState(PlayerState.PREGAME);
+    }
+
+    /**
+     * Sets in game.
+     */
+    public void setInGame() {
+
+        setState(PlayerState.INGAME);
+    }
+
+    /**
+     * Set post game.
+     */
+    public void setPostGame() {
+
+        setState(PlayerState.POSTGAME);
+    }
+
+    /**
+     * Set leaving.
+     */
+    public void setLeaving() {
+
+        setState(PlayerState.LEAVING);
+    }
+
+
+    /**
+     * Sets has quit.
+     */
+    public void setHasQuit() {
+
+        setState(PlayerState.QUIT);
+    }
+
+
+    /**
+     * Should the player have their original inventory and setting restored that they started with.
+     * <p>This should only occure if they are leaving or have quit 1v1
+     *
+     * @return true and player will be restored, false and they won't.
+     */
+    public final boolean isRestore() {
+
+        return restore;
+    }
+
+    /**
+     * Sets to true for the player to have their original inventory and settings restored.
+     * <p>Only set to true if the player is leaving or has quit 1v1.
+     *
+     * @param restore set true and player will be restored, false and they won't and it may cancel a previous request to restore.
+     * @param reason  the {@link RestoreReason}
+     */
+    public void setRestore(boolean restore, RestoreReason reason) {
+        this.restore = restore;
+        this.restoreReason = reason;
+    }
+
+    /**
+     * Gets restore reason, will have a value of {@link RestoreReason#VOID} if it has not been set.
+     *
+     * @return the {@link RestoreReason}
+     */
+    public RestoreReason getRestoreReason() {
+
+        if (restoreReason != null) {
+            return restoreReason;
+        }
+        else {
+            return RestoreReason.VOID;
+        }
+    }
+
+
+    public void firstJoinedLobby() {
+
+        Player pl = getPlayer();
+
+        savePlayerSettings(getPlayer());
+
+        applyLobbyInventory(pl);
+
+        saveInv = false;
+
+        createScoreboard();
+    }
+
+    public void applyLobbyState() {
+
+
+        updateScoreboard();
+        clearInventory();
+        applyLobbyInventory();
+        UpdateInventory.now(getPlayer(), plugin);
+
+    }
+
+    /**
+     * Save player inventory,potions and settings.
+     */
+    public void savePlayerSettings() {
+
+        Player pl = getPlayer();
+        savePlayerSettings(pl);
+
+    }
+
+
+    /**
+     * Save player inventory,potions and settings and clear the inventory.
+     *
+     * @param player the {@link Player} to save the settings for
+     */
+    public void savePlayerSettings(Player pl) {
+
+        this.store = new InventoryStore(pl.getInventory(), pl.getActivePotionEffects(), PlayerSettings.save(pl));
+
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
+            pl.removePotionEffect(effect.getType());
+        }
+
+        clearInventory(pl);
+
+    }
+
+    /**
+     * Clear inventory.
+     */
+    @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
+    public void clearInventory() {
+        clearInventory(getPlayer());
+    }
+
+    /**
+     * Clear inventory.
+     */
+    @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
+    public void clearInventory(Player player) {
+
+        PlayerInventory inv = player.getInventory();
+        player.closeInventory();
+        inv.setArmorContents(new ItemStack[4]);
+        inv.clear();
+
+    }
+
+    /**
+     * Apply lobby inventory.
+     */
+    public void applyLobbyInventory() {
+
+        applyLobbyInventory(getPlayer());
+
+    }
+
+    /**
+     * Apply lobby inventory.
+     *
+     * @param pl the {@link Player} to apply it to
+     */
+    public void applyLobbyInventory(Player pl) {
+
+        pl.getInventory().setArmorContents(lobbyArmor.clone());
+        pl.getInventory().setContents(lobbyBar.clone());
+        plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(pl);
+        pl.addPotionEffects(lobbyEffects);
+
+        updateInventory(pl);
+
+
+    }
+
+    /**
+     * Update inventory.
+     *
+     * @param player the {@link Player}
+     */
+    public void updateInventory(Player player) {
+
+        UpdateInventory.now(player, getPlugin());
+    }
+
+    /**
+     * Update inventory.
+     */
+    public void updateInventory() {
+
+        updateInventory(getPlayer());
+    }
+
 
     /**
      * Gets players rank.
@@ -227,46 +545,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     }
 
-    /**
-     * Gets {@link PlayerState}
-     *
-     * @return the current {@link PlayerState}
-     */
-    public PlayerState getState() {
-
-        return state;
-    }
-
-    public final void setState(PlayerState playerState) {
-
-        this.state = playerState;
-
-        if (state.equals(PlayerState.LOBBY)) {
-            stateLobby();
-        }
-        else if (state.equals(PlayerState.QUIT)) {
-            stateGameEnd();
-        }
-    }
-
-    public void stateLobby() {
-
-        if (saveInv) {
-
-            savePlayerSettings();
-            clearInventory();
-            applyLobbyInventory();
-            UpdateInventory.now(getPlayer(), plugin);
-            saveInv = false;
-        }
-        else {
-            updateScoreboard();
-            clearInventory();
-            applyLobbyInventory();
-            UpdateInventory.now(getPlayer(), plugin);
-        }
-
-    }
 
     public void stateGameEnd() {
 
@@ -327,60 +605,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
         TeleportTask.create(getPlayer(), location, plugin, 20);
     }
 
-    /**
-     * Save player inventory,potions and settings.
-     */
-    public void savePlayerSettings() {
-
-        Player pl = getPlayer();
-
-
-        this.store = new InventoryStore(pl.getInventory(), pl.getActivePotionEffects(), PlayerSettings.save(pl));
-
-
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
-            pl.removePotionEffect(effect.getType());
-        }
-
-
-    }
-
-    /**
-     * Clear inventory.
-     */
-    @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
-    public void clearInventory() {
-
-        PlayerInventory inv = getPlayer().getInventory();
-        getPlayer().closeInventory();
-        inv.setArmorContents(new ItemStack[4]);
-        inv.clear();
-
-    }
-
-    public void updateInventory() {
-
-        UpdateInventory.now(getPlayer(), getPlugin());
-    }
-
-    public void applyLobbyInventory() {
-
-        Player pl = getPlayer();
-        //playerInventory.setArmorContents(lobbyArmor);
-        //playerInventory.setContents(lobbyBar);
-        pl.getInventory().setArmorContents(lobbyArmor);
-        pl.getInventory().setContents(lobbyBar);
-        plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(pl);
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
-            pl.removePotionEffect(effect.getType());
-        }
-
-        lobbyEffects.forEach(pl::addPotionEffect);
-
-        sendMessage("Lobby effect should be applied");
-
-
-    }
 
     /**
      * Restore player inventory and null the storage object.
@@ -401,8 +625,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     public boolean isGod() {
 
-        return state.equals(PlayerState.LOBBY) || state.equals(PlayerState.QUEUED);
+        return state == PlayerState.LOBBY;
     }
+
 
     /**
      * Is the player queueing.
@@ -490,5 +715,15 @@ public class PvpPlayer extends WeakGamer<Duel> {
         catch (ReflectionException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void destroy() {
+
+        clearInventory();
+        restorePlayerSettings();
+        updateScoreboard(true);
+        player.clear();
+        System.out.println("PvpPlayer Object destroyed");
     }
 }

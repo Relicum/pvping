@@ -17,10 +17,6 @@ import java.util.List;
  */
 public class ActionTimer extends BukkitRunnable {
 
-    private final String GREEN = "&a&l\u2B1B";
-    private final String RED = "&4&l\u2B1B";
-    private final String PREFIX = "&f&lStarting in ";
-    private String SUFFIX = " &f&l in NN seconds";
     private TitleMaker titleMaker;
 
     private List<Player> players;
@@ -80,18 +76,21 @@ public class ActionTimer extends BukkitRunnable {
 
         for (int i = 0; i < length; i++) {
 
-            String tmp = PREFIX;
+            String tmp = "&f&lStarting in ";
 
             for (int j = 1; j < length; j++) {
 
                 if (j > i) {
+                    String RED = "&4&l\u2B1B";
                     tmp += RED;
                 }
                 else {
+                    String GREEN = "&a&l\u2B1B";
                     tmp += GREEN;
                 }
             }
 
+            String SUFFIX = " &f&l in NN seconds";
             tmp += SUFFIX.replaceAll("NN", String.valueOf((length - i)));
             mess[i] = tmp;
         }

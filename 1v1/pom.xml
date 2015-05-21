@@ -5,7 +5,7 @@
     <parent>
         <artifactId>pvping-parent</artifactId>
         <groupId>com.relicum</groupId>
-        <version>1.0.15-SNAPSHOT</version>
+        <version>1.0.16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>1v1</artifactId>
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>com.relicum</groupId>
             <artifactId>pvp-core</artifactId>
-            <version>1.0.15-SNAPSHOT</version>
+            <version>1.0.16-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
