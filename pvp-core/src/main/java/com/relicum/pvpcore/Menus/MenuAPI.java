@@ -102,7 +102,7 @@ public class MenuAPI<T extends JavaPlugin> implements Listener {
         if (inventory.getHolder() instanceof ActionMenu) {
 
             if (!((ActionMenu) inventory.getHolder()).isModifiable()) {
-                plugin.getLogger().warning("Action :" + event.getAction().name());
+
 
                 event.setCancelled(true);
             }

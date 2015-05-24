@@ -33,6 +33,7 @@ public class DuelConfigs {
     private boolean allowLobbyChat = true;
     private boolean restrictIngameChat = true;
     private SpawnPoint lobbySpawn;
+    private MessageSettings messageSettings = new MessageSettings();
     private Map<String, Integer> coll = new HashMap<>();
 
     public DuelConfigs() {
@@ -43,6 +44,10 @@ public class DuelConfigs {
         this.lobbySpawn = point;
     }
 
+
+    public MessageSettings getMessageSettings() {
+        return messageSettings;
+    }
 
     public Set<Map.Entry<String, Integer>> getCollectionEntry() {
 

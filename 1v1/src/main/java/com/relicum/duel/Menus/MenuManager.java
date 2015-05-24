@@ -7,6 +7,7 @@ import com.relicum.pvpcore.Arenas.ZoneCollection;
 import com.relicum.pvpcore.Enums.ArenaState;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.AbstractItem;
+import com.relicum.pvpcore.Menus.ActionHandler;
 import com.relicum.pvpcore.Menus.ActionItem;
 import com.relicum.pvpcore.Menus.ActionMenu;
 import com.relicum.pvpcore.Menus.ClickAction;
@@ -72,7 +73,7 @@ public class MenuManager implements Listener {
     }
 
 
-    public ActionMenu getConfirmMenu() {
+    public ActionMenu getConfirmMenu(ActionHandler handler) {
 
 
         ActionMenu confirm = MenuAPI.get().createMenu(FormatUtil.colorize("&a&lCONFIRMATION NEEDED"), 1);
@@ -84,22 +85,17 @@ public class MenuManager implements Listener {
                 confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
                                                            .setDurability((short) 5)
                                                            .setDisplayName("&a&lRight click to confirm")
-                                                           .build(), i, ClickAction.VALIDATION), i);
+                                                           .build(), i, ClickAction.CONFIG, handler), i);
 
             }
 
-            else if (i == 4) {
-
-                confirm.addMenuItem(new ActionItem(new ItemStack(Material.AIR), i, ClickAction.NO_ACTION), i);
-
-            }
 
             else if (i > 4) {
 
                 confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
                                                            .setDurability((short) 14)
                                                            .setDisplayName("&4&lRight click to cancel")
-                                                           .build(), i, ClickAction.VALIDATION), i);
+                                                           .build(), i, ClickAction.CONFIG, handler), i);
 
             }
         }

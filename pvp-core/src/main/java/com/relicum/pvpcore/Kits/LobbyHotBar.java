@@ -3,6 +3,7 @@ package com.relicum.pvpcore.Kits;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.Slot;
 import com.relicum.utilities.Items.ItemBuilder;
+import com.relicum.utilities.Items.MLore;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -61,9 +62,16 @@ public class LobbyHotBar {
      */
     public void setAxe() {
 
+        MLore lore = new MLore(" \n")
+                             .then("&3Left Click to challenge")
+                             .append("a player to a 1v1")
+                             .blankLine()
+                             .then("&bRight Click the air to")
+                             .append("to select a 1v1 game to play").newLine();
+
         ItemStack stacks = new ItemBuilder(Material.GOLD_AXE, 1)
                                    .setDisplayName("&3&l\u00BB &6&lChallenge a Player &3&l\u00AB")
-                                   .setItemLores(Arrays.asList(" ", "&3Right click to challenge", "&3a player to a 1v1"))
+                                   .setItemLores(lore.toLore())
                                    .setUnBreaking(true)
                                    .setItemFlag(ItemFlag.HIDE_ATTRIBUTES)
                                    .setItemFlag(ItemFlag.HIDE_UNBREAKABLE)
@@ -92,10 +100,14 @@ public class LobbyHotBar {
      */
     public void setQueue() {
 
+        MLore lore = new MLore(" \n")
+                             .then("&3Right Click to open queue")
+                             .append("menu where you can select")
+                             .append("from a range of game modes");
+
         ItemStack stacks = new ItemBuilder(Material.NETHER_STAR, 1)
                                    .setDisplayName("&3&l\u00BB &a&lJoin Match Queue &3&l\u00AB")
-                                   .setItemLores(Arrays.asList(" ", "&3Right Click to open queue",
-                                                               "&3menu where you can select", "&3from a range of game " + "modes"))
+                                   .setItemLores(lore.toLore())
                                    .build();
 
         addItem(Slot.FOUR, stacks.clone());
@@ -127,9 +139,14 @@ public class LobbyHotBar {
      */
     public void setLeave() {
 
+        MLore lore = new MLore("  \n")
+                             .then("&3Right Click to leave the")
+                             .append("1v1 lobby and go back to")
+                             .append("where you came from");
+
         ItemStack stacks = new ItemBuilder(Material.WATCH, 1)
                                    .setDisplayName("&3&l\u00BB &a&lLeave 1v1 Lobby &3&l\u00AB")
-                                   .setItemLores(Arrays.asList(" ", "&3Right Click to leave the", "&31v1 lobby and go back to", "&3where you came from"))
+                                   .setItemLores(lore.toLore())
                                    .build();
 
         addItem(Slot.EIGHT, stacks.clone());

@@ -21,7 +21,7 @@ import java.util.List;
 public class DebugCmd extends DuelCmd {
 
 
-    private final List<String> OPTIONS = ImmutableList.of("display");
+    private final List<String> OPTIONS = ImmutableList.of("display", "game");
 
     private final List<String> OPTIONS2 = ImmutableList.of("state", "inlobby", "players", "queue");
 

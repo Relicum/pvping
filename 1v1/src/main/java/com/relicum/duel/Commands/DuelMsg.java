@@ -1,8 +1,7 @@
 package com.relicum.duel.Commands;
 
 import com.relicum.commands.Interfaces.Msg;
-
-import static org.bukkit.ChatColor.*;
+import com.relicum.duel.Duel;
 
 /**
  * DuelMsg
@@ -13,9 +12,19 @@ import static org.bukkit.ChatColor.*;
 public final class DuelMsg implements Msg {
 
     private static DuelMsg instance = null;
+    private final String thePrefix;
+    private final String theColor;
+    private final String errorColor;
+    private final String theAdminColor;
+    private final String theLogPrefix;
 
     protected DuelMsg() {
 
+        thePrefix = Duel.get().getConfigs().getMessageSettings().getPrefix();
+        theColor = Duel.get().getConfigs().getMessageSettings().getMessageColor();
+        errorColor = Duel.get().getConfigs().getMessageSettings().getErrorColor();
+        theAdminColor = Duel.get().getConfigs().getMessageSettings().getAdminColor();
+        theLogPrefix = Duel.get().getConfigs().getMessageSettings().getLogPrefix();
     }
 
     public static DuelMsg getInstance() {
@@ -29,19 +38,32 @@ public final class DuelMsg implements Msg {
     @Override
     public String getInfoChar() {
 
-        return "6";
+        return theColor;
+    }
+
+    @Override
+    public String getAdminColor() {
+
+        return theAdminColor;
+    }
+
+    @Override
+    public String getErrorColor() {
+
+        return errorColor;
     }
 
     @Override
     public String getPrefix() {
 
-        return String.valueOf(DARK_RED) + BOLD + "|-" + GOLD + BOLD + "1V1" + DARK_RED + BOLD + "-| " + RESET;
+        return thePrefix;
+
     }
 
     @Override
     public String getLogPrefix() {
 
-        return "[\u001b[1m\u001b[32mDuel\u001B[0m] \u001b[0m";
+        return theLogPrefix;
     }
 
 }

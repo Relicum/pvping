@@ -31,6 +31,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * PvpPlayer
@@ -56,6 +57,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private PlayerStats stats;
     private Objective objective;
     private RankArmor rank;
+    private PvpGame game;
     private int start = 10;
 
     /**
@@ -545,6 +547,10 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
     }
 
+    public UUID getGameId() {
+
+        return game.getUuid();
+    }
 
     public void stateGameEnd() {
 

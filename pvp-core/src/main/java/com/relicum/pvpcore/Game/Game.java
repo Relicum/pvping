@@ -59,14 +59,14 @@ public class Game<T extends JavaPlugin> {
 
     }
 
-    public void setZone(PvPZone pZone) {
-
-        this.zone = pZone;
-    }
-
     public PvPZone getZone() {
 
         return zone;
+    }
+
+    public void setZone(PvPZone pZone) {
+
+        this.zone = pZone;
     }
 
     public int getCountDown() {
@@ -94,14 +94,14 @@ public class Game<T extends JavaPlugin> {
         return zone.getMinPlayers();
     }
 
-    public void setRounds(int rounds) {
-
-        this.rounds = rounds;
-    }
-
     public int getRounds() {
 
         return rounds;
+    }
+
+    public void setRounds(int rounds) {
+
+        this.rounds = rounds;
     }
 
     public int getMaxRoundLength() {

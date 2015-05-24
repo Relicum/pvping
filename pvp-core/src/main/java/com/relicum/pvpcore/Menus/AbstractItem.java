@@ -1,5 +1,6 @@
 package com.relicum.pvpcore.Menus;
 
+import com.google.common.base.Objects;
 import com.relicum.pvpcore.FormatUtil;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -460,5 +461,22 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
 
         DEFAULT,
         ALTERNATIVE
+    }
+
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                       .add("action", action)
+                       .add("actionHandler", actionHandler)
+                       .add("displayName", displayName)
+                       .add("item", item)
+                       .add("lores", lores.toString())
+                       .add("modifiable", modifiable)
+                       .add("permission", permission)
+                       .add("permRequired", permRequired)
+                       .add("slot", slot)
+                       .add("toggleState", toggleState)
+                       .toString();
     }
 }

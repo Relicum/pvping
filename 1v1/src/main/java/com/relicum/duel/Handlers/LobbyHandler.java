@@ -6,6 +6,7 @@ import com.relicum.duel.Configs.LobbyLoadOutLoader;
 import com.relicum.duel.Configs.LobbyPlayerConfigs;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Events.PlayerJoinLobbyEvent;
+import com.relicum.duel.Menus.LeaveLobbyHandler;
 import com.relicum.duel.Objects.LobbyLoadOut;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.JoinCause;
@@ -16,13 +17,19 @@ import com.relicum.pvpcore.Tasks.TeleportTask;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -198,7 +205,6 @@ public class LobbyHandler implements Listener {
     }
 
 
-
     /**
      * Gets game handler {@link GameHandler}.
      *
@@ -229,7 +235,10 @@ public class LobbyHandler implements Listener {
         this.accepting = accept;
     }
 
+    public void refreshSpawn() {
 
+        lobbySpawn = plugin.getConfigs().getLobbySpawn();
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onLobby(PlayerJoinLobbyEvent event) {
@@ -296,6 +305,10 @@ public class LobbyHandler implements Listener {
 
     }
 
+    public void removeAndReturn(Player player) {
+
+    }
+
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInter(PlayerInteractEvent event) {
@@ -314,27 +327,58 @@ public class LobbyHandler implements Listener {
 
         int slot = player.getInventory().getHeldItemSlot();
         Action action = event.getAction();
-        if (!action.equals(Action.RIGHT_CLICK_BLOCK) && !action.equals(Action.LEFT_CLICK_AIR)) {
+        if (!action.equals(Action.RIGHT_CLICK_AIR) && !action.equals(Action.LEFT_CLICK_AIR)) {
 
             return;
         }
 
         if (slot == 0) {
-            if (event.getItem().getType().equals(Material.GOLD_AXE)) {
+            if (event.getItem().getType().equals(Material.GOLD_AXE) && action.equals(Action.LEFT_CLICK_AIR)) {
                 player.sendMessage("Getting this far");
-                if (action.equals(Action.LEFT_CLICK_AIR)) {
 
                     event.setCancelled(true);
                     msg.sendMessage(player, "You have left clicked the air");
                     return;
-                }
-                if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            }
+        }
+        if (slot == 8) {
+            if (event.getItem().getType().equals(Material.WATCH)) {
 
-                    event.setCancelled(true);
-                    msg.sendMessage(player, "You have right clicked a block" + event.getClickedBlock().getType().name());
+                if (!action.equals(Action.RIGHT_CLICK_AIR)) {
+
+                    msg.sendErrorMessage(player, "Invalid click need to right click air");
                     return;
                 }
+
+                ItemStack watch = event.getItem();
+
+                if (!watch.hasItemMeta()) {
+
+                    msg.sendErrorMessage(player, "Invalid item no meta found");
+                    return;
+                }
+
+                ItemMeta meta = watch.getItemMeta();
+
+                if (!meta.hasDisplayName() && !meta.hasLore()) {
+
+                    msg.sendErrorMessage(player, "Invalid item no display name or lore found");
+                    return;
+
+                }
+
+                if (!meta.getDisplayName().equalsIgnoreCase("§3§l» §a§lLeave 1v1 Lobby §3§l«")) {
+
+                    msg.sendErrorMessage(player, "Invalid display");
+                    return;
+
+                }
+                event.setCancelled(true);
+                msg.sendMessage(player, "Click confirm to leave");
+                plugin.getMenuManager().getConfirmMenu(new LeaveLobbyHandler()).openMenuForEditing(player);
+                return;
             }
+
         }
 
     }
@@ -350,6 +394,58 @@ public class LobbyHandler implements Listener {
             }
 
         }
+    }
+
+    @EventHandler
+    public void onInterEnt(PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof Player)) {
+            return;
+        }
+        Player p = event.getPlayer();
+
+        if (p.getInventory().getHeldItemSlot() != 0 && !p.getItemInHand().getType().equals(Material.GOLD_AXE)) {
+            return;
+        }
+
+        if (isInLobby(p.getUniqueId().toString()) && isInLobby(event.getRightClicked().getUniqueId().toString())) {
+
+            ItemMeta meta = p.getItemInHand().getItemMeta();
+            if (meta.hasDisplayName() && meta.getDisplayName().equalsIgnoreCase("§3§l» §6§lChallenge a Player §3§l«")) {
+                event.setCancelled(true);
+                Player p2 = (Player) event.getRightClicked();
+
+                msg.sendMessage(p, "You have requested a 1v1 with &6 " + p2.getName());
+                msg.sendMessage(p2, "Player &6" + p.getName() + " &ahas requested a 1v1 with you");
+
+            }
+
+        }
+
+    }
+
+    @EventHandler
+    public void onDam(EntityDamageEvent event) {
+
+        if (event.getEntity() instanceof Player) {
+            if (isInLobby(event.getEntity().getUniqueId().toString())) {
+                event.setCancelled(true);
+                ((Player) event.getEntity()).setHealth(20.0d);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onFoodDrop(FoodLevelChangeEvent event) {
+
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            if (isInLobby(event.getEntity().getUniqueId().toString())) {
+                event.setCancelled(true);
+                ((Player) event.getEntity()).setFoodLevel(20);
+                ((Player) event.getEntity()).setSaturation(20.0f);
+                ((Player) event.getEntity()).setExhaustion(0.2f);
+            }
+        }
+
     }
 
 

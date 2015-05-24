@@ -3,6 +3,7 @@ package com.relicum.duel.Handlers;
 import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
+import com.relicum.duel.Objects.PvpGame;
 import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
@@ -13,8 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
@@ -36,14 +36,17 @@ public class GameHandler implements Listener {
     private Queue<String> playerQueue = new LinkedList<>();
     private Map<String, PvpPlayer> players = new HashMap<>();
     private Duel plugin;
+    private Map<UUID, PvpGame> games = new HashMap<>();
     private DuelMsg msg;
     private LobbyGameLink link;
+
 
     public GameHandler(Duel plugin) {
 
         this.plugin = plugin;
         worldSpawn = new SpawnPoint(plugin.getServer().getWorld("world").getSpawnLocation());
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        msg = DuelMsg.getInstance();
         openLink();
     }
 
@@ -130,7 +133,7 @@ public class GameHandler implements Listener {
     public PvpResponse add(Player player, RankArmor rank, SpawnPoint point) {
 
         if (isKnown(player.getUniqueId().toString())) {
-            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Player: " + player.getName() + " is alredy in the players map");
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Player: " + player.getName() + " is already in the players map");
         }
 
 
@@ -326,32 +329,24 @@ public class GameHandler implements Listener {
         return worldSpawn.toLocation();
     }
 
-    @EventHandler
-    public void onDamage(EntityDamageEvent event) {
 
-        if (event.getEntityType().equals(EntityType.PLAYER)) {
-            if (players.containsKey(event.getEntity().getUniqueId().toString())) {
+    public void onDamage(EntityDamageByEntityEvent event) {
 
-                if (players.get(event.getEntity().getUniqueId().toString()).isGod()) {
+        if (event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntity().getType().equals(EntityType.PLAYER)) {
+            Player damager = (Player) event.getDamager();
+            Player defender = (Player) event.getEntity();
+            if (players.containsKey(damager.getUniqueId().toString()) && players.containsKey(defender.getUniqueId().toString())) {
+
+                if (players.get(damager.getUniqueId().toString()).inLobby() && players.get(defender.getUniqueId().toString()).inLobby()) {
+                    msg.sendMessage(damager, "You have requested a player to 1v1 with " + defender.getName());
+                    msg.sendMessage(defender, "Player " + damager.getName() + " has requested a 1v1 with you");
                     event.setCancelled(true);
                 }
             }
         }
     }
 
-    @EventHandler
-    public void onFoodDrop(FoodLevelChangeEvent event) {
 
-        if (event.getEntityType().equals(EntityType.PLAYER)) {
-            if (players.containsKey(event.getEntity().getUniqueId().toString())) {
-
-                if (players.get(event.getEntity().getUniqueId().toString()).isGod()) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-
-    }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {

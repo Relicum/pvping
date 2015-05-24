@@ -3,6 +3,7 @@ package com.relicum.duel;
 
 import com.relicum.commands.CommandRegister;
 import com.relicum.duel.Commands.BuildLoadOut;
+import com.relicum.duel.Commands.ClearAll;
 import com.relicum.duel.Commands.DebugCmd;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Commands.DuelSettings;
@@ -150,6 +151,7 @@ public class Duel extends JavaPlugin implements Listener {
         adminCommands.register(new ZoneModify(this));
         adminCommands.register(new BuildLoadOut(this));
         adminCommands.register(new DuelSettings(this));
+        adminCommands.register(new ClearAll(this));
         adminCommands.register(new DebugCmd(this));
         playerCommands.endRegistration();
         adminCommands.endRegistration();
@@ -157,6 +159,19 @@ public class Duel extends JavaPlugin implements Listener {
 
     }
 
+//    private void setEconomy(){
+//
+//        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+//
+//        if (rsp != null) {
+//            economy = rsp.getProvider();
+//            getLogger().info("Successfully hooked into Vault Economy");
+//        }
+//        else {
+//            getLogger().severe("Unable to hook into Vault Economy");
+//        }
+//
+//    }
 
     public boolean isFirstLoad() {
 

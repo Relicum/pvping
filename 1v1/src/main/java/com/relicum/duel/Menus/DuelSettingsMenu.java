@@ -2,18 +2,27 @@ package com.relicum.duel.Menus;
 
 import com.relicum.duel.Configs.DuelConfigs;
 import com.relicum.duel.Duel;
+import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.AbstractItem;
 import com.relicum.pvpcore.Menus.ActionHandler;
+import com.relicum.pvpcore.Menus.ActionItem;
 import com.relicum.pvpcore.Menus.ActionMenu;
 import com.relicum.pvpcore.Menus.ActionResponse;
 import com.relicum.pvpcore.Menus.BStack;
 import com.relicum.pvpcore.Menus.BooleanItem;
 import com.relicum.pvpcore.Menus.ClickAction;
+import com.relicum.utilities.Items.ItemBuilder;
 import com.relicum.utilities.Items.MLore;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 /**
  * Name: DuelSettingsMenu.java Created: 18 May 2015
@@ -29,6 +38,7 @@ public class DuelSettingsMenu extends ActionMenu {
         super(title, rows);
         this.configs = configs;
 
+        setModifiable(true);
         setEditing(true);
         initItems();
     }
@@ -44,6 +54,7 @@ public class DuelSettingsMenu extends ActionMenu {
 
     public void initItems() {
         setEnabledItem();
+        setLobbySpawn();
         setClosedItem();
     }
 
@@ -103,7 +114,73 @@ public class DuelSettingsMenu extends ActionMenu {
             }
         });
 
+
         registerItems(it);
+    }
+
+
+    public void setLobbySpawn() {
+
+        AbstractItem ls = new ActionItem(new ItemBuilder(Material.SIGN).setDisplayName("&6&lSet Lobby Spawn").setItemLores(getLobbySpawnLore()).build(), 2,
+                                         ClickAction.CONFIG, new ActionHandler() {
+
+
+            @Override
+            public ActionHandler getExecutor() {
+                return this;
+            }
+
+            public ActionResponse perform(Player player, AbstractItem icon, InventoryClickEvent event) {
+
+                event.setCancelled(true);
+
+                configs.setLobbySpawn(new SpawnPoint(player.getLocation()));
+
+                DuelSettingsMenu menu = (DuelSettingsMenu) icon.getMenu();
+
+                menu.removeMenuItem(icon.getIndex());
+
+                icon.setDescription(getLobbySpawnLore());
+                ItemStack stack = icon.getItem();
+                ItemMeta meta = stack.getItemMeta();
+                meta.setLore(getLobbySpawnLore());
+                meta.setDisplayName(icon.getText());
+                stack.setItemMeta(meta);
+
+                menu.addMenuItem(icon, icon.getIndex());
+                menu.getInventory().setItem(icon.getIndex(), stack);
+
+                player.sendMessage(ChatColor.GREEN + "Lobby Spawn Successfully Updated");
+                player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 10.0f, 1.0f);
+
+                saveConfigs();
+                Duel.get().getLobbyHandler().refreshSpawn();
+
+                ActionResponse response = new ActionResponse(icon, player);
+                response.setWillUpdate(true);
+                return response;
+
+            }
+
+        });
+
+        registerItems(ls);
+    }
+
+    public List<String> getLobbySpawnLore() {
+
+        MLore lore = new MLore(" \n")
+                             .then("&6Lobby Spawn Is Set To")
+                             .blankLine()
+                             .then("&aWorld :&6 " + configs.getLobbySpawn().getWorld()).newLine()
+                             .then("&aX     :&6 " + configs.getLobbySpawn().getX()).newLine()
+                             .then("&aY     :&6 " + configs.getLobbySpawn().getY()).newLine()
+                             .then("&aZ     :&6 " + configs.getLobbySpawn().getZ()).newLine()
+                             .then("&aYaw   :&6 " + configs.getLobbySpawn().getYaw()).newLine()
+                             .then("&aPitch :&6 " + configs.getLobbySpawn().getPitch());
+
+        return lore.toLore();
+
     }
 
     public void setClosedItem() {

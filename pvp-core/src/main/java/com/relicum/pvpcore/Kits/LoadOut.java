@@ -1,12 +1,17 @@
 package com.relicum.pvpcore.Kits;
 
 import com.google.common.base.Objects;
+import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Gamers.PlayerGameSettings;
 import com.relicum.pvpcore.Gamers.PlayerGameSettingsBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
@@ -28,6 +33,8 @@ public class LoadOut {
     private String loadOutPermission = "duel";
     private List<String> description = new LinkedList<>();
     private PlayerGameSettings settings;
+    private String material = "";
+    private String displayName = "";
 
 
     public LoadOut(String loadoutName) {
@@ -40,6 +47,9 @@ public class LoadOut {
         this.inventory = inventory;
         this.effects.addAll(effects);
         this.loadoutName = loadoutName;
+        loadOutPermission = "duel.kit." + ChatColor.stripColor(loadoutName);
+        this.material = Material.IRON_SWORD.name();
+        this.displayName = "&6&l" + loadoutName;
         description.add("&6the first");
         description.add("&6the second");
         ((LinkedList<String>) description).addLast("&bClick to go back");
@@ -97,6 +107,33 @@ public class LoadOut {
         this.description.add(description);
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = FormatUtil.colorize(displayName);
+    }
+
+    public Material getMaterial() {
+        return Material.valueOf(material);
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public ItemStack getIcon() {
+
+        ItemStack stack = new ItemStack(getMaterial());
+        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(getMaterial());
+        meta.setDisplayName(getDisplayName());
+        meta.setLore(getDescription());
+        stack.setItemMeta(meta);
+
+        return stack;
+    }
+
     public void applySettings(Player player) {
 
         settings.apply(player);
@@ -113,6 +150,8 @@ public class LoadOut {
                        .add("loadOutPermission", loadOutPermission)
                        .add("description", description.toString())
                        .add("settings", settings.toString())
+                       .add("material", material)
+                       .add("displayName", getDisplayName())
                        .toString();
     }
 }
