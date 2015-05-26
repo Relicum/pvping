@@ -21,11 +21,16 @@ public class TeleportTask extends BukkitRunnable {
     private Location location;
 
 
-    private TeleportTask(Player player, Location location, Plugin paramPlugin, int delay, String meta) {
+    private TeleportTask(Player player, Location location, Plugin paramPlugin, int delay, int meta) {
 
-        if (meta.length() > 0) {
-            player.setMetadata("PVP-META", new FixedMetadataValue(paramPlugin, meta));
+        if (meta != 1 && meta != 2 && meta != -1) {
+            throw new IllegalArgumentException("MetaData value must either be 1 or 2 or -1");
         }
+
+        if (meta != -1) {
+            player.setMetadata("DUEL-META", new FixedMetadataValue(paramPlugin, meta));
+        }
+
 
         this.player = player;
 
@@ -57,7 +62,7 @@ public class TeleportTask extends BukkitRunnable {
      */
     public static void create(Player player, Location location, Plugin paramPlugin, int delay) {
 
-        new TeleportTask(player, location, paramPlugin, delay, "");
+        new TeleportTask(player, location, paramPlugin, delay, -1);
     }
 
     /**
@@ -70,7 +75,7 @@ public class TeleportTask extends BukkitRunnable {
      * @param delay       the delay
      * @param meta        name of meta data if you want to attach it to the player
      */
-    public static void create(Player player, Location location, Plugin paramPlugin, int delay, String meta) {
+    public static void create(Player player, Location location, Plugin paramPlugin, int delay, int meta) {
 
         new TeleportTask(player, location, paramPlugin, delay, meta);
     }

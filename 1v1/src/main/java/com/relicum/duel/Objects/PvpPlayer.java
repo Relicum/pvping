@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -59,6 +60,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private RankArmor rank;
     private PvpGame game;
     private int start = 10;
+    private boolean online = false;
 
     /**
      * Instantiates a new PvpPlayer.
@@ -71,6 +73,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
         super(paramPlayer, paramPlugin);
         this.rank = rank;
 
+        setOnline(true);
 
         this.backLocation = backLocation;
 
@@ -89,12 +92,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
         setState(PlayerState.LOBBY);
 
 
-
-        List<String> messages = new ArrayList<>();
-        messages.add(FormatUtil.colorize("&a&lWelcome to 1v1 Zone"));
-        messages.add(FormatUtil.colorize("&f&oBrought To You By"));
-        messages.add(FormatUtil.colorize("&6&lRELICUM"));
-        messages.add(FormatUtil.colorize("&f&lAlong with &a&lU&b&lH&c&lC &6&lZone"));
+//        List<String> messages = new ArrayList<>();
+//        messages.add(FormatUtil.colorize("&a&lWelcome to 1v1 Zone"));
+//        messages.add(FormatUtil.colorize("&f&oBrought To You By"));
+//        messages.add(FormatUtil.colorize("&6&lRELICUM"));
+//        messages.add(FormatUtil.colorize("&f&lAlong with &a&lU&b&lH&c&lC &6&lZone"));
 
 
         new ActionTimer(Arrays.asList(paramPlayer), 10, Duel.get().getTitleMaker()).runTaskTimer(paramPlugin, 20l, 20l);
@@ -198,6 +200,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
             }
 
         }
+
         else if (isLeaving()) {
 
             setRestore(true, RestoreReason.LEAVE_CMD);
@@ -375,6 +378,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         applyLobbyInventory(pl);
 
+
         saveInv = false;
 
         createScoreboard();
@@ -387,6 +391,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
         clearInventory();
         applyLobbyInventory();
         UpdateInventory.now(getPlayer(), plugin);
+
 
     }
 
@@ -410,9 +415,14 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         this.store = new InventoryStore(pl.getInventory(), pl.getActivePotionEffects(), PlayerSettings.save(pl));
 
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
-            pl.removePotionEffect(effect.getType());
-        }
+        pl.getActivePotionEffects()
+                .stream()
+                .map(PotionEffect::getType)
+                .forEach(pl::removePotionEffect);
+
+//        for (PotionEffect effect : pl.getActivePotionEffects()) {
+//            pl.removePotionEffect(effect.getType());
+//        }
 
         clearInventory(pl);
 
@@ -455,6 +465,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      */
     public void applyLobbyInventory(Player pl) {
 
+        setMetaDataToLobby(pl);
         pl.getInventory().setArmorContents(lobbyArmor.clone());
         pl.getInventory().setContents(lobbyBar.clone());
         plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(pl);
@@ -503,10 +514,12 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         switch (reason) {
             case LEAVE_CMD: {
+                Player p = getPlayer();
+                //p.removeMetadata(Duel.META_KEY, plugin);
                 clearInventory();
                 restorePlayerSettings();
                 updateScoreboard(true);
-                UpdateInventory.now(getPlayer(), plugin);
+                UpdateInventory.now(p, plugin);
                 stats.incrementWin();
                 plugin.getStatsManager().removeAndSave(getUuid().toString());
                 teleport(backLocation.toLocation());
@@ -517,6 +530,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
                 try {
 
                     Player p = plugin.getServer().getPlayer(getUuid());
+                    p.removeMetadata(Duel.META_KEY, plugin);
                     p.teleport(backLocation.toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
                     p.getInventory().setArmorContents(store.getArmor());
                     p.getInventory().setContents(store.getContents());
@@ -619,6 +633,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         Player pl = getPlayer();
 
+        if (hasMetaData(pl)) {
+            pl.removeMetadata(Duel.META_KEY, plugin);
+            System.out.println("Removing Metadata from restore");
+        }
+
         pl.getInventory().setArmorContents(store.getArmor().clone());
         pl.getInventory().setContents(store.getContents().clone());
         for (PotionEffect effect : pl.getActivePotionEffects()) {
@@ -678,8 +697,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param objects the variables
      */
     public void sendMessage(String mess, Object[] objects) {
-
-        DuelMsg.getInstance().sendMessage(getPlayer(), FormatUtil.formatNoColor(mess, objects));
+        if (isOnline()) {
+            DuelMsg.getInstance().sendMessage(getPlayer(), FormatUtil.formatNoColor(mess, objects));
+        }
     }
 
     /**
@@ -688,8 +708,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param mess the message to display
      */
     public void sendMessage(String mess) {
-
-        DuelMsg.getInstance().sendMessage(getPlayer(), mess);
+        if (isOnline()) {
+            DuelMsg.getInstance().sendMessage(getPlayer(), mess);
+        }
     }
 
     /**
@@ -699,8 +720,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param objects the variables
      */
     public void sendErrorMessage(String mess, Object[] objects) {
-
-        DuelMsg.getInstance().sendErrorMessage(getPlayer(), FormatUtil.formatNoColor(mess, objects));
+        if (isOnline()) {
+            DuelMsg.getInstance().sendErrorMessage(getPlayer(), FormatUtil.formatNoColor(mess, objects));
+        }
     }
 
     /**
@@ -709,17 +731,24 @@ public class PvpPlayer extends WeakGamer<Duel> {
      * @param mess the error message to display
      */
     public void sendErrorMessage(String mess) {
-
-        DuelMsg.getInstance().sendErrorMessage(getPlayer(), mess);
+        if (isOnline()) {
+            DuelMsg.getInstance().sendErrorMessage(getPlayer(), mess);
+        }
     }
 
+    /**
+     * Send action bar message to the player.
+     *
+     * @param mess the message to send
+     */
     public void sendActionMessage(String mess) {
-
-        try {
-            plugin.getTitleMaker().sendActionBar(getPlayer(), mess);
-        }
-        catch (ReflectionException e) {
-            e.printStackTrace();
+        if (isOnline()) {
+            try {
+                plugin.getTitleMaker().sendActionBar(getPlayer(), mess);
+            }
+            catch (ReflectionException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -732,4 +761,103 @@ public class PvpPlayer extends WeakGamer<Duel> {
         player.clear();
         System.out.println("PvpPlayer Object destroyed");
     }
+
+    /**
+     * Gets if the player is currently online.
+     *
+     * @return true if they are online false if not..
+     */
+    public boolean isOnline() {
+
+        return online;
+    }
+
+    /**
+     * Sets players online status.
+     *
+     * @param online set true if they are online, or false if they are offline.
+     */
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    /**
+     * Has the player got metadata attached to them.
+     *
+     * @param player the player
+     * @return true if they do false if not.
+     */
+    public boolean hasMetaData(Player player) {
+
+        return player.hasMetadata(Duel.META_KEY);
+    }
+
+    /**
+     * Check and get metadata, if they do not have any the returned int will be -1.
+     *
+     * @return the metadata int, 1 and there in lobby, 2 they are in game, -1 and no meta is set.
+     */
+    public int checkAndGetMeta() {
+
+        Player player = getPlayer();
+
+        if (hasMetaData(player)) {
+            System.out.println("Check and get is good to go");
+            return player.getMetadata(Duel.META_KEY).get(0).asInt();
+        }
+
+        return -1;
+    }
+
+    /**
+     * Remove meta data.
+     */
+    public void removeMetaData() {
+
+        removeMetaData(getPlayer());
+    }
+
+    /**
+     * Remove meta data.
+     */
+    public void removeMetaData(Player pl) {
+
+        pl.removeMetadata(Duel.META_KEY, plugin);
+    }
+
+    /**
+     * Set meta data to lobby.
+     */
+    public void setMetaDataToLobby() {
+
+        setMetaDataToLobby(getPlayer());
+    }
+
+    /**
+     * Set meta data to lobby.
+     */
+    public void setMetaDataToLobby(Player pl) {
+
+        pl.setMetadata(Duel.META_KEY, new FixedMetadataValue(plugin, 1));
+        System.out.println("Setting meta to lobby");
+    }
+
+    /**
+     * Set meta data to game.
+     */
+    public void setMetaDataToGame() {
+
+        setMetaDataToGame(getPlayer());
+    }
+
+    /**
+     * Set meta data to game.
+     */
+    public void setMetaDataToGame(Player pl) {
+
+        pl.setMetadata(Duel.META_KEY, new FixedMetadataValue(plugin, 2));
+        System.out.println("Setting meta to game");
+    }
+
+
 }

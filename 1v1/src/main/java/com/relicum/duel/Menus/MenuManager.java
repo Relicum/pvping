@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +71,17 @@ public class MenuManager implements Listener {
     public Duel getPlugin() {
 
         return plugin;
+    }
+
+    public ActionMenu getKitModifyMenu(int rows) {
+
+        return MenuAPI.get().createMenu(FormatUtil.colorize("&a&lModify Kits Menu"), fit(rows));
+    }
+
+    public ActionMenu getHeadMenu() {
+
+        return MenuAPI.get().createMenu(FormatUtil.colorize("&a&lPlayer Heads"), 1);
+
     }
 
 
@@ -254,6 +266,7 @@ public class MenuManager implements Listener {
         return zoneEditMenu;
     }
 
+    @Nullable
     public ActionMenu getStateMenu(ArenaState current, String coll, String zone, ActionMenu parent) {
 
         ActionMenu sta = new ActionMenu(FormatUtil.colorize("&6&l" + zone + " state menu"), Slot.ONE.ordinal(), parent);

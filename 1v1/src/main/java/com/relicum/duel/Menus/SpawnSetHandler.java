@@ -82,15 +82,16 @@ public class SpawnSetHandler implements ActionHandler {
                 }
                 else {
 
-                    if (zone.containsSpawn(sp.getName())) {
+                    if (zone.containsSpawn(sp != null ? sp.getName() : null)) {
 
                         closeAndReOpen(player, am);
+                        assert sp != null;
                         player.teleport(zone.getSpawn(sp.getName()).toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
                     }
                     else {
 
-                        player.sendMessage(ChatColor.RED + "Unable to teleport, " + sp.getTitle() + " not set");
+                        player.sendMessage(ChatColor.RED + "Unable to teleport, " + (sp != null ? sp.getTitle() : null) + " not set");
 
                     }
                 }

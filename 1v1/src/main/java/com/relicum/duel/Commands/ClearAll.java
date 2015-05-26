@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class ClearAll extends DuelCmd {
 
     @Override
     public List<String> tabComp(int i, String[] args) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

@@ -7,17 +7,19 @@ import com.relicum.duel.Configs.LobbyPlayerConfigs;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Events.PlayerJoinLobbyEvent;
 import com.relicum.duel.Menus.LeaveLobbyHandler;
+import com.relicum.duel.Objects.GameInvite;
 import com.relicum.duel.Objects.LobbyLoadOut;
+import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.JoinCause;
 import com.relicum.pvpcore.Enums.Symbols;
 import com.relicum.pvpcore.Gamers.PvpResponse;
 import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,8 +27,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -34,6 +40,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -122,6 +129,7 @@ public class LobbyHandler implements Listener {
     }
 
 
+    @Nullable
     public PvpResponse addPlayer(Player player, RankArmor rank, SpawnPoint backLocation, JoinCause cause) {
 
         if (cause == JoinCause.END_GAME) {
@@ -274,14 +282,16 @@ public class LobbyHandler implements Listener {
             public void run() {
 
                 if (c == 1) {
-                    TeleportTask.create(event.getPlayer(), getLobbySpawn(), plugin, 0);
+                    TeleportTask.create(event.getPlayer(), getLobbySpawn(), plugin, 1);
                 }
 
                 if (c == 2) {
 
                     PvpResponse response = addPlayer(event.getPlayer(), event.getRank(), event.getFrom(), event.getCause());
 
+                    assert response != null;
                     if (!response.response()) {
+
                         event.getPlayer().sendMessage(ChatColor.RED + response.getMessage());
 
                         event.setCancelled(true);
@@ -336,9 +346,9 @@ public class LobbyHandler implements Listener {
             if (event.getItem().getType().equals(Material.GOLD_AXE) && action.equals(Action.LEFT_CLICK_AIR)) {
                 player.sendMessage("Getting this far");
 
-                    event.setCancelled(true);
-                    msg.sendMessage(player, "You have left clicked the air");
-                    return;
+                event.setCancelled(true);
+                msg.sendMessage(player, "You have left clicked the air");
+                return;
             }
         }
         if (slot == 8) {
@@ -386,6 +396,7 @@ public class LobbyHandler implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
 
+
         if (isInLobby(event.getPlayer().getUniqueId().toString())) {
             plugin.getLogger().info("Player has quit but is still in the Set of players in Lobby handler");
 
@@ -396,6 +407,7 @@ public class LobbyHandler implements Listener {
         }
     }
 
+    @SuppressFBWarnings({"NOISE_OPERATION"})
     @EventHandler
     public void onInterEnt(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof Player)) {
@@ -413,12 +425,16 @@ public class LobbyHandler implements Listener {
             if (meta.hasDisplayName() && meta.getDisplayName().equalsIgnoreCase("§3§l» §6§lChallenge a Player §3§l«")) {
                 event.setCancelled(true);
                 Player p2 = (Player) event.getRightClicked();
-
+                PvpPlayer pv1 = plugin.getGameHandler().getPvpPlayer(p.getUniqueId().toString());
+                PvpPlayer pv2 = plugin.getGameHandler().getPvpPlayer(p2.getUniqueId().toString());
+                GameInvite invite = new GameInvite(plugin, pv1, pv2, plugin.getKitHandler().getKit("diamond"));
+                plugin.getInviteCache().addInvite(invite);
                 msg.sendMessage(p, "You have requested a 1v1 with &6 " + p2.getName());
                 msg.sendMessage(p2, "Player &6" + p.getName() + " &ahas requested a 1v1 with you");
 
             }
 
+            return;
         }
 
     }
@@ -427,7 +443,9 @@ public class LobbyHandler implements Listener {
     public void onDam(EntityDamageEvent event) {
 
         if (event.getEntity() instanceof Player) {
+
             if (isInLobby(event.getEntity().getUniqueId().toString())) {
+
                 event.setCancelled(true);
                 ((Player) event.getEntity()).setHealth(20.0d);
             }
@@ -437,12 +455,73 @@ public class LobbyHandler implements Listener {
     @EventHandler
     public void onFoodDrop(FoodLevelChangeEvent event) {
 
-        if (event.getEntityType().equals(EntityType.PLAYER)) {
+        if (event.getEntity() instanceof Player) {
+
             if (isInLobby(event.getEntity().getUniqueId().toString())) {
+
                 event.setCancelled(true);
+
                 ((Player) event.getEntity()).setFoodLevel(20);
                 ((Player) event.getEntity()).setSaturation(20.0f);
                 ((Player) event.getEntity()).setExhaustion(0.2f);
+
+                event.getEntity().sendMessage(ChatColor.GREEN + "Food event was called");
+
+            }
+
+        }
+    }
+
+    @EventHandler
+    public void noDrops(PlayerDropItemEvent event) {
+
+        Player player = event.getPlayer();
+
+        if (isInLobby(player.getUniqueId().toString())) {
+
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.GREEN + "Drops have been blocked while in lobby");
+        }
+    }
+
+    @EventHandler
+    public void noPickUps(PlayerPickupItemEvent event) {
+
+        Player player = event.getPlayer();
+
+        if (isInLobby(player.getUniqueId().toString())) {
+
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.GREEN + "Pick ups have been blocked while in lobby");
+        }
+    }
+
+    @EventHandler
+    public void noClicking(InventoryClickEvent event) {
+
+        if (event.getWhoClicked() instanceof Player) {
+
+            Player player = (Player) event.getWhoClicked();
+
+            if (isInLobby(player.getUniqueId().toString())) {
+
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.GREEN + "No Clicking in player inventories have been blocked while in lobby");
+            }
+        }
+    }
+
+    @EventHandler
+    public void noMoveItem(InventoryDragEvent event) {
+
+        if (event.getWhoClicked() instanceof Player) {
+
+            Player player = (Player) event.getWhoClicked();
+
+            if (isInLobby(player.getUniqueId().toString())) {
+
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.GREEN + "No dragging items in player inventories has been blocked while in lobby");
             }
         }
 

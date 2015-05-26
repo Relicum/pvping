@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -298,7 +299,7 @@ public class ActionMenu implements InventoryHolder {
         return this.parentMenu;
     }
 
-    public void switchMenu(Player player, ActionMenu toMenu) {
+    public void switchMenu(Player player, @Nullable ActionMenu toMenu) {
 
         MenuAPI.switchMenu(player, this, toMenu);
     }

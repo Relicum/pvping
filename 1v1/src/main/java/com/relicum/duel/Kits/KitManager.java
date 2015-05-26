@@ -11,6 +11,7 @@ import com.relicum.utilities.Files.FileUtils;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -144,6 +146,7 @@ public class KitManager {
      * @param name the name of the kit
      * @return a cloned copy of {@link LoadOut}, or null if kit wasn't found
      */
+    @Nullable
     public LoadOut getKit(String name) {
 
         if (containsKit(name)) {
@@ -154,6 +157,25 @@ public class KitManager {
 
     }
 
+    /**
+     * Get number of kits.
+     *
+     * @return the total number of stored kits
+     */
+    public int getNumberOfKits() {
+
+        return kitLoadOuts.size();
+    }
+
+    /**
+     * Get all kits.
+     *
+     * @return an entry set of all kits
+     */
+    public Set<Map.Entry<String, LoadOut>> getAllKits() {
+
+        return kitLoadOuts.entrySet();
+    }
 
     /**
      * Get list of kit names.
@@ -207,6 +229,7 @@ public class KitManager {
      * @param name the kit name
      * @return the {@link LoadOut} that has been removed.
      */
+    @Nullable
     public LoadOut removeKit(String name) {
 
         if (containsKit(name)) {
@@ -216,6 +239,7 @@ public class KitManager {
         return null;
     }
 
+    @Nullable
     public LoadOut deleteLoadOutFile(String name) {
 
         if (deleteFile(name)) {

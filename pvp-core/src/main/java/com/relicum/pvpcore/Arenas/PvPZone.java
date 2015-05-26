@@ -9,6 +9,7 @@ import com.relicum.pvpcore.Menus.Spawns1v1;
 import lombok.ToString;
 import org.apache.commons.lang.Validate;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class PvPZone implements IZone {
      * {@inheritDoc}
      */
     @Override
-    public SpawnPoint getSpawn(String key) {
+    public SpawnPoint getSpawn(@Nullable String key) {
 
         Validate.notNull(key);
         return spawns.get(key);
@@ -167,7 +168,7 @@ public class PvPZone implements IZone {
      * {@inheritDoc}
      */
     @Override
-    public boolean containsSpawn(String key) {
+    public boolean containsSpawn(@Nullable String key) {
 
         Validate.notNull(key);
         return spawns.containsKey(key);
@@ -250,11 +251,12 @@ public class PvPZone implements IZone {
                 setMaxPlayers(6);
                 spawns = new PointsGroup<>(6);
                 arenaType = types;
+                break;
             }
             default: {
 
-                setMinPlayers(2);
-                setMaxPlayers(2);
+                this.setMinPlayers(2);
+                this.setMaxPlayers(2);
                 spawns = new PointsGroup<>(2);
                 arenaType = ArenaType.ARENA1v1;
             }

@@ -2,6 +2,7 @@ package com.relicum.duel.Commands;
 
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE"})
 @Command(aliases = {"settings"}, desc = "Opens menu to set the main plugin settings", perm = "duel.admin.settings", usage = "/noxarena settings", isSub = true, parent = "noxarena")
 public class DuelSettings extends DuelCmd {
 
@@ -31,7 +33,7 @@ public class DuelSettings extends DuelCmd {
 
     @Override
     public boolean onCommand(CommandSender sender, String label, String[] args) {
-        Player player = (Player) sender;
+
         if (args.length == 0) {
             sendMessage("Opening Settings Menu");
             plugin.getMenuManager().getDuelSettings().openMenuForEditing((Player) sender);

@@ -7,6 +7,7 @@ import com.relicum.pvpcore.Kits.InventoryRow;
 import com.relicum.pvpcore.Menus.Slot;
 import com.relicum.pvpcore.Menus.Spawns1v1;
 import com.relicum.utilities.Items.ItemBuilder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,12 +25,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 
+
 /**
  * SpawnHotBar
  *
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressFBWarnings({"NOISE_METHOD_CALL"})
 public class SpawnHotBar implements InventoryRow, Listener {
 
     private ItemStack[] items = new ItemStack[9];
@@ -59,6 +62,7 @@ public class SpawnHotBar implements InventoryRow, Listener {
         zone.setEditing(true);
         refresh();
         setCloseItem();
+
     }
 
     public void refresh() {

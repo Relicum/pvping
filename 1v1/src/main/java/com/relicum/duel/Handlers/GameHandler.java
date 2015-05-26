@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class GameHandler implements Listener {
         openLink();
     }
 
+    @Nullable
     public LobbyGameLink.Inner getAccess(LobbyHandler handler) {
 
         return link.requestAccess(handler);
@@ -102,7 +104,7 @@ public class GameHandler implements Listener {
     }
 
 
-    private PvpPlayer getPvpPlayer(String uuid) {
+    public PvpPlayer getPvpPlayer(String uuid) {
 
         return players.get(uuid);
     }
@@ -130,6 +132,7 @@ public class GameHandler implements Listener {
      *
      * @param player the player
      */
+    @Nullable
     public PvpResponse add(Player player, RankArmor rank, SpawnPoint point) {
 
         if (isKnown(player.getUniqueId().toString())) {
@@ -156,6 +159,7 @@ public class GameHandler implements Listener {
      * @return the players {@link PvpPlayer} object. Returns null if no player
      * was found.
      */
+    @Nullable
     public PvpPlayer remove(Player player, EndReason reason) {
 
         if (isKnown(player.getUniqueId().toString())) {
@@ -269,6 +273,25 @@ public class GameHandler implements Listener {
         }
     }
 
+    /**
+     * Set player flag to offline.
+     *
+     * @param uuid the string uuid of the player
+     */
+    public void setPlayerOffline(String uuid) {
+
+        players.get(uuid).setOnline(false);
+    }
+
+    /**
+     * Set player flag to online.
+     *
+     * @param uuid the string uuid of the player
+     */
+    public void setPlayerOnline(String uuid) {
+
+        players.get(uuid).setOnline(true);
+    }
 
     /**
      * Is a player in the queue.
@@ -281,6 +304,7 @@ public class GameHandler implements Listener {
         return playerQueue.contains(uuid);
 
     }
+
 
     /**
      * Is the queue full.
@@ -347,12 +371,15 @@ public class GameHandler implements Listener {
     }
 
 
-
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
 
-        if (isKnown(event.getPlayer().getUniqueId().toString())) {
+        String uuid = event.getPlayer().getUniqueId().toString();
+
+        if (isKnown(uuid)) {
             try {
+                setPlayerOffline(uuid);
+                event.getPlayer().removeMetadata(Duel.META_KEY, plugin);
                 removeAndDestroy(event.getPlayer(), EndReason.LOGGED);
             }
             catch (Exception e) {

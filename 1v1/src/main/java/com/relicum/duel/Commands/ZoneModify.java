@@ -7,6 +7,7 @@ import com.relicum.duel.Menus.SpawnHotBar;
 import com.relicum.pvpcore.Menus.Spawns1v1;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Arenas.PvPZone;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressFBWarnings({"NOISE_OPERATION", "NOISE_OPERATION"})
 @Command(aliases = {"modify"}, desc = "Modify and edit Zone settings", perm = "duel.admin.modify", usage = "/noxarena modify", isSub = true, parent =
                                                                                                                                                      "noxarena",
                 useTab = true, min = 1)

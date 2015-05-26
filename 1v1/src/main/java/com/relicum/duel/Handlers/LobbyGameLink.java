@@ -2,6 +2,7 @@ package com.relicum.duel.Handlers;
 
 import com.relicum.pvpcore.Enums.PlayerState;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public abstract class LobbyGameLink {
         return inner;
     }
 
+    @Nullable
     private Inner grantAccess(Object obj) {
 
         if (obj instanceof LobbyHandler) {
@@ -55,6 +57,7 @@ public abstract class LobbyGameLink {
         return null;
     }
 
+    @Nullable
     public Inner requestAccess(Object obj) {
 
         if (!(obj instanceof LobbyHandler)) {

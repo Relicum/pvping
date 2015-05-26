@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * MStack simple class for persisting an {@link ItemStack} that is used on a {@link ActionMenu}
+ * BStack simple class for persisting boolean {@link ItemStack} that is used on a {@link ActionMenu}
  *
  * @author Relicum
  * @version 0.0.1

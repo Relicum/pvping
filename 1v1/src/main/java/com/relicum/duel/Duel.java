@@ -2,18 +2,12 @@ package com.relicum.duel;
 
 
 import com.relicum.commands.CommandRegister;
-import com.relicum.duel.Commands.BuildLoadOut;
-import com.relicum.duel.Commands.ClearAll;
-import com.relicum.duel.Commands.DebugCmd;
-import com.relicum.duel.Commands.DuelMsg;
-import com.relicum.duel.Commands.DuelSettings;
-import com.relicum.duel.Commands.Join;
-import com.relicum.duel.Commands.Leave;
-import com.relicum.duel.Commands.ZoneCreator;
-import com.relicum.duel.Commands.ZoneModify;
+import com.relicum.duel.Commands.*;
 import com.relicum.duel.Configs.ConfigLoader;
 import com.relicum.duel.Configs.DuelConfigs;
 import com.relicum.duel.Handlers.GameHandler;
+import com.relicum.duel.Handlers.InviteCache;
+import com.relicum.duel.Handlers.InviteListener;
 import com.relicum.duel.Handlers.LobbyHandler;
 import com.relicum.duel.Kits.KitManager;
 import com.relicum.duel.Menus.MenuManager;
@@ -43,9 +37,11 @@ import java.util.Collections;
 @SuppressFBWarnings({"UNKNOWN"})
 public class Duel extends JavaPlugin implements Listener {
 
-    public static final String META_KEY = "PVP-META";
+    public static final String META_KEY = "DUEL-META";
     private static Duel instance;
     public PvpPlayer player;
+    private CacheManager cacheManager;
+    private InviteCache inviteCache;
     private KitManager kitHandler;
     private boolean firstLoad = false;
     private GameHandler gameHandler;
@@ -102,6 +98,9 @@ public class Duel extends JavaPlugin implements Listener {
                 return;
             }
 
+            cacheManager = new CacheManager();
+
+            inviteCache = new InviteCache(this, 100l, 100l, new InviteListener());
 
             kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
@@ -151,6 +150,7 @@ public class Duel extends JavaPlugin implements Listener {
         adminCommands.register(new ZoneModify(this));
         adminCommands.register(new BuildLoadOut(this));
         adminCommands.register(new DuelSettings(this));
+        adminCommands.register(new LoadoutModify(this));
         adminCommands.register(new ClearAll(this));
         adminCommands.register(new DebugCmd(this));
         playerCommands.endRegistration();
@@ -182,10 +182,23 @@ public class Duel extends JavaPlugin implements Listener {
 
         DuelMsg.getInstance().logInfoFormatted("Saving Configuration files");
         configLoader.save(configs);
-
+        cacheManager.invalidateAll();
+        cacheManager.cleanUp();
+        inviteCache.cancelCheckTask();
+        inviteCache.invalidateAll();
+        inviteCache.clear();
         kitHandler.saveAndRemoveAll();
         statsManager.saveAndClearAll();
         gameHandler.clearAllPlayers();
+    }
+
+
+    public InviteCache getInviteCache() {
+        return inviteCache;
+    }
+
+    public CacheManager getCacheManager() {
+        return cacheManager;
     }
 
     public DuelConfigs getConfigs() {
@@ -252,6 +265,9 @@ public class Duel extends JavaPlugin implements Listener {
 //            if (!Files.exists(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator))) {
 //                Files.createDirectories(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator));
 //            }
+
+            cacheManager = new CacheManager();
+            inviteCache = new InviteCache(this);
             kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
             lobbyHandler = new LobbyHandler(this);

@@ -28,6 +28,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 /**
@@ -573,23 +574,23 @@ public class ZoneEditMenu extends ActionMenu {
         }
     }
 
-    public ItemStack getSetItem(Spawns1v1 spawn) {
+    public ItemStack getSetItem(@Nullable Spawns1v1 spawn) {
 
         SpawnPoint p;
 
-        if (spawn.equals(Spawns1v1.END)) {
+        if (spawn == Spawns1v1.END) {
             p = zone.getEndSpawn();
         }
-        else if (spawn.equals(Spawns1v1.SPECTATOR)) {
+        else if (spawn == Spawns1v1.SPECTATOR) {
             p = zone.getSpecSpawn();
         }
         else {
-            p = zone.getSpawn(spawn.getName());
+            p = zone.getSpawn(spawn != null ? spawn.getName() : null);
         }
 
 
         return new ItemBuilder(Material.INK_SACK)
-                       .setDisplayName("&6&l" + spawn.getTitle())
+                       .setDisplayName("&6&l" + (spawn != null ? spawn.getTitle() : null))
                        .setDurability((short) 10)
                        .setItemLores(Arrays.asList(" ", "&aSpawn Set", " ", "&4Collection: &e" + zone.getName(), "&4Zone: &a" + zone.getNameId(), " ",
                                                    "&eWorld: &c" + p.getWorld(), "&eX:      &c" + p.getX(), "&eY:      &c" + p.getY(), "&eZ:      &c" + p.getZ(),

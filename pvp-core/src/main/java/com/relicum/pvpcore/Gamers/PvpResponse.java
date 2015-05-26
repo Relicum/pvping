@@ -1,5 +1,7 @@
 package com.relicum.pvpcore.Gamers;
 
+import javax.annotation.Nullable;
+
 /**
  * PvpResponse is used to return a response by a method indicating its outcome.
  * <p>You can also set a message giving more specific details on the response.
@@ -19,7 +21,7 @@ public class PvpResponse {
      * @param type    the outcome of the method
      * @param message the message used to provided more detail if needed, null is accepted.
      */
-    public PvpResponse(ResponseType type, String message) {
+    public PvpResponse(ResponseType type, @Nullable String message) {
         this.type = type;
         this.message = message;
     }

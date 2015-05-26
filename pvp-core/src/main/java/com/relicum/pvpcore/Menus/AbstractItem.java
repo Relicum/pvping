@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     protected boolean modifiable;
     protected ToggleState toggleState;
     protected ClickAction action;
+    protected SkullMeta skullMeta;
 
     public AbstractItem() {
 
@@ -247,6 +249,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         return false;
     }
 
+
     public ActionHandler getActionHandler() {
 
         return actionHandler;
@@ -377,7 +380,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     public void setIndex(int paramSlot) {
 
         Validate.notNull(paramSlot);
-        Validate.isTrue(paramSlot > 0, "Icon slot must be greater than 1");
+        Validate.isTrue(paramSlot >= 0, "Icon slot must be greater than 1");
         this.slot = paramSlot;
     }
 
@@ -444,6 +447,27 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     }
 
     /**
+     * Gets skullMeta this needs to be over written by the extending class if they wish to use it
+     *
+     * @return {@link SkullMeta}
+     */
+    public SkullMeta getSkullMeta() {
+
+        throw new UnsupportedOperationException("Not currently supported");
+
+    }
+
+    /**
+     * Sets new skullMeta this needs to be over written by the extending class if they wish to use it.
+     *
+     * @param skullMeta {@link SkullMeta}.
+     */
+    public void setSkullMeta(SkullMeta skullMeta) {
+
+        throw new UnsupportedOperationException("Not currently supported");
+    }
+
+    /**
      * Gets if this item can be modified.
      *
      * @return true and it can be modified, false and it can not.
@@ -456,13 +480,6 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
      * @param modifiable set true and it can be modified, false and it can not.
      */
     public void setModifiable(boolean modifiable) { this.modifiable = modifiable; }
-
-    public enum ToggleState {
-
-        DEFAULT,
-        ALTERNATIVE
-    }
-
 
     @Override
     public String toString() {
@@ -477,6 +494,16 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
                        .add("permRequired", permRequired)
                        .add("slot", slot)
                        .add("toggleState", toggleState)
+                       .add("skullMeta", skullMeta.toString())
                        .toString();
     }
+
+
+    public enum ToggleState {
+
+        DEFAULT,
+        ALTERNATIVE
+    }
+
+
 }

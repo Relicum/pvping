@@ -42,13 +42,13 @@ public final class DuelMsg implements Msg {
     }
 
     @Override
-    public String getAdminColor() {
+    public String getAdminChar() {
 
         return theAdminColor;
     }
 
     @Override
-    public String getErrorColor() {
+    public String getErrorChar() {
 
         return errorColor;
     }
