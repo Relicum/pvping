@@ -379,7 +379,6 @@ public class GameHandler implements Listener {
         if (isKnown(uuid)) {
             try {
                 setPlayerOffline(uuid);
-                event.getPlayer().removeMetadata(Duel.META_KEY, plugin);
                 removeAndDestroy(event.getPlayer(), EndReason.LOGGED);
             }
             catch (Exception e) {

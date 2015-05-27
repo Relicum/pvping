@@ -71,7 +71,7 @@ public class LobbyHotBar {
 
         ItemStack stacks = new ItemBuilder(Material.GOLD_AXE, 1)
                                    .setDisplayName("&3&l\u00BB &6&lChallenge a Player &3&l\u00AB")
-                                   .setItemLores(lore.toLore())
+                                   .setItemLores(lore.toLore(28))
                                    .setUnBreaking(true)
                                    .setItemFlag(ItemFlag.HIDE_ATTRIBUTES)
                                    .setItemFlag(ItemFlag.HIDE_UNBREAKABLE)
@@ -107,7 +107,7 @@ public class LobbyHotBar {
 
         ItemStack stacks = new ItemBuilder(Material.NETHER_STAR, 1)
                                    .setDisplayName("&3&l\u00BB &a&lJoin Match Queue &3&l\u00AB")
-                                   .setItemLores(lore.toLore())
+                                   .setItemLores(lore.toLore(28))
                                    .build();
 
         addItem(Slot.FOUR, stacks.clone());
@@ -146,7 +146,7 @@ public class LobbyHotBar {
 
         ItemStack stacks = new ItemBuilder(Material.WATCH, 1)
                                    .setDisplayName("&3&l\u00BB &a&lLeave 1v1 Lobby &3&l\u00AB")
-                                   .setItemLores(lore.toLore())
+                                   .setItemLores(lore.toLore(28))
                                    .build();
 
         addItem(Slot.EIGHT, stacks.clone());

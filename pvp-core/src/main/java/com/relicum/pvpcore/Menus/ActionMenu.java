@@ -126,6 +126,38 @@ public class ActionMenu implements InventoryHolder {
         return true;
     }
 
+    /**
+     * Replace menu item.
+     * <p>Removes item from inventory at specified index and removes it from the internal map.
+     * <p>Then adds the item to the inventory at the specified index and adds it to the internal map.
+     *
+     * @param index the index
+     * @param item  the item
+     * @return true if the item was successfully added, false if there was a error.
+     */
+    public boolean replaceMenuItem(int index, AbstractItem item) {
+
+        if (removeMenuItem(index)) {
+
+            System.out.println("Item Successfully removed from menu");
+
+            if (addMenuItem(item, index)) {
+
+                System.out.println("Item successfully replaced");
+                return true;
+            }
+            else {
+                System.out.println("Error replacing item");
+                return false;
+            }
+        }
+        else {
+            System.out.println("Error removing item from menu");
+            return false;
+        }
+
+    }
+
     protected void selectMenuItem(Player player, int index) {
 
         if (this.items.containsKey(index)) {

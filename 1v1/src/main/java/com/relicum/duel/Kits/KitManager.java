@@ -1,15 +1,9 @@
 package com.relicum.duel.Kits;
 
 import com.relicum.duel.Configs.LoadOutLoader;
-import com.relicum.duel.Configs.LobbyPlayerConfigs;
 import com.relicum.duel.Duel;
-import com.relicum.duel.Handlers.LobbyArmor;
-import com.relicum.duel.Objects.LobbyLoadOut;
 import com.relicum.pvpcore.Kits.LoadOut;
-import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.utilities.Files.FileUtils;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +47,9 @@ public class KitManager {
         }
 
         this.kitLoadOuts = new HashMap<>();
-        loader = new LoadOutLoader(BASE_DIR, "lobbysettings");
-        if (plugin.isFirstLoad()) {
-            doFirstLoad();
-        }
-        else {
+        loader = new LoadOutLoader(BASE_DIR, "kits");
+        if (!plugin.isFirstLoad()) {
+
             this.init();
         }
     }
@@ -94,23 +85,6 @@ public class KitManager {
 
     }
 
-    private void doFirstLoad() {
-
-        List<PotionEffect> list = new ArrayList<>(2);
-        list.add(new PotionEffect(PotionEffectType.JUMP, 1000000, 1, false, false));
-        list.add(new PotionEffect(PotionEffectType.FAST_DIGGING, 1000000, 1, false, false));
-        LobbyLoadOut lobbyLoadOut = new LobbyLoadOut();
-        lobbyLoadOut.setArmor(new LobbyArmor(true));
-        lobbyLoadOut.setContents(LobbyHotBar.create().getItems());
-        lobbyLoadOut.setPotionEffects(list);
-        lobbyLoadOut.setSettings(LobbyPlayerConfigs.create(true).getSettings());
-
-//        loader.setPath(Paths.get(BASE_DIR + "lobbysettings.json"));
-//        loader.save(lobbyLoadOut);
-//        list.clear();
-//
-//        kitLoadOuts.put("lobbysettings", lobbyLoadOut);
-    }
 
     /**
      * Add new Kit {@link LoadOut}.

@@ -23,10 +23,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Name: MenuManager.java Created: 02 May 2015
@@ -75,7 +75,7 @@ public class MenuManager implements Listener {
 
     public ActionMenu getKitModifyMenu(int rows) {
 
-        return MenuAPI.get().createMenu(FormatUtil.colorize("&a&lModify Kits Menu"), fit(rows));
+        return MenuAPI.get().createMenu(FormatUtil.colorize("&a&lModify Kits Menu"), toSlot(rows));
     }
 
     public ActionMenu getHeadMenu() {
@@ -93,21 +93,21 @@ public class MenuManager implements Listener {
         for (int i = 0; i < 9; i++) {
 
             if (i < 4) {
-
-                confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
-                                                           .setDurability((short) 5)
-                                                           .setDisplayName("&a&lRight click to confirm")
-                                                           .build(), i, ClickAction.CONFIG, handler), i);
-
+                confirm.addMenuItem(new ActionItem
+                                            (new ItemBuilder(Material.STAINED_GLASS_PANE)
+                                                     .setDurability((short) 5)
+                                                     .setDisplayName("&a&lRight click to confirm")
+                                                     .build(), i, ClickAction.CONFIG, handler), i);
             }
 
 
             else if (i > 4) {
 
-                confirm.addMenuItem(new ActionItem(new ItemBuilder(Material.STAINED_GLASS_PANE)
-                                                           .setDurability((short) 14)
-                                                           .setDisplayName("&4&lRight click to cancel")
-                                                           .build(), i, ClickAction.CONFIG, handler), i);
+                confirm.addMenuItem(new ActionItem
+                                            (new ItemBuilder(Material.STAINED_GLASS_PANE)
+                                                     .setDurability((short) 14)
+                                                     .setDisplayName("&4&lRight click to cancel")
+                                                     .build(), i, ClickAction.CONFIG, handler), i);
 
             }
         }
@@ -222,11 +222,7 @@ public class MenuManager implements Listener {
 
         int c = 0;
         for (Map.Entry<String, PvPZone> entry : zc.getZones()) {
-            List<String> tl = new ArrayList<>();
-
-            for (String s : entry.getValue().getLore()) {
-                tl.add(FormatUtil.colorize(s));
-            }
+            List<String> tl = entry.getValue().getLore().stream().map(FormatUtil::colorize).collect(Collectors.toList());
 
             ItemStack stack = new ItemStack(Material.PAPER, 1);
             ItemMeta meta = stack.getItemMeta();
@@ -278,6 +274,11 @@ public class MenuManager implements Listener {
         }
 
         return null;
+    }
+
+    public int toSlot(int num) {
+
+        return (fit(num) / 9);
     }
 
     public int fit(int slots) {

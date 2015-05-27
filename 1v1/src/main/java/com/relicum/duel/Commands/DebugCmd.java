@@ -94,20 +94,6 @@ public class DebugCmd extends DuelCmd {
                         sendMessage("Your currently NOT showing in the lobby set");
                     }
 
-                    if (player.hasMetadata(Duel.META_KEY)) {
-
-                        sendMessage("Found some meta data");
-                        int r = player.getMetadata(Duel.META_KEY).get(0).asInt();
-
-                        sendMessage("The int for the meta data is " + r);
-                    }
-                    else {
-
-                        sendAdminMessage("Currently no meta data found");
-                    }
-
-
-
                     return true;
                 }
 

@@ -342,6 +342,9 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
     public void setDescription(List<String> paramLore) {
 
         Validate.notNull(paramLore);
+        if (this.lores.size() > 0) {
+            this.lores.clear();
+        }
         this.lores.addAll(paramLore.stream().map(FormatUtil::colorize).collect(Collectors.toList()));
     }
 

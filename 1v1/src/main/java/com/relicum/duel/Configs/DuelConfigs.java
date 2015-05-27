@@ -395,7 +395,7 @@ public class DuelConfigs {
      * @param lobbySpawn New value of lobbySpawn.
      */
     public void setLobbySpawn(SpawnPoint lobbySpawn) {
-
+        lobbySpawn.setPitch(0.0f);
         this.lobbySpawn = lobbySpawn;
     }
 

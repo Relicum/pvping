@@ -37,7 +37,7 @@ import java.util.Collections;
 @SuppressFBWarnings({"UNKNOWN"})
 public class Duel extends JavaPlugin implements Listener {
 
-    public static final String META_KEY = "DUEL-META";
+    //public static final String META_KEY = "DUEL-META";
     private static Duel instance;
     public PvpPlayer player;
     private CacheManager cacheManager;

@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -465,7 +464,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
      */
     public void applyLobbyInventory(Player pl) {
 
-        setMetaDataToLobby(pl);
+
         pl.getInventory().setArmorContents(lobbyArmor.clone());
         pl.getInventory().setContents(lobbyBar.clone());
         plugin.getLobbyHandler().getLobbyLoadOut().getSettings().apply(pl);
@@ -515,7 +514,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
         switch (reason) {
             case LEAVE_CMD: {
                 Player p = getPlayer();
-                //p.removeMetadata(Duel.META_KEY, plugin);
+
                 clearInventory();
                 restorePlayerSettings();
                 updateScoreboard(true);
@@ -530,7 +529,7 @@ public class PvpPlayer extends WeakGamer<Duel> {
                 try {
 
                     Player p = plugin.getServer().getPlayer(getUuid());
-                    p.removeMetadata(Duel.META_KEY, plugin);
+
                     p.teleport(backLocation.toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
                     p.getInventory().setArmorContents(store.getArmor());
                     p.getInventory().setContents(store.getContents());
@@ -632,11 +631,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public void restorePlayerSettings() {
 
         Player pl = getPlayer();
-
-        if (hasMetaData(pl)) {
-            pl.removeMetadata(Duel.META_KEY, plugin);
-            System.out.println("Removing Metadata from restore");
-        }
 
         pl.getInventory().setArmorContents(store.getArmor().clone());
         pl.getInventory().setContents(store.getContents().clone());
@@ -781,83 +775,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
         this.online = online;
     }
 
-    /**
-     * Has the player got metadata attached to them.
-     *
-     * @param player the player
-     * @return true if they do false if not.
-     */
-    public boolean hasMetaData(Player player) {
-
-        return player.hasMetadata(Duel.META_KEY);
-    }
-
-    /**
-     * Check and get metadata, if they do not have any the returned int will be -1.
-     *
-     * @return the metadata int, 1 and there in lobby, 2 they are in game, -1 and no meta is set.
-     */
-    public int checkAndGetMeta() {
-
-        Player player = getPlayer();
-
-        if (hasMetaData(player)) {
-            System.out.println("Check and get is good to go");
-            return player.getMetadata(Duel.META_KEY).get(0).asInt();
-        }
-
-        return -1;
-    }
-
-    /**
-     * Remove meta data.
-     */
-    public void removeMetaData() {
-
-        removeMetaData(getPlayer());
-    }
-
-    /**
-     * Remove meta data.
-     */
-    public void removeMetaData(Player pl) {
-
-        pl.removeMetadata(Duel.META_KEY, plugin);
-    }
-
-    /**
-     * Set meta data to lobby.
-     */
-    public void setMetaDataToLobby() {
-
-        setMetaDataToLobby(getPlayer());
-    }
-
-    /**
-     * Set meta data to lobby.
-     */
-    public void setMetaDataToLobby(Player pl) {
-
-        pl.setMetadata(Duel.META_KEY, new FixedMetadataValue(plugin, 1));
-        System.out.println("Setting meta to lobby");
-    }
-
-    /**
-     * Set meta data to game.
-     */
-    public void setMetaDataToGame() {
-
-        setMetaDataToGame(getPlayer());
-    }
-
-    /**
-     * Set meta data to game.
-     */
-    public void setMetaDataToGame(Player pl) {
-
-        pl.setMetadata(Duel.META_KEY, new FixedMetadataValue(plugin, 2));
-        System.out.println("Setting meta to game");
-    }
 
 
 }

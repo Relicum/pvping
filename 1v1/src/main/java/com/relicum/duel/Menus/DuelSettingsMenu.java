@@ -19,7 +19,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
@@ -136,24 +135,19 @@ public class DuelSettingsMenu extends ActionMenu {
 
                 configs.setLobbySpawn(new SpawnPoint(player.getLocation()));
 
-                DuelSettingsMenu menu = (DuelSettingsMenu) icon.getMenu();
-
-                menu.removeMenuItem(icon.getIndex());
-
                 icon.setDescription(getLobbySpawnLore());
-                ItemStack stack = icon.getItem();
-                ItemMeta meta = stack.getItemMeta();
-                meta.setLore(getLobbySpawnLore());
-                meta.setDisplayName(icon.getText());
-                stack.setItemMeta(meta);
 
-                menu.addMenuItem(icon, icon.getIndex());
-                menu.getInventory().setItem(icon.getIndex(), stack);
+                ItemMeta meta = icon.getItem().getItemMeta();
+                meta.setLore(icon.getDescription());
+
+                icon.getItem().setItemMeta(meta);
+                icon.getMenu().getInventory().getItem(icon.getIndex()).setItemMeta(meta);
+
+
 
                 player.sendMessage(ChatColor.GREEN + "Lobby Spawn Successfully Updated");
                 player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 10.0f, 1.0f);
 
-                saveConfigs();
                 Duel.get().getLobbyHandler().refreshSpawn();
 
                 ActionResponse response = new ActionResponse(icon, player);
@@ -170,14 +164,16 @@ public class DuelSettingsMenu extends ActionMenu {
     public List<String> getLobbySpawnLore() {
 
         MLore lore = new MLore(" \n")
-                             .then("&6Lobby Spawn Is Set To")
+                             .then("&5Lobby Spawn Is Set To")
                              .blankLine()
-                             .then("&aWorld :&6 " + configs.getLobbySpawn().getWorld()).newLine()
-                             .then("&aX     :&6 " + configs.getLobbySpawn().getX()).newLine()
-                             .then("&aY     :&6 " + configs.getLobbySpawn().getY()).newLine()
-                             .then("&aZ     :&6 " + configs.getLobbySpawn().getZ()).newLine()
-                             .then("&aYaw   :&6 " + configs.getLobbySpawn().getYaw()).newLine()
-                             .then("&aPitch :&6 " + configs.getLobbySpawn().getPitch());
+                             .then("&aWorld :&6     " + configs.getLobbySpawn().getWorld()).newLine()
+                             .then("&aX      :&6     " + configs.getLobbySpawn().getX()).newLine()
+                             .then("&aY      :&6     " + configs.getLobbySpawn().getY()).newLine()
+                             .then("&aZ      :&6     " + configs.getLobbySpawn().getZ()).newLine()
+                             .then("&aYaw   :&6     " + configs.getLobbySpawn().getYaw()).newLine()
+                             .then("&aPitch  :&6     " + configs.getLobbySpawn().getPitch()).blankLine()
+                             .then("&bRight Click to set the lobby").newLine()
+                             .then("&bspawn to your current location");
 
         return lore.toLore();
 
