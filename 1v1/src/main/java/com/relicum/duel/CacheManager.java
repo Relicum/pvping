@@ -3,11 +3,9 @@ package com.relicum.duel;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.relicum.duel.Objects.GameInvite;
 import com.relicum.pvpcore.Menus.ActionMenu;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +19,7 @@ public class CacheManager {
 
     private Cache<String, ActionMenu> menuCache;
 
-    private Cache<UUID, GameInvite> inviteCache;
+    //private InviteCache inviteCache;
 
     private RemovalListener<String, ActionMenu> listener;
 
@@ -37,9 +35,31 @@ public class CacheManager {
                 System.out.println("Menu Removed from cache " + key);
             }
         };
-        menuCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.SECONDS).removalListener(listener).maximumSize(100).weakValues().build();
+        menuCache = CacheBuilder.newBuilder()
+                            .expireAfterAccess(30, TimeUnit.SECONDS)
+                            .removalListener(listener)
+                            .maximumSize(100)
+                            .weakValues()
+                            .build();
 
     }
+
+//    public void createInviteCache(long startDelay,long evictAfter,InviteRemovalListener listener){
+//
+//        if (inviteCache != null){
+//            throw new IllegalStateException("An invite cache has already been created, you many not create more than one");
+//        }
+//
+//        inviteCache = new InviteCache(startDelay,evictAfter,listener);
+//    }
+//
+//    public InviteCache getInviteCache(){
+//
+//        if (inviteCache != null)
+//            return inviteCache;
+//
+//        return null;
+//    }
 
     /**
      * Associates {@code value} with {@code key} in this cache. If the cache previously contained a

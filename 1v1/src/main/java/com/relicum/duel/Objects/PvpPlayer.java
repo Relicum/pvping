@@ -3,6 +3,8 @@ package com.relicum.duel.Objects;
 import com.massivecraft.massivecore.adapter.relicum.RankArmor;
 import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
+import com.relicum.duel.Menus.CloseItem;
+import com.relicum.duel.Menus.PlayerQueueMenu;
 import com.relicum.duel.Tasks.ActionTimer;
 import com.relicum.locations.SpawnPoint;
 import com.relicum.pvpcore.Enums.EndReason;
@@ -30,7 +32,10 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -60,6 +65,11 @@ public class PvpPlayer extends WeakGamer<Duel> {
     private PvpGame game;
     private int start = 10;
     private boolean online = false;
+    private List<UUID> sentInvites;
+    private List<UUID> invites;
+    private Map<UUID, String> invitesToPlayer;
+    private long inviteTimeOut = 0;
+    private PlayerQueueMenu queueMenu;
 
     /**
      * Instantiates a new PvpPlayer.
@@ -71,7 +81,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         super(paramPlayer, paramPlugin);
         this.rank = rank;
-
+        this.sentInvites = new ArrayList<>();
+        this.invites = new ArrayList<>();
+        this.invitesToPlayer = new HashMap<>();
         setOnline(true);
 
         this.backLocation = backLocation;
@@ -90,6 +102,9 @@ public class PvpPlayer extends WeakGamer<Duel> {
 
         setState(PlayerState.LOBBY);
 
+        queueMenu = plugin.getMenuManager().getInvitesMenu();
+        queueMenu.addMenuItem(new CloseItem(8), 8);
+        queueMenu.addMenuItem(plugin.getSkullHandler().getHeadItem(getName(), 0, paramPlayer.getUniqueId().toString()), 0);
 
 //        List<String> messages = new ArrayList<>();
 //        messages.add(FormatUtil.colorize("&a&lWelcome to 1v1 Zone"));
@@ -160,6 +175,222 @@ public class PvpPlayer extends WeakGamer<Duel> {
 //
 //            }
 //        }.runTaskTimer(plugin, 200l, 20l);
+    }
+
+    public PlayerQueueMenu getQueueMenu() {
+        return queueMenu;
+    }
+
+
+    //************************************** MANAGE GAME INVITES ******************************************//
+
+    public boolean canSendInvite() {
+
+        return inLobby() && (sentInvites.size() == 0 || (sentInvites.size() > 0 && !(System.currentTimeMillis() <= inviteTimeOut)));
+
+    }
+
+    /**
+     * Can this user send invite to another player.
+     * <p>This checks both players at the same time.
+     *
+     * @param player the player {@link PvpPlayer} to check aganist.
+     * @return the {@link PvpResponse}
+     */
+    public PvpResponse canSendInviteTo(PvpPlayer player) {
+
+        if (!canSendInvite()) {
+
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "You must wait 10 seconds between sending invites");
+        }
+
+
+        for (UUID invite : invites) {
+            if (player.getSentInvites().contains(invite)) {
+                return new PvpResponse(PvpResponse.ResponseType.FAILURE, player.getName() + " already has an invite open for you");
+            }
+        }
+
+
+        for (UUID invite : player.getInvites()) {
+            if (getSentInvites().contains(invite)) {
+
+                return new PvpResponse(PvpResponse.ResponseType.FAILURE, "You already have an invite open for " + player.getName());
+            }
+        }
+
+
+        if (!maxInvitesSent()) {
+
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "You do not have any spare slots for sending invites");
+        }
+
+        if (!player.maxInvitesReceived()) {
+
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, player.getName() + " does not have enough slots to receive invites");
+        }
+
+
+        return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
+    }
+
+    public List<UUID> getSentInvites() {
+        return sentInvites;
+    }
+
+    public boolean maxInvitesSent() {
+
+        return sentInvites.size() < 9;
+    }
+
+    public boolean maxInvitesReceived() {
+
+        return invites.size() < 9;
+    }
+
+    /**
+     * Add invites that other players send to you.
+     *
+     * @param invite the invite {@link GameInvite}
+     * @return the {@link PvpResponse}
+     */
+    public PvpResponse addFromInvite(GameInvite invite) {
+
+        if (invites.size() > 8) {
+
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Max of 8 invites reached,decline some before being able to accept more");
+
+        }
+
+        try {
+
+            invites.add(invite.getUuid());
+            invitesToPlayer.put(invite.getUuid(), invite.getInviterName());
+            queueMenu.addMenuItem(plugin.getSkullHandler().getHeadItem(invite.getInviterName(), 1, invite.getInviterId()), 1);
+            queueMenu.updateMenu();
+            return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
+
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Error adding invite from &6" + invite.getInviterName());
+        }
+    }
+
+
+    /**
+     * Add invites that you have sent to other players.
+     *
+     * @param invite the {@link GameInvite}
+     * @return the {@link PvpResponse}
+     */
+    public PvpResponse addInvite(GameInvite invite) {
+
+        if (!canSendInvite()) {
+
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "You must wait 10 seconds between sending invites");
+        }
+
+        inviteTimeOut = System.currentTimeMillis() + 10000;
+
+        sentInvites.add(invite.getUuid());
+
+        return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
+    }
+
+    public PvpResponse removeInvite(GameInvite invite, InviteResponse response) {
+
+        if (!sentInvites.contains(invite.getUuid())) {
+            return new PvpResponse(PvpResponse.ResponseType.FAILURE, "Invite not found");
+        }
+
+        if (sentInvites.remove(invite.getUuid())) {
+
+            plugin.getInviteCache().removeInvite(invite.getUuid(), response);
+
+            inviteTimeOut = 0;
+
+            return new PvpResponse(PvpResponse.ResponseType.SUCCESS, null);
+        }
+
+
+        else {
+            inviteTimeOut = 0;
+            return new PvpResponse(PvpResponse.ResponseType.SUCCESS, "Only a success a it wasn't found in the cache it is still same result");
+        }
+
+
+    }
+
+    /**
+     * Remove invite that has been sent to you.
+     *
+     * @param invite {@link GameInvite}
+     */
+    public void removeFromInvite(GameInvite invite) {
+        if (invites.remove(invite.getUuid())) {
+            invitesToPlayer.remove(invite.getUuid(), invite.getInviterName());
+            queueMenu.removeMenuItem(1);
+            queueMenu.updateMenu();
+            System.out.println("Removed Invitee Invite");
+        }
+        else {
+            System.out.println("FAILED to remove Invitee invite");
+        }
+
+        if (inviteTimeOut != 0) {
+            inviteTimeOut = 0;
+        }
+    }
+
+    /**
+     * Remove invites that you have sent to others.
+     *
+     * @param invite {@link GameInvite}
+     */
+    public void removeInvite(GameInvite invite) {
+
+        if (sentInvites.remove(invite.getUuid())) {
+            System.out.println("Removed Inviter Invite");
+        }
+        else {
+            System.out.println("FAILED to remove Inviter invite");
+        }
+        if (inviteTimeOut != 0) {
+            inviteTimeOut = 0;
+        }
+    }
+
+    /**
+     * Clear invites that have been sent to you.
+     */
+    public void clearInvites() {
+        invites.clear();
+    }
+
+    /**
+     * Get all invites that have been sent to you.
+     *
+     * @return the invites
+     */
+    public List<UUID> getInvites() {
+        return invites;
+    }
+
+    public long getInviteTimeOut() {
+
+        return inviteTimeOut;
+    }
+
+    public int getNumberInvites() {
+
+        return sentInvites.size();
+    }
+
+    public void resetInviteTimeOut() {
+
+        inviteTimeOut = 0;
     }
 
 
@@ -419,10 +650,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
                 .map(PotionEffect::getType)
                 .forEach(pl::removePotionEffect);
 
-//        for (PotionEffect effect : pl.getActivePotionEffects()) {
-//            pl.removePotionEffect(effect.getType());
-//        }
-
         clearInventory(pl);
 
     }
@@ -515,6 +742,21 @@ public class PvpPlayer extends WeakGamer<Duel> {
             case LEAVE_CMD: {
                 Player p = getPlayer();
 
+                ListIterator<UUID> iterator = sentInvites.listIterator();
+                while (iterator.hasNext()) {
+                    UUID invite = iterator.next();
+                    plugin.getInviteCache().removeInvite(invite, InviteResponse.CANCELED);
+                    iterator.remove();
+                }
+
+                invites.stream()
+                        .filter(uuid -> plugin.getInviteCache().contains(uuid))
+                        .forEach(uuid -> plugin.getInviteCache().getInvite(uuid).setActive(false));
+
+                invites.clear();
+
+                // sentInvites.clear();
+
                 clearInventory();
                 restorePlayerSettings();
                 updateScoreboard(true);
@@ -529,6 +771,19 @@ public class PvpPlayer extends WeakGamer<Duel> {
                 try {
 
                     Player p = plugin.getServer().getPlayer(getUuid());
+
+                    ListIterator<UUID> iterator = sentInvites.listIterator();
+                    while (iterator.hasNext()) {
+                        UUID invite = iterator.next();
+                        plugin.getInviteCache().removeInvite(invite, InviteResponse.INVITER_OFFLINE);
+                        iterator.remove();
+                    }
+
+                    invites.stream()
+                            .filter(uuid -> plugin.getInviteCache().contains(uuid))
+                            .forEach(uuid -> plugin.getInviteCache().getInvite(uuid).setActive(false));
+
+                    invites.clear();
 
                     p.teleport(backLocation.toLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
                     p.getInventory().setArmorContents(store.getArmor());
@@ -774,7 +1029,6 @@ public class PvpPlayer extends WeakGamer<Duel> {
     public void setOnline(boolean online) {
         this.online = online;
     }
-
 
 
 }

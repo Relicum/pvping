@@ -30,7 +30,7 @@ public class MenuStack {
         return items.get(slot);
     }
 
-    public int Size() {
+    public int size() {
         return items.size();
     }
 

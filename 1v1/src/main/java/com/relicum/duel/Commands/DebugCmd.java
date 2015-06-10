@@ -4,11 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Menus.CloseItem;
+import com.relicum.duel.Objects.PvpPlayer;
 import com.relicum.pvpcore.Enums.PlayerState;
 import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Menus.ActionMenu;
 import com.relicum.pvpcore.Menus.ClickAction;
-import com.relicum.pvpcore.Menus.PlayerHeadItem;
+import com.relicum.duel.Menus.PlayerHeadItem;
 import com.relicum.utilities.Items.MLore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -94,6 +95,22 @@ public class DebugCmd extends DuelCmd {
                         sendMessage("Your currently NOT showing in the lobby set");
                     }
 
+
+                    return true;
+                }
+                if ("players".equalsIgnoreCase(args[1])) {
+
+                    plugin.getInviteCache().clear();
+
+                    for (PvpPlayer p : plugin.getGameHandler().getPlayers()) {
+                        sendMessage("Player " + p.getName() + ": ");
+                        sendMessage("Sent = " + p.getSentInvites().size());
+                        p.getSentInvites().clear();
+                        sendMessage("Received = " + p.getInvites().size());
+                        p.clearInvites();
+                        sendMessage("Now S = " + p.getSentInvites().size() + " R = " + p.getInvites().size());
+                    }
+
                     return true;
                 }
 
@@ -102,10 +119,10 @@ public class DebugCmd extends DuelCmd {
                     if (menu == null) {
                         menu = plugin.getMenuManager().getHeadMenu();
 
-                        PlayerHeadItem phi = new PlayerHeadItem(0, ClickAction.NO_ACTION, heads.get("Relicum"));
+                        PlayerHeadItem phi = new PlayerHeadItem(0, ClickAction.NO_ACTION, heads.get("Relicum"), "hhhgg");
 
-                        PlayerHeadItem phi1 = new PlayerHeadItem(1, ClickAction.NO_ACTION, heads.get("Darryn25"));
-                        PlayerHeadItem phi2 = new PlayerHeadItem(2, ClickAction.NO_ACTION, heads.get("PVPINGNINJA"));
+                        PlayerHeadItem phi1 = new PlayerHeadItem(1, ClickAction.NO_ACTION, heads.get("Darryn25"), "hhhgwg");
+                        PlayerHeadItem phi2 = new PlayerHeadItem(2, ClickAction.NO_ACTION, heads.get("PVPINGNINJA"), "hhhgdg");
 
 
                         menu.addMenuItem(phi, 0);

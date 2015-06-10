@@ -17,7 +17,6 @@ import com.relicum.pvpcore.Gamers.PvpResponse;
 import com.relicum.pvpcore.Kits.LobbyHotBar;
 import com.relicum.pvpcore.Tasks.TeleportTask;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -65,8 +64,6 @@ public class LobbyHandler implements Listener {
     private Set<String> inLobby = new HashSet<>();
     private boolean accepting = true;
     private SpawnPoint lobbySpawn;
-
-    private LobbyGameLink.Inner gameLink;
 
 
     public LobbyHandler(Duel plugin) {
@@ -119,8 +116,6 @@ public class LobbyHandler implements Listener {
 
             plugin.getConfigs().setLobbyEnabled(false);
         }
-
-        this.gameLink = getGameHandler().getAccess(this);
 
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -255,7 +250,7 @@ public class LobbyHandler implements Listener {
 
         if (event.isCancelled()) {
 
-            DuelMsg.getInstance().sendErrorMessage(player, "Error: Lobby Join event has been canceled by another plugin " + Symbols.EXCLAMATION_MARK.toChar());
+            getMsg().sendErrorMessage(player, "Error: Lobby Join event has been canceled by another plugin " + Symbols.EXCLAMATION_MARK.toChar());
 
             return;
         }
@@ -292,7 +287,7 @@ public class LobbyHandler implements Listener {
                     assert response != null;
                     if (!response.response()) {
 
-                        event.getPlayer().sendMessage(ChatColor.RED + response.getMessage());
+                        getMsg().sendErrorMessage(event.getPlayer(), response.getMessage());
 
                         event.setCancelled(true);
 
@@ -344,13 +339,25 @@ public class LobbyHandler implements Listener {
 
         if (slot == 0) {
             if (event.getItem().getType().equals(Material.GOLD_AXE) && action.equals(Action.LEFT_CLICK_AIR)) {
-                player.sendMessage("Getting this far");
 
                 event.setCancelled(true);
                 msg.sendMessage(player, "You have left clicked the air");
                 return;
             }
         }
+        if (slot == 2) {
+            if (event.getItem().getType().equals(Material.PAPER) && action.equals(Action.RIGHT_CLICK_AIR)) {
+
+                event.setCancelled(true);
+                msg.sendMessage(player, "Opening Invite Menu");
+
+                plugin.getGameHandler().getPvpPlayer(player.getUniqueId().toString()).getQueueMenu().openMenu(player);
+
+                return;
+            }
+
+        }
+
         if (slot == 8) {
             if (event.getItem().getType().equals(Material.WATCH)) {
 
@@ -386,7 +393,6 @@ public class LobbyHandler implements Listener {
                 event.setCancelled(true);
                 msg.sendMessage(player, "Click confirm to leave");
                 plugin.getMenuManager().getConfirmMenu(new LeaveLobbyHandler()).openMenuForEditing(player);
-                return;
             }
 
         }
@@ -410,31 +416,83 @@ public class LobbyHandler implements Listener {
     @SuppressFBWarnings({"NOISE_OPERATION"})
     @EventHandler
     public void onInterEnt(PlayerInteractEntityEvent event) {
+
         if (!(event.getRightClicked() instanceof Player)) {
             return;
         }
         Player p = event.getPlayer();
 
-        if (p.getInventory().getHeldItemSlot() != 0 && !p.getItemInHand().getType().equals(Material.GOLD_AXE)) {
-            return;
-        }
 
-        if (isInLobby(p.getUniqueId().toString()) && isInLobby(event.getRightClicked().getUniqueId().toString())) {
+        if (p.getInventory().getHeldItemSlot() == 0 && p.getItemInHand().getType().equals(Material.GOLD_AXE)) {
 
-            ItemMeta meta = p.getItemInHand().getItemMeta();
-            if (meta.hasDisplayName() && meta.getDisplayName().equalsIgnoreCase("§3§l» §6§lChallenge a Player §3§l«")) {
-                event.setCancelled(true);
-                Player p2 = (Player) event.getRightClicked();
-                PvpPlayer pv1 = plugin.getGameHandler().getPvpPlayer(p.getUniqueId().toString());
-                PvpPlayer pv2 = plugin.getGameHandler().getPvpPlayer(p2.getUniqueId().toString());
-                GameInvite invite = new GameInvite(plugin, pv1, pv2, plugin.getKitHandler().getKit("diamond"));
-                plugin.getInviteCache().addInvite(invite);
-                msg.sendMessage(p, "You have requested a 1v1 with &6 " + p2.getName());
-                msg.sendMessage(p2, "Player &6" + p.getName() + " &ahas requested a 1v1 with you");
+
+            if (isInLobby(p.getUniqueId().toString()) && isInLobby(event.getRightClicked().getUniqueId().toString())) {
+
+                ItemMeta meta = p.getItemInHand().getItemMeta();
+
+                if (meta.hasDisplayName() && meta.getDisplayName().equalsIgnoreCase("§3§l» §6§lChallenge a Player §3§l«")) {
+
+                    event.setCancelled(true);
+
+                    if (!plugin.getKitHandler().hasKits()) {
+
+                        msg.sendErrorMessage(p, "There is currently no kits made, please let staff know");
+                        return;
+                    }
+
+                    PvpPlayer pv1 = plugin.getGameHandler().getPvpPlayer(p.getUniqueId().toString());
+
+                    if (!pv1.canSendInvite()) {
+
+                        pv1.sendErrorMessage("You must wait 10 seconds between sending invites");
+                        return;
+                    }
+
+                    Player p2 = (Player) event.getRightClicked();
+                    PvpPlayer pv2 = plugin.getGameHandler().getPvpPlayer(p2.getUniqueId().toString());
+                    PvpResponse response = pv1.canSendInviteTo(pv2);
+
+                    if (!response.response()) {
+
+                        pv1.sendErrorMessage(response.getMessage());
+                        return;
+                    }
+
+                    GameInvite invite = new GameInvite
+                                                (p.getUniqueId().toString(),
+                                                 p.getName(),
+                                                 p2.getUniqueId().toString(),
+                                                 p2.getName(),
+                                                 plugin.getKitHandler().getKit("diamond"));
+
+
+                    PvpResponse response2 = pv1.addInvite(invite);
+                    PvpResponse p2addResponse = pv2.addFromInvite(invite);
+
+                    if (!p2addResponse.response()) {
+
+                        pv1.removeInvite(invite);
+                        pv1.sendErrorMessage(p2addResponse.getMessage());
+                        return;
+                    }
+
+                    if (response2.response()) {
+
+                        plugin.getInviteCache().addInvite(invite);
+                        msg.sendMessage(p, "You have requested a 1v1 with &6 " + p2.getName());
+                        msg.sendMessage(p2, "Player &6" + p.getName() + " &ahas requested a 1v1 with you");
+
+                    }
+                    else {
+
+                        pv2.removeFromInvite(invite);
+                        pv1.sendErrorMessage(response2.getMessage());
+
+                        invite.clear();
+                    }
+                }
 
             }
-
-            return;
         }
 
     }
@@ -465,7 +523,7 @@ public class LobbyHandler implements Listener {
                 ((Player) event.getEntity()).setSaturation(20.0f);
                 ((Player) event.getEntity()).setExhaustion(0.2f);
 
-                event.getEntity().sendMessage(ChatColor.GREEN + "Food event was called");
+                getMsg().sendMessage(event.getEntity(), "Food event was called");
 
             }
 
@@ -480,7 +538,7 @@ public class LobbyHandler implements Listener {
         if (isInLobby(player.getUniqueId().toString())) {
 
             event.setCancelled(true);
-            player.sendMessage(ChatColor.GREEN + "Drops have been blocked while in lobby");
+            getMsg().sendMessage(player, "Drops have been blocked while in lobby");
         }
     }
 
@@ -492,7 +550,7 @@ public class LobbyHandler implements Listener {
         if (isInLobby(player.getUniqueId().toString())) {
 
             event.setCancelled(true);
-            player.sendMessage(ChatColor.GREEN + "Pick ups have been blocked while in lobby");
+            getMsg().sendMessage(player, "Pick ups have been blocked while in lobby");
         }
     }
 
@@ -506,7 +564,7 @@ public class LobbyHandler implements Listener {
             if (isInLobby(player.getUniqueId().toString())) {
 
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.GREEN + "No Clicking in player inventories have been blocked while in lobby");
+                getMsg().sendMessage(player, "No Clicking in player inventories have been blocked while in lobby");
             }
         }
     }
@@ -521,7 +579,7 @@ public class LobbyHandler implements Listener {
             if (isInLobby(player.getUniqueId().toString())) {
 
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.GREEN + "No dragging items in player inventories has been blocked while in lobby");
+                getMsg().sendMessage(player, "No dragging items in player inventories has been blocked while in lobby");
             }
         }
 

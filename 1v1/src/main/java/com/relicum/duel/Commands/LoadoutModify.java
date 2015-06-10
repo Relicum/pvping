@@ -4,6 +4,7 @@ import com.relicum.commands.Annotations.Command;
 import com.relicum.duel.Duel;
 import com.relicum.duel.Menus.CloseItem;
 import com.relicum.duel.Menus.DuelSettingsMenu;
+import com.relicum.pvpcore.FormatUtil;
 import com.relicum.pvpcore.Kits.LoadOut;
 import com.relicum.pvpcore.Menus.AbstractItem;
 import com.relicum.pvpcore.Menus.ActionHandler;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Name: LoadoutModify.java Created: 25 May 2015
@@ -80,7 +82,7 @@ public class LoadoutModify extends DuelCmd {
 
                 int c = 0;
 
-                for (Map.Entry<String, LoadOut> entry : plugin.getKitHandler().getAllKits()) {
+                for (Map.Entry<UUID, LoadOut> entry : plugin.getKitHandler().getAllKits()) {
                     LoadOut data = entry.getValue();
                     ActionItem item = new ActionItem(data.getIcon(), c, ClickAction.CONFIG, new ActionHandler() {
                         @Override
@@ -94,7 +96,7 @@ public class LoadoutModify extends DuelCmd {
 
                             player.playSound(player.getLocation(), Sound.CLICK, 10.0f, 1.0f);
 
-                            DuelSettingsMenu d = new DuelSettingsMenu("&6&lKit: " + icon.getText(), 1, Duel.get().getConfigs());
+                            DuelSettingsMenu d = new DuelSettingsMenu(FormatUtil.colorize("&6&lKit: " + icon.getText()), 1, Duel.get().getConfigs());
 
 
                             plugin.getCacheManager().putMenu("duel", d);

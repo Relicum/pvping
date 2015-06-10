@@ -9,6 +9,7 @@ import com.relicum.duel.Handlers.GameHandler;
 import com.relicum.duel.Handlers.InviteCache;
 import com.relicum.duel.Handlers.InviteListener;
 import com.relicum.duel.Handlers.LobbyHandler;
+import com.relicum.duel.Handlers.SkullHandler;
 import com.relicum.duel.Kits.KitManager;
 import com.relicum.duel.Menus.MenuManager;
 import com.relicum.duel.Objects.PvpPlayer;
@@ -42,6 +43,7 @@ public class Duel extends JavaPlugin implements Listener {
     public PvpPlayer player;
     private CacheManager cacheManager;
     private InviteCache inviteCache;
+    private InviteListener inviteListener;
     private KitManager kitHandler;
     private boolean firstLoad = false;
     private GameHandler gameHandler;
@@ -55,6 +57,7 @@ public class Duel extends JavaPlugin implements Listener {
     private LobbyHandler lobbyHandler;
     private ConfigLoader configLoader;
     private DuelConfigs configs;
+    private SkullHandler skullHandler;
 
 
     /**
@@ -98,9 +101,13 @@ public class Duel extends JavaPlugin implements Listener {
                 return;
             }
 
+            skullHandler = new SkullHandler(this);
+
             cacheManager = new CacheManager();
 
-            inviteCache = new InviteCache(this, 100l, 100l, new InviteListener());
+            inviteListener = new InviteListener(this);
+
+            inviteCache = new InviteCache(100l, 100l, inviteListener);
 
             kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
@@ -156,8 +163,11 @@ public class Duel extends JavaPlugin implements Listener {
         playerCommands.endRegistration();
         adminCommands.endRegistration();
 
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new TestTask(), 0, 0);
+
 
     }
+
 
 //    private void setEconomy(){
 //
@@ -184,9 +194,8 @@ public class Duel extends JavaPlugin implements Listener {
         configLoader.save(configs);
         cacheManager.invalidateAll();
         cacheManager.cleanUp();
-        inviteCache.cancelCheckTask();
-        inviteCache.invalidateAll();
-        inviteCache.clear();
+        inviteCache.cleanAndDestroy();
+        skullHandler.clear();
         kitHandler.saveAndRemoveAll();
         statsManager.saveAndClearAll();
         gameHandler.clearAllPlayers();
@@ -195,6 +204,14 @@ public class Duel extends JavaPlugin implements Listener {
 
     public InviteCache getInviteCache() {
         return inviteCache;
+    }
+
+    public SkullHandler getSkullHandler() {
+        return skullHandler;
+    }
+
+    public InviteListener getInviteListener() {
+        return inviteListener;
     }
 
     public CacheManager getCacheManager() {
@@ -266,8 +283,11 @@ public class Duel extends JavaPlugin implements Listener {
 //                Files.createDirectories(Paths.get(getDataFolder().toString() + File.separator + "kits" + File.separator));
 //            }
 
+            skullHandler = new SkullHandler(this);
             cacheManager = new CacheManager();
-            inviteCache = new InviteCache(this);
+            inviteListener = new InviteListener(this);
+
+            inviteCache = new InviteCache(100l, 100l, inviteListener);
             kitHandler = new KitManager(this);
             gameHandler = new GameHandler(this);
             lobbyHandler = new LobbyHandler(this);

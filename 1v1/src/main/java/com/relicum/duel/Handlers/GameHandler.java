@@ -10,14 +10,13 @@ import com.relicum.pvpcore.Enums.EndReason;
 import com.relicum.pvpcore.Enums.PlayerState;
 import com.relicum.pvpcore.Gamers.PvpResponse;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class GameHandler implements Listener {
     private Duel plugin;
     private Map<UUID, PvpGame> games = new HashMap<>();
     private DuelMsg msg;
-    private LobbyGameLink link;
+
 
 
     public GameHandler(Duel plugin) {
@@ -48,34 +47,11 @@ public class GameHandler implements Listener {
         worldSpawn = new SpawnPoint(plugin.getServer().getWorld("world").getSpawnLocation());
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         msg = DuelMsg.getInstance();
-        openLink();
-    }
 
-    @Nullable
-    public LobbyGameLink.Inner getAccess(LobbyHandler handler) {
-
-        return link.requestAccess(handler);
     }
 
 
-    public void openLink() {
 
-        this.link = new LobbyGameLink(this) {
-
-            @Override
-            public PlayerState getPlayerState(String uuid) {
-                return GameHandler.this.getPlayerState(uuid);
-            }
-
-            @Override
-            public void setPlayerState(String uuid, PlayerState state) {
-
-                GameHandler.this.registerPlayerState(uuid, state);
-            }
-
-
-        };
-    }
 
     /**
      * Gets players current state {@link PlayerState}.
@@ -90,7 +66,7 @@ public class GameHandler implements Listener {
 
     /**
      * Attempts to register the {@link PlayerState} for the player.
-     * <p>It might not always to be possible to resgister the {@link PlayerState} under certain conditions.
+     * <p>It might not always to be possible to register the {@link PlayerState} under certain conditions.
      * <p>It is important to check the returned {@link PvpResponse} for the outcome.
      *
      * @param uuid  the uuid
@@ -151,6 +127,9 @@ public class GameHandler implements Listener {
 
     }
 
+    public Collection<PvpPlayer> getPlayers() {
+        return players.values();
+    }
 
     /**
      * Remove the {@link Player} {@link PvpPlayer} object and returns it.
@@ -331,14 +310,63 @@ public class GameHandler implements Listener {
 
     }
 
+    /**
+     * Send message to the specified PvpPlayer.
+     *
+     * @param message the message
+     * @param uuid    the uuid
+     */
+    public void sendMessage(String message, String uuid) {
+        if (this.isKnown(uuid)) {
+            players.get(uuid).sendMessage(message);
+        }
+    }
+
+    /**
+     * Send message to the specified PvpPlayer, allows for placeholders.
+     *
+     * @param message the message
+     * @param objects the text to replace each placeholder
+     * @param uuid    the uuid
+     */
+    public void sendMessage(String message, Object[] objects, String uuid) {
+        if (this.isKnown(uuid)) {
+            players.get(uuid).sendMessage(message, objects);
+        }
+    }
+
+    /**
+     * Send error message to the specified PvpPlayer.
+     *
+     * @param message the message
+     * @param uuid    the uuid
+     */
+    public void sendErrorMessage(String message, String uuid) {
+        if (this.isKnown(uuid)) {
+            players.get(uuid).sendErrorMessage(message);
+        }
+    }
+
+    /**
+     * Send error message to the specified PvpPlayer, allows for placeholders.
+     *
+     * @param message the message
+     * @param objects the text to replace each placeholder
+     * @param uuid    the uuid
+     */
+    public void sendErrorMessage(String message, Object[] objects, String uuid) {
+        if (this.isKnown(uuid)) {
+            players.get(uuid).sendErrorMessage(message, objects);
+        }
+    }
+
+
     public void clearQueue() {
 
         playerQueue.clear();
     }
 
     public void clearAllPlayers() {
-
-        link.setActive(false);
 
         clearQueue();
 
@@ -351,23 +379,6 @@ public class GameHandler implements Listener {
     public Location getWorldSpawn() {
 
         return worldSpawn.toLocation();
-    }
-
-
-    public void onDamage(EntityDamageByEntityEvent event) {
-
-        if (event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntity().getType().equals(EntityType.PLAYER)) {
-            Player damager = (Player) event.getDamager();
-            Player defender = (Player) event.getEntity();
-            if (players.containsKey(damager.getUniqueId().toString()) && players.containsKey(defender.getUniqueId().toString())) {
-
-                if (players.get(damager.getUniqueId().toString()).inLobby() && players.get(defender.getUniqueId().toString()).inLobby()) {
-                    msg.sendMessage(damager, "You have requested a player to 1v1 with " + defender.getName());
-                    msg.sendMessage(defender, "Player " + damager.getName() + " has requested a 1v1 with you");
-                    event.setCancelled(true);
-                }
-            }
-        }
     }
 
 

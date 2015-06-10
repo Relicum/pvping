@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * LoadOut //todo needs documenting.
@@ -27,6 +28,7 @@ import java.util.List;
  */
 public class LoadOut {
 
+    private UUID uuid;
     private String loadoutName;
     private PlayerInventory inventory;
     private Collection<PotionEffect> effects = new ArrayList<>();
@@ -40,6 +42,7 @@ public class LoadOut {
     public LoadOut(String loadoutName) {
 
         this.loadoutName = loadoutName;
+        this.uuid = UUID.randomUUID();
     }
 
     public LoadOut(PlayerInventory inventory, Collection<PotionEffect> effects, String loadoutName) {
@@ -49,13 +52,18 @@ public class LoadOut {
         this.loadoutName = loadoutName;
         loadOutPermission = "duel.kit." + ChatColor.stripColor(loadoutName);
         this.material = Material.IRON_SWORD.name();
-        this.displayName = "&6&l" + loadoutName;
-        description.add("&6the first");
-        description.add("&6the second");
-        ((LinkedList<String>) description).addLast("&bClick to go back");
+        this.displayName = FormatUtil.colorize("&6&l" + loadoutName);
+        description.add("  ");
+        description.add(FormatUtil.colorize("&6the first"));
+        description.add(FormatUtil.colorize("&6the second"));
+        ((LinkedList<String>) description).addLast(FormatUtil.colorize("&bClick to go back"));
         settings = PlayerGameSettingsBuilder.builder().setGameMode(GameMode.SURVIVAL.name()).build();
+        this.uuid = UUID.randomUUID();
 
+    }
 
+    public UUID getUuid() {
+        return uuid;
     }
 
     public String getLoadoutName() {
@@ -144,6 +152,7 @@ public class LoadOut {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+                       .add("uuid", getUuid().toString())
                        .add("loadoutName", loadoutName)
                        .add("inventory", inventory.toString())
                        .add("effects", effects.toString())

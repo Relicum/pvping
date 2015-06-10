@@ -67,6 +67,10 @@ public class MenuManager implements Listener {
         }
     }
 
+    public PlayerQueueMenu getInvitesMenu() {
+
+        return new PlayerQueueMenu(FormatUtil.colorize("&6&lPlayer Invitation Menu"), 1);
+    }
 
     public Duel getPlugin() {
 

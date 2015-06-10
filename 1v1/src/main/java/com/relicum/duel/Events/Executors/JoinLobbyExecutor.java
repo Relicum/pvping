@@ -12,8 +12,12 @@ import org.bukkit.plugin.EventExecutor;
  * @version 0.0.1
  */
 public class JoinLobbyExecutor implements EventExecutor {
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(Listener listener, Event event) throws EventException {
+
 
     }
 }

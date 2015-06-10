@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
  */
 public class PlayerGameSettings {
 
+
     protected float exhaustion = 0.2f;
     protected float saturation = 5.0f;
     protected double playerHealth = 20.0d;
@@ -47,6 +48,7 @@ public class PlayerGameSettings {
         this.totalExperience = totalExperience;
         this.walkSpeed = walkSpeed;
         this.xp = xp;
+
     }
 
 

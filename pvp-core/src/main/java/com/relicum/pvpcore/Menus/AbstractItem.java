@@ -2,6 +2,7 @@ package com.relicum.pvpcore.Menus;
 
 import com.google.common.base.Objects;
 import com.relicum.pvpcore.FormatUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -265,6 +266,7 @@ public abstract class AbstractItem implements BaseItem, Permissible, Actionable 
         return menu;
     }
 
+    @SuppressFBWarnings({"NOISE_OPERATION"})
     public void addToMenu(ActionMenu menu) {
 
         this.menu = menu;

@@ -1,47 +1,76 @@
 package com.relicum.duel.Objects;
 
-import com.relicum.duel.Commands.DuelMsg;
 import com.relicum.duel.Duel;
 import com.relicum.pvpcore.Kits.LoadOut;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * GameInvite hols details of players challenging other players to 1v1's
+ * GameInvite holds details of players challenging other players to 1v1's
  *
  * @author Relicum
  * @version 0.0.1
  */
 public class GameInvite {
 
-    private Duel plugin;
+
     private UUID uuid;
-    private PvpPlayer inviter;
-    private PvpPlayer invitee;
+    private String inviterId;
+    private String inviterName;
+    private String inviteeId;
+    private String inviteeName;
     private LoadOut loadOut;
     private long timeout;
     private boolean active;
 
+
     /**
      * Instantiates a new Game invite.
      *
-     * @param plugin  the plugin
-     * @param inviter the {@link PvpPlayer} submitting the invite
-     * @param invitee the {@link PvpPlayer} the invite is sent to.
-     * @param loadOut the {@link LoadOut} the game will use.
+     * @param inviterId   the string uuid of the player submitting the invite.
+     * @param inviterName the player name submitting the invite.
+     * @param inviteeId   the string uuid of the player the invite is sent to.
+     * @param inviteeName the player name the invite is sent to.
+     * @param loadOut     the {@link LoadOut} the game will use.
      */
-    public GameInvite(Duel plugin, PvpPlayer inviter, PvpPlayer invitee, @Nullable LoadOut loadOut) {
-        this.plugin = plugin;
-        this.setInviter(inviter);
-        this.setInvitee(invitee);
-        this.setLoadOut(loadOut);
-        this.setTimeout(System.currentTimeMillis() + 10000);
-        this.setUuid(UUID.randomUUID());
+    public GameInvite(String inviterId, String inviterName, String inviteeId, String inviteeName, @Nullable LoadOut loadOut) {
+
+        this.inviterId = inviterId;
+        this.inviterName = inviterName;
+        this.inviteeId = inviteeId;
+        this.inviteeName = inviteeName;
+        this.loadOut = loadOut;
+        this.timeout = (System.currentTimeMillis() + 30000);
+        this.uuid = UUID.randomUUID();
         this.active = true;
+
     }
+
+    /**
+     * Instantiates a new Game invite.
+     *
+     * @param inviterId   the string uuid of the player submitting the invite.
+     * @param inviterName the player name submitting the invite.
+     * @param inviteeId   the string uuid of the player the invite is sent to.
+     * @param inviteeName the player name the invite is sent to.
+     * @param loadOut     the {@link LoadOut} the game will use.
+     * @param timeOut     the number of milli seconds before the invite expires default is 30 seconds
+     */
+    public GameInvite(String inviterId, String inviterName, String inviteeId, String inviteeName, @Nullable LoadOut loadOut, long timeOut) {
+
+        this.inviterId = inviterId;
+        this.inviterName = inviterName;
+        this.inviteeId = inviteeId;
+        this.inviteeName = inviteeName;
+        this.loadOut = loadOut;
+        this.timeout = (System.currentTimeMillis() + timeOut);
+        this.uuid = UUID.randomUUID();
+        this.active = true;
+
+    }
+
 
     /**
      * Has the invite it timed out or is it still valid.
@@ -53,31 +82,40 @@ public class GameInvite {
         return System.currentTimeMillis() <= getTimeout();
     }
 
-    /**
-     * Gets {@link PvpPlayer} that submitted the invite.
-     *
-     * @return the inviter {@link PvpPlayer}
-     */
-    public PvpPlayer getInviter() {
-        return inviter;
-    }
+    public void remove(InviteResponse response) {
 
-    public void setInviter(PvpPlayer inviter) {
-        this.inviter = inviter;
+        Duel.get().getInviteCache().removeInvite(getUuid(), response);
     }
 
     /**
-     * Gets {@link PvpPlayer} that was sent the invite.
+     * Send message.
+     * <p>Checks they are still have a {@link com.relicum.pvpcore.Enums.PlayerState#LOBBY} if not the message will not be sent.
      *
-     * @return the invitee
+     * @param message the message
+     * @param who     the id or either the inviter or invitee
      */
-    public PvpPlayer getInvitee() {
-        return invitee;
+    public void sendMessage(String message, String who) {
+
+        if (Duel.get().getLobbyHandler().isInLobby(who)) {
+            Duel.get().getGameHandler().sendMessage(message, who);
+        }
+
     }
 
-    public void setInvitee(PvpPlayer invitee) {
-        this.invitee = invitee;
+    /**
+     * Send error message.
+     * <p>Checks they are still have a {@link com.relicum.pvpcore.Enums.PlayerState#LOBBY} if not the message will not be sent.
+     *
+     * @param message the message
+     * @param who     the id or either the inviter or invitee
+     */
+    public void sendErrorMessage(String message, String who) {
+
+        if (Duel.get().getLobbyHandler().isInLobby(who)) {
+            Duel.get().getGameHandler().sendErrorMessage(message, who);
+        }
     }
+
 
     /**
      * Gets {@link LoadOut} the game will use.
@@ -85,12 +123,10 @@ public class GameInvite {
      * @return the {@link LoadOut}
      */
     public LoadOut getLoadOut() {
+
         return loadOut;
     }
 
-    public void setLoadOut(@Nullable LoadOut loadOut) {
-        this.loadOut = loadOut;
-    }
 
     /**
      * Gets timeout.
@@ -101,145 +137,110 @@ public class GameInvite {
         return timeout;
     }
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
 
+    /**
+     * Gets the invites {@link UUID}.
+     *
+     * @return the uuid
+     */
     public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+
+    /**
+     * Gets inviter string uuid.
+     *
+     * @return the inviter string uuid
+     */
+    public String getInviterId() {
+        return inviterId;
     }
 
-    public void invalidatedByInviter() {
-
-        process(Response.CANCELED);
+    /**
+     * Gets invitee string uuid
+     *
+     * @return the invitee string uuid
+     */
+    public String getInviteeId() {
+        return inviteeId;
     }
 
-    public void invalidatedByInvitee() {
-
-        process(Response.DECLINED);
+    /**
+     * Gets inviter name.
+     *
+     * @return the inviter name
+     */
+    public String getInviterName() {
+        return inviterName;
     }
 
-    public void inviteTimesOut() {
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                process(Response.TIMEOUT);
-            }
-        }.runTask(plugin);
-
-
+    /**
+     * Gets invitee name.
+     *
+     * @return the invitee name
+     */
+    public String getInviteeName() {
+        return inviteeName;
     }
 
-    public void accept() {
-
-        process(Response.ACCEPTED);
-
-    }
-
-    public void inviterOffline() {
-
-        process(Response.INVITER_OFFLINE);
-    }
-
-    public void inviteeOffline() {
-
-        process(Response.INVITEE_OFFLINE);
-    }
-
-    public void systemInvalidate() {
-
-        process(Response.SYSTEM);
-    }
-
-    private void process(Response response) {
-
-        active = false;
-
-        switch (response) {
-            case ACCEPTED: {
-                getInviter().sendMessage("&6" + getInvitee().getName() + "&a has accepted your challenge");
-                getInvitee().sendMessage("You have accepted the invite from &6" + getInviter().getName());
-
-                break;
-            }
-            case TIMEOUT: {
-                getInviter().sendErrorMessage("Your invite to &6" + getInvitee().getName() + " has expired");
-                plugin.getInviteCache().removeInvite(getUuid());
-                break;
-            }
-            case DECLINED: {
-                getInviter().sendErrorMessage("&6" + getInvitee().getName() + "&a has declined your challenge");
-                getInvitee().sendMessage("You have declined the invite from &6" + getInviter().getName());
-                break;
-            }
-            case CANCELED: {
-                getInviter().sendMessage("You have canceled your invite to &6" + getInvitee().getName());
-                getInvitee().sendErrorMessage("&6" + getInviter().getName() + "&a has cancelled their invite");
-                break;
-            }
-            case INVITER_OFFLINE: {
-                getInvitee().sendErrorMessage("&6" + getInviter().getName() + "&a has gone offline invite is cancelled");
-                break;
-            }
-            case INVITEE_OFFLINE: {
-                getInviter().sendErrorMessage("&6" + getInvitee().getName() + "&a has gone offline invite is cancelled");
-                break;
-            }
-            case SYSTEM: {
-                plugin.getLogger().info("System has expired invite from " + getInviter().getName() + " to " + getInvitee().getName());
-                plugin.getInviteCache().removeInvite(getUuid());
-                break;
-            }
-            default: {
-
-                DuelMsg.getInstance().logSevereFormatted("Unknown invite Response type, this is a bug");
-            }
-
-        }
-
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GameInvite)) return false;
-        GameInvite that = (GameInvite) o;
-        return Objects.equals(getTimeout(), that.getTimeout()) &&
-                       Objects.equals(getUuid(), that.getUuid()) &&
-                       Objects.equals(getInviter(), that.getInviter()) &&
-                       Objects.equals(getInvitee(), that.getInvitee()) &&
-                       Objects.equals(getLoadOut(), that.getLoadOut());
+        GameInvite invite = (GameInvite) o;
+        return Objects.equals(uuid, invite.uuid) &&
+                       Objects.equals(inviterId, invite.inviterId) &&
+                       Objects.equals(inviteeId, invite.inviteeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUuid(), getInviter(), getInvitee(), getLoadOut(), getTimeout());
+        return Objects.hash(uuid, inviterId, inviteeId);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                       .add("invitee", getInvitee().toString())
-                       .add("inviter", getInviter().toString())
-                       .add("loadOut", getLoadOut().toString())
-                       .add("timeout", getTimeout())
-                       .add("uuid", getUuid().toString())
+                       .add("uuid", uuid)
+                       .add("inviterId", inviterId)
+                       .add("inviteeId", inviteeId)
+                       .add("inviterName", inviterName)
+                       .add("inviteeName", inviteeName)
+                       .add("timeout", timeout)
+                       .add("loadOut", loadOut.toString())
                        .toString();
     }
 
-    public enum Response {
+    public void clear() {
 
-        ACCEPTED,
-        DECLINED,
-        TIMEOUT,
-        CANCELED,
-        INVITER_OFFLINE,
-        INVITEE_OFFLINE,
-        SYSTEM,
+        this.uuid = null;
+        this.inviterId = null;
+        this.inviterName = null;
+        this.inviteeId = null;
+        this.inviteeName = null;
+        this.loadOut = null;
+
+    }
+
+    /**
+     * Gets active.
+     *
+     * @return true and the invite is still valid.
+     */
+    public boolean isActive() {
+
+        return active;
+    }
+
+    /**
+     * Sets new active.
+     *
+     * @param active set true to mark it as valid or false to mark it as invalid.
+     */
+    public void setActive(boolean active) {
+
+        this.active = active;
     }
 }

@@ -401,8 +401,8 @@ public class ActionMenu implements InventoryHolder {
         ActionMenu clone = new ActionMenu(this.title, this.rows);
         clone.setExitOnClickOutside(this.exitOnClickOutside);
         clone.setMenuCloseBehaviour(this.menuCloseBehaviour);
-        for (Integer index : this.items.keySet()) {
-            addMenuItem(this.items.get(index), index);
+        for (Map.Entry<Integer, AbstractItem> index : this.items.entrySet()) {
+            addMenuItem(index.getValue(), index.getKey());
         }
         return clone;
     }

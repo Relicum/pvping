@@ -1,7 +1,9 @@
 package com.relicum.pvpcore.Arenas;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.relicum.pvpcore.Enums.ArenaState;
+import com.relicum.pvpcore.Enums.ArenaType;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +20,12 @@ public class ZoneCollection {
 
     private String name;
     private Map<String, PvPZone> zones = Maps.newHashMap();
+    private Set<String> enabledZones = Sets.newConcurrentHashSet();
 
     public ZoneCollection(String name) {
 
         this.name = name;
+
     }
 
     public String getName() {
@@ -41,7 +45,12 @@ public class ZoneCollection {
 
     public void addZone(PvPZone paramZone) {
 
-        zones.putIfAbsent(paramZone.getNameId(), paramZone);
+        zones.put(paramZone.getNameId(), paramZone);
+        if (paramZone.isEnabled() && !paramZone.getState().equals(ArenaState.EDITING) && paramZone.getArenaType().equals(ArenaType.ARENA1v1))
+
+        {
+            enabledZones.add(paramZone.getNameId());
+        }
     }
 
     public PvPZone getZone(String paramNameId) {
@@ -65,9 +74,9 @@ public class ZoneCollection {
      *
      * @return the list of {@link PvPZone} that are enabled.
      */
-    public List<PvPZone> getEnabledZones() {
+    public Iterable<String> getEnabledZones() {
 
-        return zones.values().stream().filter(PvPZone::isEnabled).collect(Collectors.toList());
+        return zones.values().stream().filter(PvPZone::isEnabled).map(PvPZone::getNameId).collect(Collectors.toList());
     }
 
     /**

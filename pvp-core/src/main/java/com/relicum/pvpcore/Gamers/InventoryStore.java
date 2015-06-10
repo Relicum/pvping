@@ -49,7 +49,8 @@ public class InventoryStore {
      */
     public ItemStack[] getArmor() {
 
-        return armor;
+
+        return armor.clone();
     }
 
     /**
@@ -59,7 +60,7 @@ public class InventoryStore {
      */
     public ItemStack[] getContents() {
 
-        return contents;
+        return contents.clone();
     }
 
     /**

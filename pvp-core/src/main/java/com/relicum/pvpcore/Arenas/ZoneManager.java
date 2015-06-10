@@ -8,7 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +29,8 @@ public class ZoneManager<T extends JavaPlugin> {
 
     private Map<String, ZoneCollection> zonesMap = new HashMap<>();
 
+    private Map<String, Set<String>> enabledZones;
+
     private Set<String> zoneNames = new HashSet<>();
 
     private String BASE_DIR;
@@ -33,6 +39,7 @@ public class ZoneManager<T extends JavaPlugin> {
 
         this.plugin = plugin;
         BASE_DIR = plugin.getDataFolder().toString() + File.separator + "zones" + File.separator;
+
 
         try {
             FileUtils.createDirectory(BASE_DIR);

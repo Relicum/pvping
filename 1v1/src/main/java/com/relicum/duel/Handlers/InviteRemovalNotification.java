@@ -1,9 +1,9 @@
 package com.relicum.duel.Handlers;
 
 import com.relicum.duel.Objects.GameInvite;
+import com.relicum.duel.Objects.InviteResponse;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 
 /**
  * InviteRemovalNotification
@@ -17,11 +17,14 @@ public final class InviteRemovalNotification {
     @Nullable
     private String key;
     @Nullable
-    private WeakReference<GameInvite> gameInvite;
+    private GameInvite gameInvite;
 
-    InviteRemovalNotification(@Nullable String key, @Nullable GameInvite invite) {
+    private InviteResponse response;
+
+    InviteRemovalNotification(@Nullable String key, @Nullable GameInvite invite, @Nullable InviteResponse response) {
         this.key = key;
-        this.gameInvite = new WeakReference<>(invite);
+        this.gameInvite = invite;
+        this.response = response;
     }
 
     /**
@@ -48,20 +51,26 @@ public final class InviteRemovalNotification {
     @Nullable
     public GameInvite getGameInvite() {
         if (gameInvite != null) {
-            return gameInvite.get();
+            return gameInvite;
         }
 
         return null;
     }
 
     /**
-     * Clear the {@link WeakReference} of the {@link GameInvite}.
+     * Gets response of the removal giving the reason from {@link InviteResponse}.
+     *
+     * @return the response the reason for removal {@link InviteResponse}
      */
-    public void clearInviteReference() {
+    public InviteResponse getResponse() {
+        return response;
+    }
 
-        if (gameInvite != null) {
+    public void clear() {
+
+        if (gameInvite != null)
             gameInvite.clear();
-        }
+        this.key = null;
     }
 
     private static final long serialVersionUID = 0;

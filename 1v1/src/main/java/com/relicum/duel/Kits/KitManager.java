@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +28,9 @@ public class KitManager {
 
     protected final String BASE_DIR;
 
-    protected Map<String, LoadOut> kitLoadOuts;
+    protected Map<UUID, LoadOut> kitLoadOuts;
+
+    protected Map<String, UUID> nameToUUID;
 
     protected LoadOutLoader loader;
 
@@ -36,7 +39,7 @@ public class KitManager {
     public KitManager(Duel plugin) {
 
         this.plugin = plugin;
-
+        this.nameToUUID = new HashMap<>();
         BASE_DIR = plugin.getDataFolder().toString() + File.separator + "kits" + File.separator;
 
         try {
@@ -67,8 +70,8 @@ public class KitManager {
 
                     LoadOut data = loader.load();
 
-                    kitLoadOuts.put(data.getLoadoutName(), data);
-
+                    kitLoadOuts.put(data.getUuid(), data);
+                    nameToUUID.put(data.getLoadoutName(), data.getUuid());
                     plugin.getLogger().info("Kit: " + data.getLoadoutName() + " successfully loaded");
 
                 }
@@ -98,8 +101,8 @@ public class KitManager {
             loader.setPath(Paths.get(BASE_DIR + data.getLoadoutName() + ".json"));
             loader.save(data);
             LoadOut ki = loader.load();
-            kitLoadOuts.put(ki.getLoadoutName(), ki);
-
+            kitLoadOuts.put(ki.getUuid(), ki);
+            nameToUUID.put(ki.getLoadoutName(), ki.getUuid());
             return true;
         }
         catch (Exception e) {
@@ -109,25 +112,34 @@ public class KitManager {
 
     }
 
-    public LoadOut getLobbyKit() {
 
-        return kitLoadOuts.get("lobbysettings");
+    /**
+     * Get a {@link LoadOut} by name.
+     *
+     * @param uuid the {@link UUID} of the kit
+     * @return a cloned copy of {@link LoadOut}, or null if kit wasn't found
+     */
+    @Nullable
+    public LoadOut getKit(UUID uuid) {
+
+        if (containsKit(uuid)) {
+
+            return kitLoadOuts.get(uuid);
+        }
+        return null;
+
     }
 
     /**
      * Get a {@link LoadOut} by name.
      *
-     * @param name the name of the kit
+     * @param uuid the {@link UUID} of the kit
      * @return a cloned copy of {@link LoadOut}, or null if kit wasn't found
      */
     @Nullable
     public LoadOut getKit(String name) {
 
-        if (containsKit(name)) {
-
-            return kitLoadOuts.get(name);
-        }
-        return null;
+        return getKit(nameToUUID.get(name));
 
     }
 
@@ -141,14 +153,36 @@ public class KitManager {
         return kitLoadOuts.size();
     }
 
+
+    /**
+     * Has kits lets you know if there are any kits made.
+     * <p>Useful to use to stop exceptions being thrown by calling this first to see if there are ANy kits at all.
+     *
+     * @return true and there are kits false and there are not.
+     */
+    public boolean hasKits() {
+
+        return kitLoadOuts.size() > 0;
+    }
+
     /**
      * Get all kits.
      *
      * @return an entry set of all kits
      */
-    public Set<Map.Entry<String, LoadOut>> getAllKits() {
+    public Set<Map.Entry<UUID, LoadOut>> getAllKits() {
 
         return kitLoadOuts.entrySet();
+    }
+
+    /**
+     * Get list of kit {@link UUID}.
+     *
+     * @return the list of kit {@link UUID}
+     */
+    public List<UUID> getKitUuids() {
+
+        return kitLoadOuts.keySet().stream().collect(Collectors.toList());
     }
 
     /**
@@ -158,18 +192,31 @@ public class KitManager {
      */
     public List<String> getKitNames() {
 
-        return kitLoadOuts.keySet().stream().collect(Collectors.toList());
+        return kitLoadOuts.values().stream().map(LoadOut::getLoadoutName).collect(Collectors.toList());
     }
 
     /**
      * Save the {@link LoadOut} object.
      * <p>The {@link LoadOut} is re added after the save has completed.
      *
-     * @param name the name of the kit.
+     * @param name the  of the kit.
      */
     public void saveKit(String name) {
 
-        saveKit(name, kitLoadOuts.get(name));
+        saveKit(kitLoadOuts.get(nameToUUID.get(name)));
+
+    }
+
+
+    /**
+     * Save the {@link LoadOut} object.
+     * <p>The {@link LoadOut} is re added after the save has completed.
+     *
+     * @param uuid the {@link UUID} of the kit.
+     */
+    public void saveKit(UUID uuid) {
+
+        saveKit(kitLoadOuts.get(uuid));
 
     }
 
@@ -180,27 +227,34 @@ public class KitManager {
      */
     public void saveKit(LoadOut data) {
 
-        saveKit(data.getLoadoutName(), data);
-
-    }
-
-    /**
-     * Saves a {@link LoadOut} object directly.
-     *
-     * @param name the kit name
-     * @param data the {@link LoadOut} to be saved
-     */
-    public void saveKit(String name, LoadOut data) {
-
-        loader.setPath(Paths.get(BASE_DIR + name + ".json"));
+        loader.setPath(Paths.get(BASE_DIR + data.getLoadoutName() + ".json"));
         loader.save(data);
+
+        nameToUUID.put(data.getLoadoutName(), data.getUuid());
+
     }
 
 
     /**
      * Remove a {@link LoadOut} from the internal map.
      *
-     * @param name the kit name
+     * @param uuid the {@link UUID} of kit
+     * @return the {@link LoadOut} that has been removed.
+     */
+    @Nullable
+    public LoadOut removeKit(UUID uuid) {
+
+        if (containsKit(uuid)) {
+
+            return kitLoadOuts.remove(uuid);
+        }
+        return null;
+    }
+
+    /**
+     * Remove a {@link LoadOut} from the internal map.
+     *
+     * @param uuid the {@link UUID} of kit
      * @return the {@link LoadOut} that has been removed.
      */
     @Nullable
@@ -208,16 +262,32 @@ public class KitManager {
 
         if (containsKit(name)) {
 
-            return kitLoadOuts.remove(name);
+            return kitLoadOuts.remove(nameToUUID.get(name));
         }
         return null;
+    }
+
+    @Nullable
+    public LoadOut deleteLoadOutFile(UUID name) {
+
+        if (deleteFile(kitLoadOuts.get(name).getLoadoutName())) {
+            LoadOut loadOut = kitLoadOuts.remove(name);
+            nameToUUID.remove(loadOut.getLoadoutName());
+            return loadOut;
+        }
+
+        else {
+            return null;
+        }
     }
 
     @Nullable
     public LoadOut deleteLoadOutFile(String name) {
 
         if (deleteFile(name)) {
-            return kitLoadOuts.remove(name);
+            LoadOut loadOut = kitLoadOuts.remove(nameToUUID.get(name));
+            nameToUUID.remove(loadOut.getLoadoutName());
+            return loadOut;
         }
 
         else {
@@ -231,9 +301,20 @@ public class KitManager {
      * @param name the kit name
      * @return true if it is, false if not.
      */
-    public boolean containsKit(String name) {
+    public boolean containsKit(UUID name) {
 
         return kitLoadOuts.containsKey(name);
+    }
+
+    /**
+     * Checks to see if a {@link LoadOut} is stored.
+     *
+     * @param name the kit name
+     * @return true if it is, false if not.
+     */
+    public boolean containsKit(String name) {
+
+        return kitLoadOuts.containsKey(nameToUUID.get(name));
     }
 
     /**
@@ -243,13 +324,11 @@ public class KitManager {
 
         plugin.getLogger().info("Saving all Kits and Data....");
 
-        for (LoadOut data : kitLoadOuts.values()) {
-            saveKit(data.getLoadoutName(), data);
-        }
-
-
+        kitLoadOuts.values().forEach(this::saveKit);
+        nameToUUID.clear();
         kitLoadOuts.clear();
         kitLoadOuts = null;
+        nameToUUID = null;
     }
 
     /**
